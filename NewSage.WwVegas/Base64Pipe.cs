@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class Base64Pipe(Base64PipeCodeControl control) : Pipe
+public class Base64Pipe(CodeControl control) : Pipe
 {
     private readonly byte[] _cBuffer = new byte[4];
     private readonly byte[] _pBuffer = new byte[3];
@@ -32,7 +32,7 @@ public class Base64Pipe(Base64PipeCodeControl control) : Pipe
         var length = 0;
         if (_counter > 0)
         {
-            if (control is Base64PipeCodeControl.Encode)
+            if (control is CodeControl.Encode)
             {
                 var chars = Base64.Encode(_pBuffer.AsSpan()[.._counter], _cBuffer);
                 length += base.Put(_cBuffer.AsSpan()[..chars]);
@@ -65,7 +65,7 @@ public class Base64Pipe(Base64PipeCodeControl control) : Pipe
         byte[] to;
         int toSize;
 
-        if (control is Base64PipeCodeControl.Encode)
+        if (control is CodeControl.Encode)
         {
             from = _pBuffer;
             fromSize = _pBuffer.Length;
@@ -91,7 +91,7 @@ public class Base64Pipe(Base64PipeCodeControl control) : Pipe
             if (_counter == fromSize)
             {
                 var outCount =
-                    control is Base64PipeCodeControl.Encode
+                    control is CodeControl.Encode
                         ? Base64.Encode(from.AsSpan()[..fromSize], to.AsSpan()[..toSize])
                         : Base64.Decode(from.AsSpan()[..fromSize], to.AsSpan()[..toSize]);
 
@@ -103,7 +103,7 @@ public class Base64Pipe(Base64PipeCodeControl control) : Pipe
         while (sourceLength >= fromSize)
         {
             var outCount =
-                control is Base64PipeCodeControl.Encode
+                control is CodeControl.Encode
                     ? Base64.Encode(source[sourceIndex..fromSize], to.AsSpan()[..toSize])
                     : Base64.Decode(source[sourceIndex..fromSize], to.AsSpan()[..toSize]);
 

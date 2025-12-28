@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="Base64PipeCodeControl.cs" company="NewSage">
+// <copyright file="CodeControl.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public enum Base64PipeCodeControl
+public enum CodeControl
 {
     Encode,
     Decode,
