@@ -20,17 +20,17 @@
 
 namespace NewSage.WwVegas;
 
-public record WwDateTime(ushort Date, ushort Time)
+public record WwDateTime(uint Date, uint Time)
 {
-    public ushort Year => unchecked((ushort)(((Date & 0xFE00_0000) >> (9 + 16)) + 1980));
+    public uint Year => unchecked(((Date & 0xFE00_0000) >> (9 + 16)) + 1980);
 
-    public ushort Month => unchecked((ushort)((Date & 0x01E0_0000) >> (5 + 16)));
+    public uint Month => unchecked((Date & 0x01E0_0000) >> (5 + 16));
 
-    public ushort Day => unchecked((ushort)((Date & 0x001F_0000) >> 16));
+    public uint Day => (Date & 0x001F_0000) >> 16;
 
-    public ushort Hour => unchecked((ushort)((Time & 0xF800) >> 11));
+    public uint Hour => (Time & 0xF800) >> 11;
 
-    public ushort Minute => unchecked((ushort)((Time & 0x07E0) >> 5));
+    public uint Minute => (Time & 0x07E0) >> 5;
 
-    public ushort Second => unchecked((ushort)((Time & 0x001F) << 1));
+    public uint Second => (Time & 0x001F) << 1;
 }
