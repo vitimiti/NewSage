@@ -74,14 +74,17 @@ public class Pipe : IDisposable
             return;
         }
 
-        _ = ChainTo?.ChainFrom = ChainFrom;
-        ChainFrom?.PutTo(ChainTo);
+        if (disposing)
+        {
+            _ = ChainTo?.ChainFrom = ChainFrom;
+            ChainFrom?.PutTo(ChainTo);
 
-        ChainFrom?.Dispose();
-        ChainTo?.Dispose();
+            ChainFrom?.Dispose();
+            ChainTo?.Dispose();
 
-        ChainFrom = null;
-        ChainTo = null;
+            ChainFrom = null;
+            ChainTo = null;
+        }
 
         _disposed = true;
     }
