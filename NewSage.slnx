@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="NewSage.BaseTypes/NewSage.BaseTypes.csproj" />
   <Project Path="NewSage.Debug/NewSage.Debug.csproj" />
+  <Project Path="NewSage.Profile/NewSage.Profile.csproj" />
 </Solution>
