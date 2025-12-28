@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="IoQuaternion.cs" company="NewSage">
+// <copyright file="MicroChunkHeader.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -20,30 +20,35 @@
 
 namespace NewSage.WwVegas;
 
-public record IoQuaternion
+public class MicroChunkHeader
 {
-    public IList<float> Q { get; } = new float[4];
+    public MicroChunkHeader() { }
 
-    internal static int BufferSize => sizeof(float) * 4;
+    public MicroChunkHeader(byte chunkType, byte chunkSize)
+    {
+        ChunkType = chunkType;
+        ChunkSize = chunkSize;
+    }
 
-    internal static IoQuaternion FromBuffer(ReadOnlySpan<byte> buffer)
+    public byte ChunkType { get; set; }
+
+    public byte ChunkSize { get; set; }
+
+    internal static int BufferSize => sizeof(byte) * 2;
+
+    public void AddSize(byte add) => ChunkSize += add;
+
+    internal static MicroChunkHeader FromBuffer(ReadOnlySpan<byte> buffer)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
-        var q = new IoQuaternion();
-        q.Q[0] = BitConverter.ToSingle(buffer);
-        q.Q[1] = BitConverter.ToSingle(buffer[sizeof(float)..]);
-        q.Q[2] = BitConverter.ToSingle(buffer[(sizeof(float) * 2)..]);
-        q.Q[3] = BitConverter.ToSingle(buffer[(sizeof(float) * 3)..]);
-        return q;
+        return new MicroChunkHeader(buffer[0], buffer[1]);
     }
 
     internal byte[] ToBuffer()
     {
         var buffer = new byte[BufferSize];
-        BitConverter.GetBytes(Q[0]).CopyTo(buffer, 0);
-        BitConverter.GetBytes(Q[1]).CopyTo(buffer, sizeof(float));
-        BitConverter.GetBytes(Q[2]).CopyTo(buffer, sizeof(float) * 2);
-        BitConverter.GetBytes(Q[3]).CopyTo(buffer, sizeof(float) * 3);
+        buffer[0] = ChunkType;
+        buffer[1] = ChunkSize;
         return buffer;
     }
 }

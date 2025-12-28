@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="IoQuaternion.cs" company="NewSage">
+// <copyright file="ChunkHeader.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -20,30 +20,59 @@
 
 namespace NewSage.WwVegas;
 
-public record IoQuaternion
+public class ChunkHeader
 {
-    public IList<float> Q { get; } = new float[4];
+    private uint _chunkSize;
 
-    internal static int BufferSize => sizeof(float) * 4;
+    public ChunkHeader() { }
 
-    internal static IoQuaternion FromBuffer(ReadOnlySpan<byte> buffer)
+    public ChunkHeader(uint type, uint size)
+    {
+        ChunkType = type;
+        ChunkSize = size;
+    }
+
+    public uint ChunkType { get; set; }
+
+    public uint ChunkSize
+    {
+        get => _chunkSize & 0x7FFF_FFFF;
+        set
+        {
+            _chunkSize &= 0x8000_0000;
+            _chunkSize |= value & 0x7FFF_FFFF;
+        }
+    }
+
+    public bool SubChunkFlag => (_chunkSize & 0x8000_0000) != 0;
+
+    internal static int BufferSize => sizeof(uint) * 2;
+
+    public void AddSize(uint add) => ChunkSize += add;
+
+    public void SetSubChunkFlag(bool onOff)
+    {
+        if (onOff)
+        {
+            _chunkSize |= 0x8000_0000;
+        }
+        else
+        {
+            _chunkSize &= 0x7FFF_FFFF;
+        }
+    }
+
+    internal static ChunkHeader FromBuffer(ReadOnlySpan<byte> buffer)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
-        var q = new IoQuaternion();
-        q.Q[0] = BitConverter.ToSingle(buffer);
-        q.Q[1] = BitConverter.ToSingle(buffer[sizeof(float)..]);
-        q.Q[2] = BitConverter.ToSingle(buffer[(sizeof(float) * 2)..]);
-        q.Q[3] = BitConverter.ToSingle(buffer[(sizeof(float) * 3)..]);
-        return q;
+        return new ChunkHeader(BitConverter.ToUInt32(buffer), BitConverter.ToUInt32(buffer[sizeof(uint)..]));
     }
 
     internal byte[] ToBuffer()
     {
         var buffer = new byte[BufferSize];
-        BitConverter.GetBytes(Q[0]).CopyTo(buffer, 0);
-        BitConverter.GetBytes(Q[1]).CopyTo(buffer, sizeof(float));
-        BitConverter.GetBytes(Q[2]).CopyTo(buffer, sizeof(float) * 2);
-        BitConverter.GetBytes(Q[3]).CopyTo(buffer, sizeof(float) * 3);
+        BitConverter.GetBytes(ChunkType).CopyTo(buffer, 0);
+        BitConverter.GetBytes(ChunkSize).CopyTo(buffer, sizeof(uint));
         return buffer;
     }
 }

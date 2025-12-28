@@ -20,4 +20,28 @@
 
 namespace NewSage.WwVegas;
 
-public record IoVector4(float X, float Y, float Z, float W);
+public record IoVector4(float X, float Y, float Z, float W)
+{
+    internal static int BufferSize => sizeof(float) * 4;
+
+    internal static IoVector4 FromBuffer(ReadOnlySpan<byte> buffer)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
+        return new IoVector4(
+            BitConverter.ToSingle(buffer),
+            BitConverter.ToSingle(buffer[sizeof(float)..]),
+            BitConverter.ToSingle(buffer[(sizeof(float) * 2)..]),
+            BitConverter.ToSingle(buffer[(sizeof(float) * 3)..])
+        );
+    }
+
+    internal byte[] ToBuffer()
+    {
+        var buffer = new byte[BufferSize];
+        BitConverter.GetBytes(X).CopyTo(buffer, 0);
+        BitConverter.GetBytes(Y).CopyTo(buffer, sizeof(float));
+        BitConverter.GetBytes(Z).CopyTo(buffer, sizeof(float) * 2);
+        BitConverter.GetBytes(W).CopyTo(buffer, sizeof(float) * 3);
+        return buffer;
+    }
+}
