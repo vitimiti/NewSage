@@ -30,35 +30,47 @@ public class CRandom
 
     public static CRandom FreeRandom => field ??= new CRandom();
 
-    public int GetInt() => _generator.Get();
+    public int ToInt32() => _generator;
 
-    public int GetInt(int max)
+    public int ToInt32(int max)
     {
         Debug.Assert(max > 0, $"{nameof(max)} must be positive");
-        return (_generator.Get() & 0x7FFF_FFFF) % max;
+        return (_generator & 0x7FFF_FFFF) % max;
     }
 
-    public int GetInt(int min, int max)
+    public int ToInt32(int min, int max)
     {
         if (min > max)
         {
             (min, max) = (max, min);
         }
 
-        return GetInt(max - min) + min;
+        return ToInt32(max - min) + min;
     }
 
-    public float GetFloat() => GetInt(FloatRange + 1) / (float)FloatRange;
+    public float ToSingle() => ToInt32(FloatRange + 1) / (float)FloatRange;
 
-    public float GetFloat(float max) => GetFloat() * max;
+    public float ToSingle(float max) => ToSingle() * max;
 
-    public float GetFloat(float min, float max)
+    public float ToSingle(float min, float max)
     {
         if (min > max)
         {
             (min, max) = (max, min);
         }
 
-        return (GetFloat() * (max - min)) + min;
+        return (ToSingle() * (max - min)) + min;
+    }
+
+    public static implicit operator int(CRandom random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToInt32();
+    }
+
+    public static implicit operator float(CRandom random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToSingle();
     }
 }

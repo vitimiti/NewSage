@@ -30,13 +30,19 @@ public class Random : IRandomNumberGenerator
 
     public int SignificantBits => 15;
 
-    public int Get()
+    public int ToInt32()
     {
         Seed = (Seed * MultConstant) + AddConstant;
         return (int)((Seed >> ThrowAwayBits) & ~(~0UL << SignificantBits));
     }
 
-    public int Get(int min, int max) => RandomNumber<Random>.Pick(this, min, max);
+    public int ToInt32(int min, int max) => RandomNumber<Random>.Pick(this, min, max);
 
     protected ulong Seed { get; set; }
+
+    public static implicit operator int(Random random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToInt32();
+    }
 }

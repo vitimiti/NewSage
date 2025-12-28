@@ -32,7 +32,7 @@ public interface IRandomNumberGenerator
 {
     int SignificantBits { get; }
 
-    int Get();
+    int ToInt32();
 
-    int Get(int min, int max);
+    int ToInt32(int min, int max);
 }

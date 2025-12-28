@@ -53,7 +53,7 @@ public class Random3 : IRandomNumberGenerator
 
     protected int Index { get; set; }
 
-    public int Get()
+    public int ToInt32()
     {
         var lowWord = Seed;
         var hiWord = Index++;
@@ -72,5 +72,11 @@ public class Random3 : IRandomNumberGenerator
         return hiWord;
     }
 
-    public int Get(int min, int max) => RandomNumber<Random3>.Pick(this, min, max);
+    public int ToInt32(int min, int max) => RandomNumber<Random3>.Pick(this, min, max);
+
+    public static implicit operator int(Random3 random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToInt32();
+    }
 }

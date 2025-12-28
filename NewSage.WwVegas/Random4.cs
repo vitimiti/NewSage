@@ -52,7 +52,7 @@ public class Random4 : IRandomNumberGenerator
 
     protected int MtIndex { get; set; }
 
-    public int Get()
+    public int ToInt32()
     {
         uint y;
         if (MtIndex >= N)
@@ -86,14 +86,26 @@ public class Random4 : IRandomNumberGenerator
         return x;
     }
 
-    public int Get(int min, int max) => RandomNumber<Random4>.Pick(this, min, max);
+    public int ToInt32(int min, int max) => RandomNumber<Random4>.Pick(this, min, max);
 
-    public float GetFloat()
+    public float ToSingle()
     {
-        var x = Get();
+        var x = ToInt32();
         var y = BitConverter.ToUInt32(BitConverter.GetBytes(x));
 
         return y * 2.3283064370807973754314699618685e-10F;
+    }
+
+    public static implicit operator int(Random4 random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToInt32();
+    }
+
+    public static implicit operator float(Random4 random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToSingle();
     }
 
     private static uint TemperingShiftU(uint y) => y >> 11;

@@ -31,7 +31,7 @@ public class Random2 : IRandomNumberGenerator
 
         for (var i = 0; i < Table.Count; i++)
         {
-            Table[i] = random.Get();
+            Table[i] = random;
         }
     }
 
@@ -43,7 +43,7 @@ public class Random2 : IRandomNumberGenerator
 
     protected IList<int> Table { get; } = new int[250];
 
-    public int Get()
+    public int ToInt32()
     {
         Table[Index1] ^= Table[Index2];
         var value = Table[Index1];
@@ -63,5 +63,11 @@ public class Random2 : IRandomNumberGenerator
         return value;
     }
 
-    public int Get(int min, int max) => RandomNumber<Random2>.Pick(this, min, max);
+    public int ToInt32(int min, int max) => RandomNumber<Random2>.Pick(this, min, max);
+
+    public static implicit operator int(Random2 random)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        return random.ToInt32();
+    }
 }

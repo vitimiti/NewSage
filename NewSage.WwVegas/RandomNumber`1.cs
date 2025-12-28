@@ -47,7 +47,7 @@ public static class RandomNumber<T>
         var pick = magnitude + 1;
         while (pick > magnitude)
         {
-            pick = generator.Get() & mask;
+            pick = generator.ToInt32() & mask;
         }
 
         return pick + min;
