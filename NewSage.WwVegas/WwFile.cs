@@ -29,7 +29,7 @@ public abstract class WwFile
 
     public abstract int Size { get; }
 
-    public virtual DateTime GetDateTime { get; set; } = new(0, DateTimeKind.Unspecified);
+    public virtual WwDateTime GetDateTime { get; set; } = new(0, 0);
 
     public virtual SafeFileHandle FileHandle { get; } = new(nint.Zero, ownsHandle: true);
 
