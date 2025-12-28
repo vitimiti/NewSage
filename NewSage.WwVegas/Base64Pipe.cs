@@ -83,7 +83,7 @@ public class Base64Pipe(CodeControl control) : Pipe
         if (_counter > 0)
         {
             var length = sourceLength < fromSize - _counter ? sourceLength : fromSize - _counter;
-            Array.Copy(source[sourceIndex..].ToArray(), from[_counter..], length);
+            source[sourceIndex..length].CopyTo(from.AsSpan(_counter, length));
             _counter += length;
             sourceLength -= length;
             sourceIndex += length;
@@ -114,7 +114,7 @@ public class Base64Pipe(CodeControl control) : Pipe
 
         if (sourceLength > 0)
         {
-            Array.Copy(source.ToArray(), from, sourceLength);
+            source[sourceIndex..].CopyTo(from);
             _counter = sourceLength;
         }
 
