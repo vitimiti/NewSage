@@ -104,7 +104,7 @@ public abstract class GenericMultiList : IDisposable
             node = node.NextList;
         }
 
-        if (node == null)
+        if (node is null)
         {
             return false;
         }

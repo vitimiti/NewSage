@@ -48,7 +48,7 @@ public struct HashTemplateIterator<TKey, TValue>
     {
         _handle = Nil;
         var hash = _hashTable.InternalHash;
-        if (hash == null)
+        if (hash is null)
         {
             _hashIndex = (int)_hashTable.Size;
             return;

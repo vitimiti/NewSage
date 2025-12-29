@@ -67,7 +67,7 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
 
     public void Remove(TKey key)
     {
-        if (InternalHash == null)
+        if (InternalHash is null)
         {
             return;
         }
@@ -102,7 +102,7 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
     public bool TryGetValue(TKey key, out TValue? value)
     {
         value = default;
-        if (InternalHash == null)
+        if (InternalHash is null)
         {
             return false;
         }
@@ -124,7 +124,7 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
 
     public bool Exists(TKey key)
     {
-        if (InternalHash == null)
+        if (InternalHash is null)
         {
             return false;
         }
@@ -145,7 +145,7 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
 
     public void RemoveAll()
     {
-        if (InternalHash == null)
+        if (InternalHash is null)
         {
             return;
         }
