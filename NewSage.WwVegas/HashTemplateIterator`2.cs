@@ -40,9 +40,9 @@ public struct HashTemplateIterator<TKey, TValue>
 
     public readonly bool IsDone => _hashIndex == (int)_hashTable.Size;
 
-    public readonly TValue? PeekValue => _hashTable.InternalTable![_handle].Value;
+    public readonly TValue? PeekValue() => _hashTable.InternalTable![_handle].Value;
 
-    public readonly TKey? PeekKey => _hashTable.InternalTable![_handle].Key;
+    public readonly TKey? PeekKey() => _hashTable.InternalTable![_handle].Key;
 
     public void First()
     {

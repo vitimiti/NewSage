@@ -23,6 +23,8 @@ namespace NewSage.WwVegas;
 public sealed class MultiList<T> : GenericMultiList
     where T : MultiListObject
 {
+    public T? PeekHead() => SentinelHead.Next?.Object as T;
+
     public bool Add(T obj, bool onlyOnce = true) => InternalAdd(obj, onlyOnce);
 
     public bool Remove(T obj)
@@ -30,8 +32,6 @@ public sealed class MultiList<T> : GenericMultiList
         ArgumentNullException.ThrowIfNull(obj);
         return InternalRemove(obj);
     }
-
-    public T? PeekHead() => SentinelHead.Next?.Object as T;
 
     public T? RemoveHead()
     {
