@@ -1,0 +1,81 @@
+// -----------------------------------------------------------------------
+// <copyright file="FilePipe.cs" company="NewSage">
+// A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
+// Copyright (C) 2025 NewSage Contributors
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see https://www.gnu.org/licenses/.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace NewSage.WwVegas;
+
+public class FilePipe : Pipe
+{
+    private readonly FileStream _file;
+    private bool _hasOpened;
+    private bool _disposed;
+
+    public FilePipe(FileStream file)
+    {
+        _file = file;
+        _hasOpened = false;
+    }
+
+    public override int Put(ReadOnlySpan<byte> source)
+    {
+        if (source.Length <= 0)
+        {
+            return 0;
+        }
+
+        if (!_hasOpened)
+        {
+            _hasOpened = _file.CanWrite;
+        }
+
+        _file.Write(source);
+        return source.Length;
+    }
+
+    public override int End()
+    {
+        var total = base.End();
+        if (!_hasOpened)
+        {
+            return total;
+        }
+
+        _hasOpened = false;
+        _file.Close();
+
+        return total;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing && _hasOpened)
+        {
+            _file.Close();
+            _hasOpened = false;
+        }
+
+        base.Dispose(disposing);
+        _disposed = true;
+    }
+}
