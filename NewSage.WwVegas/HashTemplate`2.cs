@@ -21,7 +21,7 @@
 namespace NewSage.WwVegas;
 
 public sealed class HashTemplate<TKey, TValue> : IDisposable
-    where TKey : ICanBeCastToUInt32
+    where TKey : IConvertibleToUInt32
 {
     private const int Nil = -1;
     private readonly HashTemplateKey<TKey> _keyHasher = new();

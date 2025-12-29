@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public interface ICanBeCastToUInt32
+public interface IConvertibleToUInt32
 {
     uint ToUInt32();
 }

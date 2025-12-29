@@ -21,7 +21,7 @@
 namespace NewSage.WwVegas;
 
 public struct HashTemplateIterator<TKey, TValue>
-    where TKey : ICanBeCastToUInt32
+    where TKey : IConvertibleToUInt32
 {
     private const int Nil = -1;
 

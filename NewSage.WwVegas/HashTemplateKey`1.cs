@@ -21,7 +21,7 @@
 namespace NewSage.WwVegas;
 
 public class HashTemplateKey<T>
-    where T : ICanBeCastToUInt32
+    where T : IConvertibleToUInt32
 {
     public uint GetHashValue(T key)
     {
