@@ -68,10 +68,11 @@ public static class Crc
 
     public static ulong Crc32(byte data, ulong crc) => Table[(crc ^ data) & 0xFFL] ^ ((crc >> 8) & 0x00FF_FFFFL);
 
-    public static ulong Memory(ReadOnlySpan<byte> data, ulong length, ulong crc = 0)
+    public static ulong Memory(ReadOnlySpan<byte> data, ulong crc = 0)
     {
         crc ^= 0xFFFF_FFFF;
         var dataIndex = 0;
+        var length = data.Length;
         while (length-- > 0)
         {
             crc = Crc32(data[dataIndex++], crc);
@@ -80,10 +81,10 @@ public static class Crc
         return crc ^ 0xFFFF_FFFF;
     }
 
-    public static ulong String(string str, ulong crc = 0)
+    public static ulong String(string? str, ulong crc = 0)
     {
         crc ^= 0xFFFF_FFFF;
-        var strBytes = Encoding.ASCII.GetBytes(str);
+        var strBytes = str is null ? null : Encoding.ASCII.GetBytes(str);
         if (strBytes is null || strBytes.Length == 0)
         {
             return crc ^ 0xFFFF_FFFF;
