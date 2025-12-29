@@ -268,7 +268,7 @@ public record Vector3(float X, float Y, float Z)
         return Multiply(oneOverScalar);
     }
 
-    public Vector3 Plus() => new(X, Y, Z);
+    public Vector3 Plus() => new(+X, +Y, +Z);
 
     public Vector3 Negate() => new(-X, -Y, -Z);
 
