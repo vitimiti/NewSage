@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="IRandomNumberGenerator.cs" company="NewSage">
+// <copyright file="IRandomGenerator.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,21 +18,46 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace NewSage.WwVegas;
 
-[SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "This is a marker interface.")]
-[SuppressMessage(
-    "StyleCop.CSharp.ReadabilityRules",
-    "SA1106:Code should not contain empty statements",
-    Justification = "This is a marker interface."
-)]
-public interface IRandomNumberGenerator
+public interface IRandomGenerator
 {
+    static int Pick(IRandomGenerator generator, int min, int max)
+    {
+        ArgumentNullException.ThrowIfNull(generator);
+
+        if (min == max)
+        {
+            return min;
+        }
+
+        if (min > max)
+        {
+            (min, max) = (max, min);
+        }
+
+        var magnitude = max - min;
+        var highBit = generator.SignificantBits - 1;
+        while ((magnitude & (1 << highBit)) == 0 && highBit > 0)
+        {
+            highBit--;
+        }
+
+        var mask = ~((~0) << (highBit + 1));
+        var pick = magnitude + 1;
+        while (pick > magnitude)
+        {
+            pick = generator.GetNext() & mask;
+        }
+
+        return pick + min;
+    }
+
     int SignificantBits { get; }
 
-    int ToInt32();
+    int GetNext();
 
-    int ToInt32(int min, int max);
+    int GetNext(int min, int max);
+
+    int ToInt32() => GetNext();
 }

@@ -20,50 +20,45 @@
 
 namespace NewSage.WwVegas;
 
-public class Random2 : IRandomNumberGenerator
+public class Random2 : IRandomGenerator
 {
-    public Random2(int seed = 0)
-    {
-        Index1 = 0;
-        Index2 = 103;
+    private readonly int[] _table = new int[250];
 
-        var random = new Random3(seed);
-
-        for (var i = 0; i < Table.Count; i++)
-        {
-            Table[i] = random;
-        }
-    }
+    private int _index1;
+    private int _index2 = 103;
 
     public int SignificantBits => 32;
 
-    protected int Index1 { get; set; }
-
-    protected int Index2 { get; set; }
-
-    protected IList<int> Table { get; } = new int[250];
-
-    public int ToInt32()
+    public Random2(uint seed = 0)
     {
-        Table[Index1] ^= Table[Index2];
-        var value = Table[Index1];
-
-        Index1++;
-        Index2++;
-        if (Index1 >= Table.Count)
+        var primer = new Random3(seed);
+        for (int i = 0; i < _table.Length; i++)
         {
-            Index1 = 0;
+            _table[i] = primer.GetNext();
         }
-
-        if (Index2 >= Table.Count)
-        {
-            Index2 = 0;
-        }
-
-        return value;
     }
 
-    public int ToInt32(int min, int max) => RandomNumber<Random2>.Pick(this, min, max);
+    public int GetNext()
+    {
+        _table[_index1] ^= _table[_index2];
+        var val = _table[_index1];
+
+        if (++_index1 >= 250)
+        {
+            _index1 = 0;
+        }
+
+        if (++_index2 >= 250)
+        {
+            _index2 = 0;
+        }
+
+        return val;
+    }
+
+    public int GetNext(int min, int max) => IRandomGenerator.Pick(this, min, max);
+
+    public int ToInt32() => GetNext();
 
     public static implicit operator int(Random2 random)
     {

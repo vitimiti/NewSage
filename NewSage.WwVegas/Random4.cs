@@ -20,17 +20,18 @@
 
 namespace NewSage.WwVegas;
 
-public class Random4 : IRandomNumberGenerator
+public class Random4 : IRandomGenerator
 {
     private const int N = 624;
     private const int M = 397;
     private const uint MatrixA = 0x9908_B0DF;
     private const uint UpperMask = 0x8000_0000;
     private const uint LowerMask = 0x7FFF_FFFF;
-    private const uint TemperingMaskB = 0x9D2C_5680;
-    private const uint TemperingMaskC = 0xEFC6_0000;
 
-    private static readonly uint[] Mag01 = { 0x0000_0000, MatrixA };
+    private readonly uint[] _mt = new uint[N];
+    private int _mti;
+
+    public int SignificantBits => 32;
 
     public Random4(uint seed = 4357)
     {
@@ -39,80 +40,56 @@ public class Random4 : IRandomNumberGenerator
             seed = 4375;
         }
 
-        Mt[0] = seed & 0xFFFF_FFFF;
-        for (MtIndex = 1; MtIndex < N; MtIndex++)
+        _mt[0] = seed;
+        for (_mti = 1; _mti < N; _mti++)
         {
-            Mt[MtIndex] = (69_069 * Mt[MtIndex - 1]) & 0xFFFF_FFFF;
+            _mt[_mti] = 69069 * _mt[_mti - 1];
         }
     }
 
-    public int SignificantBits => 32;
-
-    protected IList<uint> Mt { get; } = new uint[624];
-
-    protected int MtIndex { get; set; }
-
-    public int ToInt32()
+    public int GetNext()
     {
         uint y;
-        if (MtIndex >= N)
+        ReadOnlySpan<uint> mag01 = [0, MatrixA];
+
+        if (_mti >= N)
         {
             int kk;
             for (kk = 0; kk < N - M; kk++)
             {
-                y = (Mt[kk] & UpperMask) | (Mt[kk + 1] & LowerMask);
-                Mt[kk] = Mt[kk + M] ^ (y >> 1) ^ Mag01[y & 0x0000_0001];
+                y = (_mt[kk] & UpperMask) | (_mt[kk + 1] & LowerMask);
+                _mt[kk] = _mt[kk + M] ^ (y >> 1) ^ mag01[(int)(y & 1)];
             }
 
             for (; kk < N - 1; kk++)
             {
-                y = (Mt[kk] & UpperMask) | (Mt[kk + 1] & LowerMask);
-                Mt[kk] = Mt[kk + (M - N)] ^ (y >> 1) ^ Mag01[y & 0x0000_0001];
+                y = (_mt[kk] & UpperMask) | (_mt[kk + 1] & LowerMask);
+                _mt[kk] = _mt[kk + (M - N)] ^ (y >> 1) ^ mag01[(int)(y & 1)];
             }
 
-            y = (Mt[N - 1] & UpperMask) | (Mt[0] & LowerMask);
-            Mt[N - 1] = Mt[M - 1] ^ (y >> 1) ^ Mag01[y & 0x0000_0001];
-
-            MtIndex = 0;
+            y = (_mt[N - 1] & UpperMask) | (_mt[0] & LowerMask);
+            _mt[N - 1] = _mt[M - 1] ^ (y >> 1) ^ mag01[(int)(y & 1)];
+            _mti = 0;
         }
 
-        y = Mt[MtIndex++];
-        y ^= TemperingShiftU(y);
-        y ^= TemperingShiftS(y) & TemperingMaskB;
-        y ^= TemperingShiftT(y) & TemperingMaskC;
-        y ^= TemperingShiftL(y);
+        y = _mt[_mti++];
+        y ^= y >> 11;
+        y ^= (y << 7) & 0x9d2c5680;
+        y ^= (y << 15) & 0xefc60000;
+        y ^= y >> 18;
 
-        var x = BitConverter.ToInt32(BitConverter.GetBytes(y));
-        return x;
+        return (int)y;
     }
 
-    public int ToInt32(int min, int max) => RandomNumber<Random4>.Pick(this, min, max);
+    public int GetNext(int min, int max) => IRandomGenerator.Pick(this, min, max);
 
-    public float ToSingle()
-    {
-        var x = ToInt32();
-        var y = BitConverter.ToUInt32(BitConverter.GetBytes(x));
+    public float GetFloat() => (uint)GetNext() * 2.3283064365386963e-10f;
 
-        return y * 2.3283064370807973754314699618685e-10F;
-    }
+    public int ToInt32() => GetNext();
 
     public static implicit operator int(Random4 random)
     {
         ArgumentNullException.ThrowIfNull(random);
         return random.ToInt32();
     }
-
-    public static implicit operator float(Random4 random)
-    {
-        ArgumentNullException.ThrowIfNull(random);
-        return random.ToSingle();
-    }
-
-    private static uint TemperingShiftU(uint y) => y >> 11;
-
-    private static uint TemperingShiftS(uint y) => y << 7;
-
-    private static uint TemperingShiftT(uint y) => y << 15;
-
-    private static uint TemperingShiftL(uint y) => y >> 18;
 }

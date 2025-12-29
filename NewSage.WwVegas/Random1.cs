@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="Random.cs" company="NewSage">
+// <copyright file="Random1.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -20,27 +20,26 @@
 
 namespace NewSage.WwVegas;
 
-public class Random : IRandomNumberGenerator
+public class Random1(uint seed = 0) : IRandomGenerator
 {
-    protected const uint MultConstant = 0x41C6_4E6D;
-    protected const uint AddConstant = 0x0000_3039;
-    protected const int ThrowAwayBits = 10;
+    private const uint MultConstant = 0x41C64E6D;
+    private const uint AddConstant = 0x00003039;
 
-    public Random(ulong seed = 0) => Seed = seed;
+    private uint _seed = seed;
 
     public int SignificantBits => 15;
 
-    public int ToInt32()
+    public int GetNext()
     {
-        Seed = (Seed * MultConstant) + AddConstant;
-        return (int)((Seed >> ThrowAwayBits) & ~(~0UL << SignificantBits));
+        _seed = (_seed * MultConstant) + AddConstant;
+        return (int)((_seed >> 10) & 0x7FFF);
     }
 
-    public int ToInt32(int min, int max) => RandomNumber<Random>.Pick(this, min, max);
+    public int GetNext(int min, int max) => IRandomGenerator.Pick(this, min, max);
 
-    protected ulong Seed { get; set; }
+    public int ToInt32() => GetNext();
 
-    public static implicit operator int(Random random)
+    public static implicit operator int(Random1 random)
     {
         ArgumentNullException.ThrowIfNull(random);
         return random.ToInt32();
