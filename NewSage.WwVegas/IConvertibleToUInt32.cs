@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="ICanBeCastToUInt32.cs" company="NewSage">
+// <copyright file="IConvertibleToUInt32.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
