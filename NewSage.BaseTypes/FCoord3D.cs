@@ -33,7 +33,7 @@ public record FCoord3D(float X, float Y, float Z)
         get
         {
             var length = Length;
-            return float.Abs(length) >= float.Epsilon ? new FCoord3D(X / length, Y / length, Z / length) : this;
+            return float.Abs(length) > float.Epsilon ? new FCoord3D(X / length, Y / length, Z / length) : this;
         }
     }
 

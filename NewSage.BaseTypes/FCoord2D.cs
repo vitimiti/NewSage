@@ -29,7 +29,7 @@ public record FCoord2D(float X, float Y)
         get
         {
             var length = Length;
-            return float.Abs(length) >= float.Epsilon ? new FCoord2D(X / length, Y / length) : this;
+            return float.Abs(length) > float.Epsilon ? new FCoord2D(X / length, Y / length) : this;
         }
     }
 

@@ -67,13 +67,13 @@ public record Vector3(float X, float Y, float Z)
         get
         {
             var length = Length2;
-            if (float.Abs(length) >= float.Epsilon)
+            if (float.Abs(length) < float.Epsilon)
             {
-                var oneOverLength = WwMath.InvSqrt(length);
-                return new Vector3(X * oneOverLength, Y * oneOverLength, Z * oneOverLength);
+                return this;
             }
 
-            return this;
+            var oneOverLength = WwMath.InvSqrt(length);
+            return new Vector3(X * oneOverLength, Y * oneOverLength, Z * oneOverLength);
         }
     }
 

@@ -38,7 +38,7 @@ public record Vector2(float X, float Y)
         get
         {
             var length2 = Length2;
-            return float.Abs(length2) >= float.Epsilon ? new Vector2(X / length2, Y / length2) : this;
+            return float.Abs(length2) > float.Epsilon ? new Vector2(X / length2, Y / length2) : this;
         }
     }
 
