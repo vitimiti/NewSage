@@ -18,9 +18,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections;
+
 namespace NewSage.WwVegas;
 
-public class GenericList : IDisposable
+public class GenericList : IDisposable, IEnumerable<GenericNode>
 {
     private bool _disposed;
 
@@ -73,6 +75,18 @@ public class GenericList : IDisposable
     public void AddHead(GenericNode node) => FirstNode.Link(node);
 
     public void AddTail(GenericNode node) => LastNode.Previous!.Link(node);
+
+    public IEnumerator<GenericNode> GetEnumerator()
+    {
+        GenericNode? current = FirstValid;
+        while (current != null)
+        {
+            yield return current;
+            current = current.NextValid;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public void Dispose()
     {

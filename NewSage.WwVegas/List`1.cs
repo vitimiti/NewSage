@@ -18,9 +18,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections;
+
 namespace NewSage.WwVegas;
 
-public class List<T> : GenericList
+public class List<T> : GenericList, IEnumerable<T>
     where T : GenericNode
 {
     public new T? First => base.First as T;
@@ -38,4 +40,16 @@ public class List<T> : GenericList
             First?.Unlink();
         }
     }
+
+    public new IEnumerator<T> GetEnumerator()
+    {
+        T? current = FirstValid;
+        while (current != null)
+        {
+            yield return current;
+            current = current.NextValid as T;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
