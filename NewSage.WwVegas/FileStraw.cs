@@ -24,13 +24,25 @@ public class FileStraw : Straw
 {
     private readonly FileStream _stream;
 
+    private bool _hasOpened;
     private bool _disposed;
 
     public FileStraw(FileStream fileStream) => _stream = fileStream;
 
-    private bool ValidFile => _stream.CanRead;
+    public override int Get(Span<byte> buffer)
+    {
+        if (buffer.Length == 0)
+        {
+            return 0;
+        }
 
-    public override int Get(Span<byte> buffer) => ValidFile && buffer.Length > 0 ? _stream.Read(buffer) : 0;
+        if (!_hasOpened)
+        {
+            _hasOpened = _stream.CanRead;
+        }
+
+        return _hasOpened && buffer.Length > 0 ? _stream.Read(buffer) : 0;
+    }
 
     protected override void Dispose(bool disposing)
     {

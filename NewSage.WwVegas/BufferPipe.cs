@@ -25,11 +25,7 @@ public class BufferPipe : Pipe
     private readonly Memory<byte> _buffer;
     private int _index;
 
-    public BufferPipe(Memory<byte> buffer)
-    {
-        _buffer = buffer;
-        _index = 0;
-    }
+    public BufferPipe(Memory<byte> buffer) => _buffer = buffer;
 
     public override int Put(ReadOnlySpan<byte> source)
     {

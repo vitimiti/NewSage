@@ -22,15 +22,12 @@ namespace NewSage.WwVegas;
 
 public class FilePipe : Pipe
 {
-    private readonly FileStream _file;
+    private readonly FileStream _stream;
+
     private bool _hasOpened;
     private bool _disposed;
 
-    public FilePipe(FileStream file)
-    {
-        _file = file;
-        _hasOpened = false;
-    }
+    public FilePipe(FileStream fileStream) => _stream = fileStream;
 
     public override int Put(ReadOnlySpan<byte> source)
     {
@@ -41,10 +38,15 @@ public class FilePipe : Pipe
 
         if (!_hasOpened)
         {
-            _hasOpened = _file.CanWrite;
+            _hasOpened = _stream.CanWrite;
         }
 
-        _file.Write(source);
+        if (!_hasOpened)
+        {
+            return 0;
+        }
+
+        _stream.Write(source);
         return source.Length;
     }
 
@@ -57,7 +59,7 @@ public class FilePipe : Pipe
         }
 
         _hasOpened = false;
-        _file.Close();
+        _stream.Close();
 
         return total;
     }
@@ -71,7 +73,7 @@ public class FilePipe : Pipe
 
         if (disposing && _hasOpened)
         {
-            _file.Close();
+            _stream.Close();
             _hasOpened = false;
         }
 

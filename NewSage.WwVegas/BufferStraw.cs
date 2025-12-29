@@ -25,11 +25,7 @@ public class BufferStraw : Straw
     private readonly ReadOnlyMemory<byte> _buffer;
     private int _index;
 
-    public BufferStraw(ReadOnlyMemory<byte> buffer)
-    {
-        _buffer = buffer;
-        _index = 0;
-    }
+    public BufferStraw(ReadOnlyMemory<byte> buffer) => _buffer = buffer;
 
     public override int Get(Span<byte> buffer)
     {
