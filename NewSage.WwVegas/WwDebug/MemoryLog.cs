@@ -22,6 +22,9 @@ namespace NewSage.WwVegas.WwDebug;
 
 public static class MemoryLog
 {
+    private static readonly long[] Allocations = new long[Enum.GetValues<MemoryCategory>().Length];
+    private static readonly long[] Deallocations = new long[Enum.GetValues<MemoryCategory>().Length];
+
     public static MemoryCategory Current => Stack.Count > 0 ? Stack.Peek() : MemoryCategory.Unknown;
 
     [field: ThreadStatic]
@@ -35,5 +38,21 @@ public static class MemoryLog
         {
             _ = Stack.Pop();
         }
+    }
+
+    public static void RegisterAlloc(MemoryCategory category, long count = 1) =>
+        Interlocked.Add(ref Allocations[(int)category], count);
+
+    public static void RegisterFree(MemoryCategory category, long count = 1) =>
+        Interlocked.Add(ref Deallocations[(int)category], count);
+
+    public static long GetActiveCount(MemoryCategory category) =>
+        Interlocked.Read(ref Allocations[(int)category]) - Interlocked.Read(ref Deallocations[(int)category]);
+
+    public static (long Total, long Active) GetStats(MemoryCategory category)
+    {
+        var alloc = Interlocked.Read(ref Allocations[(int)category]);
+        var free = Interlocked.Read(ref Deallocations[(int)category]);
+        return (alloc, alloc - free);
     }
 }

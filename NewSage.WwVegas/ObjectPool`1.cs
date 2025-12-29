@@ -18,6 +18,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using NewSage.WwVegas.WwDebug;
+
 namespace NewSage.WwVegas;
 
 public class ObjectPool<T>
@@ -56,6 +58,7 @@ public class ObjectPool<T>
                 AllocateBlock();
             }
 
+            MemoryLog.RegisterAlloc(MemoryLog.Current);
             return _freeList.Pop();
         }
     }
@@ -71,6 +74,7 @@ public class ObjectPool<T>
 
         lock (_lock)
         {
+            MemoryLog.RegisterFree(MemoryLog.Current);
             _freeList.Push(obj);
         }
     }
