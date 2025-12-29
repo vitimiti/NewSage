@@ -34,13 +34,13 @@ public class Base64Pipe(CodeControl control) : Pipe
         {
             if (control is CodeControl.Encode)
             {
-                var chars = Base64.Encode(_pBuffer.AsSpan()[.._counter], _cBuffer);
-                length += base.Put(_cBuffer.AsSpan()[..chars]);
+                var chars = Base64.Encode(_pBuffer.AsSpan(0, _counter), _cBuffer);
+                length += base.Put(_cBuffer.AsSpan(0, chars));
             }
             else
             {
-                var chars = Base64.Decode(_cBuffer.AsSpan()[.._counter], _pBuffer);
-                length += base.Put(_pBuffer.AsSpan()[..chars]);
+                var chars = Base64.Decode(_cBuffer.AsSpan(0, _counter), _pBuffer);
+                length += base.Put(_pBuffer.AsSpan(0, chars));
             }
 
             _counter = 0;
@@ -52,50 +52,46 @@ public class Base64Pipe(CodeControl control) : Pipe
 
     public override int Put(ReadOnlySpan<byte> source)
     {
-        if (source.Length < 1)
+        if (source.IsEmpty)
         {
             return base.Put(source);
         }
 
+        var total = 0;
         var sourceLength = source.Length;
         var sourceIndex = 0;
-        var total = 0;
+
         byte[] from;
         int fromSize;
         byte[] to;
-        int toSize;
 
-        if (control is CodeControl.Encode)
+        if (control == CodeControl.Encode)
         {
             from = _pBuffer;
-            fromSize = _pBuffer.Length;
+            fromSize = 3;
             to = _cBuffer;
-            toSize = _cBuffer.Length;
         }
         else
         {
             from = _cBuffer;
-            fromSize = _cBuffer.Length;
+            fromSize = 4;
             to = _pBuffer;
-            toSize = _pBuffer.Length;
         }
 
         if (_counter > 0)
         {
-            var length = sourceLength < fromSize - _counter ? sourceLength : fromSize - _counter;
-            source[sourceIndex..length].CopyTo(from.AsSpan(_counter, length));
-            _counter += length;
-            sourceLength -= length;
-            sourceIndex += length;
+            var len = (sourceLength < (fromSize - _counter)) ? sourceLength : (fromSize - _counter);
+            source.Slice(sourceIndex, len).CopyTo(from.AsSpan(_counter));
+
+            _counter += len;
+            sourceLength -= len;
+            sourceIndex += len;
 
             if (_counter == fromSize)
             {
-                var outCount =
-                    control is CodeControl.Encode
-                        ? Base64.Encode(from.AsSpan()[..fromSize], to.AsSpan()[..toSize])
-                        : Base64.Decode(from.AsSpan()[..fromSize], to.AsSpan()[..toSize]);
+                var outCount = (control == CodeControl.Encode) ? Base64.Encode(from, to) : Base64.Decode(from, to);
 
-                total += base.Put(to.AsSpan()[..outCount]);
+                total += base.Put(to.AsSpan(0, outCount));
                 _counter = 0;
             }
         }
@@ -104,19 +100,21 @@ public class Base64Pipe(CodeControl control) : Pipe
         {
             var outCount =
                 control is CodeControl.Encode
-                    ? Base64.Encode(source[sourceIndex..fromSize], to.AsSpan()[..toSize])
-                    : Base64.Decode(source[sourceIndex..fromSize], to.AsSpan()[..toSize]);
+                    ? Base64.Encode(source.Slice(sourceIndex, fromSize), to)
+                    : Base64.Decode(source.Slice(sourceIndex, fromSize), to);
 
             sourceIndex += fromSize;
-            total += base.Put(to.AsSpan()[..outCount]);
+            total += base.Put(to.AsSpan(0, outCount));
             sourceLength -= fromSize;
         }
 
-        if (sourceLength > 0)
+        if (sourceLength <= 0)
         {
-            source[sourceIndex..].CopyTo(from);
-            _counter = sourceLength;
+            return total;
         }
+
+        source[sourceIndex..].CopyTo(from);
+        _counter = sourceLength;
 
         return total;
     }

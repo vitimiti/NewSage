@@ -48,32 +48,32 @@ public class CrcEngine
 
     public long ToInt64(ReadOnlySpan<byte> buffer)
     {
-        if (buffer.Length > 0)
+        if (buffer.Length <= 0)
         {
-            var bufferIndex = 0;
-            var bytesLeft = buffer.Length;
+            return Value;
+        }
 
-            while (bytesLeft > 0 && BufferNeedsData)
-            {
-                Submit(buffer[bufferIndex++]);
-                bytesLeft--;
-            }
+        var bufferIndex = 0;
+        var bytesLeft = buffer.Length;
 
-            var longCount = bytesLeft / sizeof(long);
-            while (longCount-- > 0)
-            {
-                Crc = (long)(
-                    BitOperations.RotateLeft((ulong)Crc, 1) + (ulong)BitConverter.ToInt64(buffer[bufferIndex..])
-                );
-                bufferIndex += sizeof(long);
-                bytesLeft -= sizeof(long);
-            }
+        while (bytesLeft > 0 && BufferNeedsData)
+        {
+            Submit(buffer[bufferIndex++]);
+            bytesLeft--;
+        }
 
-            while (bytesLeft > 0)
-            {
-                Submit(buffer[bufferIndex++]);
-                bytesLeft--;
-            }
+        var longCount = bytesLeft / sizeof(long);
+        while (longCount-- > 0)
+        {
+            Crc = (long)(BitOperations.RotateLeft((ulong)Crc, 1) + (ulong)BitConverter.ToInt64(buffer[bufferIndex..]));
+            bufferIndex += sizeof(long);
+            bytesLeft -= sizeof(long);
+        }
+
+        while (bytesLeft > 0)
+        {
+            Submit(buffer[bufferIndex++]);
+            bytesLeft--;
         }
 
         return Value;

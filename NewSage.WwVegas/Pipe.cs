@@ -41,16 +41,14 @@ public class Pipe : IDisposable
             return;
         }
 
-        if (pipe?.ChainFrom is not null)
+        if (pipe is { ChainFrom: not null })
         {
             pipe.ChainFrom.PutTo(null);
-            pipe.ChainFrom.Dispose();
             pipe.ChainFrom = null;
         }
 
-        if (ChainTo is not null)
+        if (ChainTo != null)
         {
-            ChainTo.ChainFrom?.Dispose();
             ChainTo.ChainFrom = null;
             _ = ChainTo.Flush();
         }
