@@ -26,7 +26,6 @@ public sealed class Index<TKey, TValue> : IDisposable
     where TKey : IComparable<TKey>
 {
     private NodeElement[]? _indexTable;
-    private int _indexCount;
     private int _indexSize;
     private bool _isSorted;
     private int _archiveIndex = -1;
@@ -34,20 +33,20 @@ public sealed class Index<TKey, TValue> : IDisposable
 
     public Index() => InvalidateArchive();
 
-    public int Count => _indexCount;
+    public int Count { get; private set; }
 
     public TValue this[TKey id] => IsPresent(id) ? _indexTable![_archiveIndex].Data : default(TValue);
 
     public bool AddIndex(TKey id, TValue data)
     {
 #if DEBUG
-        for (var i = 0; i < _indexCount; i++)
+        for (var i = 0; i < Count; i++)
         {
             Debug.Assert(!_indexTable![i].Id.Equals(id), "Duplicate ID added to IndexClass.");
         }
 #endif
 
-        if (_indexCount + 1 > _indexSize)
+        if (Count + 1 > _indexSize)
         {
             if (!IncreaseTableSize(_indexSize == 0 ? 10 : _indexSize))
             {
@@ -55,8 +54,8 @@ public sealed class Index<TKey, TValue> : IDisposable
             }
         }
 
-        _indexTable![_indexCount] = new NodeElement(id, data);
-        _indexCount++;
+        _indexTable![Count] = new NodeElement(id, data);
+        Count++;
         _isSorted = false;
         return true;
     }
@@ -64,7 +63,7 @@ public sealed class Index<TKey, TValue> : IDisposable
     public bool RemoveIndex(TKey id)
     {
         var foundIndex = -1;
-        for (var i = 0; i < _indexCount; i++)
+        for (var i = 0; i < Count; i++)
         {
             if (_indexTable![i].Id.CompareTo(id) != 0)
             {
@@ -80,20 +79,20 @@ public sealed class Index<TKey, TValue> : IDisposable
             return false;
         }
 
-        for (var i = foundIndex + 1; i < _indexCount; i++)
+        for (var i = foundIndex + 1; i < Count; i++)
         {
             _indexTable![i - 1] = _indexTable[i];
         }
 
-        _indexCount--;
-        _indexTable![_indexCount] = default;
+        Count--;
+        _indexTable![Count] = default;
         InvalidateArchive();
         return true;
     }
 
     public bool IsPresent(TKey id)
     {
-        if (_indexCount == 0)
+        if (Count == 0)
         {
             return false;
         }
@@ -115,20 +114,20 @@ public sealed class Index<TKey, TValue> : IDisposable
 
     public TValue FetchByPosition(int pos)
     {
-        Debug.Assert(pos >= 0 && pos < _indexCount);
+        Debug.Assert(pos >= 0 && pos < Count, $"Position {pos} is out of bounds.");
         return _indexTable![pos].Data;
     }
 
     public TKey FetchIDByPosition(int pos)
     {
-        Debug.Assert(pos >= 0 && pos < _indexCount);
+        Debug.Assert(pos >= 0 && pos < Count, $"Position {pos} is out of bounds.");
         return _indexTable![pos].Id;
     }
 
     public void Clear()
     {
         _indexTable = null;
-        _indexCount = 0;
+        Count = 0;
         _indexSize = 0;
         _isSorted = false;
         InvalidateArchive();
@@ -160,7 +159,7 @@ public sealed class Index<TKey, TValue> : IDisposable
 
         if (_indexTable is not null)
         {
-            Array.Copy(_indexTable!, newTable, _indexCount);
+            Array.Copy(_indexTable!, newTable, Count);
         }
 
         _indexTable = newTable;
@@ -175,20 +174,20 @@ public sealed class Index<TKey, TValue> : IDisposable
 
     private int SearchForNode(TKey id)
     {
-        if (_indexCount == 0)
+        if (Count == 0)
         {
             return -1;
         }
 
         if (!_isSorted)
         {
-            Array.Sort(_indexTable!, 0, _indexCount);
+            Array.Sort(_indexTable!, 0, Count);
             InvalidateArchive();
             _isSorted = true;
         }
 
         var low = 0;
-        var high = _indexCount - 1;
+        var high = Count - 1;
         while (low <= high)
         {
             var mid = low + ((high - low) >> 1);
