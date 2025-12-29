@@ -26,13 +26,13 @@ public class GenericNode : IDisposable
 
     public GenericNode? Next => NextNode;
 
-    public GenericNode? NextValid => NextNode?.NextNode != null ? NextNode : null;
+    public GenericNode? NextValid => NextNode?.NextNode is not null ? NextNode : null;
 
     public GenericNode? Previous => PrevNode;
 
-    public GenericNode? PreviousValid => PrevNode?.PrevNode != null ? PrevNode : null;
+    public GenericNode? PreviousValid => PrevNode?.PrevNode is not null ? PrevNode : null;
 
-    public bool IsValid => NextNode != null && PrevNode != null;
+    public bool IsValid => NextNode is not null && PrevNode is not null;
 
     protected GenericNode? NextNode { get; set; }
 

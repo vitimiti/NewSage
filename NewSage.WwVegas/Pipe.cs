@@ -47,7 +47,7 @@ public class Pipe : IDisposable
             pipe.ChainFrom = null;
         }
 
-        if (ChainTo != null)
+        if (ChainTo is not null)
         {
             ChainTo.ChainFrom = null;
             _ = ChainTo.Flush();

@@ -47,7 +47,7 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
 
     public void SetValue(TKey key, TValue value)
     {
-        if (InternalHash != null)
+        if (InternalHash is not null)
         {
             var hash = InternalHash[(int)GetHashValue(key, Size)];
             while (hash != Nil)

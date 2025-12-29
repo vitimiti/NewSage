@@ -35,7 +35,7 @@ public class GenericList : IDisposable, IEnumerable<GenericNode>
         get
         {
             GenericNode? node = FirstNode.Next;
-            return node?.Next != null ? node : null;
+            return node?.Next is not null ? node : null;
         }
     }
 
@@ -46,7 +46,7 @@ public class GenericList : IDisposable, IEnumerable<GenericNode>
         get
         {
             GenericNode? node = LastNode.Previous;
-            return node?.Previous != null ? node : null;
+            return node?.Previous is not null ? node : null;
         }
     }
 
@@ -58,7 +58,7 @@ public class GenericList : IDisposable, IEnumerable<GenericNode>
         {
             GenericNode? node = FirstValid;
             var counter = 0;
-            while (node != null)
+            while (node is not null)
             {
                 counter++;
                 node = node.NextValid;
@@ -79,7 +79,7 @@ public class GenericList : IDisposable, IEnumerable<GenericNode>
     public IEnumerator<GenericNode> GetEnumerator()
     {
         GenericNode? current = FirstValid;
-        while (current != null)
+        while (current is not null)
         {
             yield return current;
             current = current.NextValid;

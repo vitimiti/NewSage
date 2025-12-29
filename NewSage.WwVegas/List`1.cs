@@ -44,7 +44,7 @@ public class List<T> : GenericList, IEnumerable<T>
     public new IEnumerator<T> GetEnumerator()
     {
         T? current = FirstValid;
-        while (current != null)
+        while (current is not null)
         {
             yield return current;
             current = current.NextValid as T;

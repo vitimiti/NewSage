@@ -65,7 +65,7 @@ public class HashList<T, TUser> : IDisposable
         node.SetNewInList(true);
         HashNode<T, TUser>? first = _hashTable[hashIdx];
 
-        if (first != null)
+        if (first is not null)
         {
             first.Link(node);
             if (first.LastInTable)
@@ -92,7 +92,7 @@ public class HashList<T, TUser> : IDisposable
         var hashIdx = key % (uint)_numHashValues;
         HashNode<T, TUser>? cur = _hashTable[hashIdx];
 
-        while (cur != null)
+        while (cur is not null)
         {
             if (cur.Key == key)
             {
@@ -129,7 +129,7 @@ public class HashList<T, TUser> : IDisposable
             else
             {
                 _hashTable[hashIdx] = node.NextValid;
-                if (_hashTable[hashIdx] != null)
+                if (_hashTable[hashIdx] is not null)
                 {
                     _hashTable[hashIdx]!.FirstInTable = true;
                 }
