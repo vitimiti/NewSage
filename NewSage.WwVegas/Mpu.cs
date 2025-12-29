@@ -27,4 +27,6 @@ public static class Mpu
     public static long CpuRate => Stopwatch.Frequency;
 
     public static long CpuClock => Stopwatch.GetTimestamp();
+
+    public static int CpuSpeed => unchecked((int)(Stopwatch.Frequency / 1_000_000));
 }
