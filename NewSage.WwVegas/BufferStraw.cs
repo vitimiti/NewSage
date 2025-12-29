@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class BufferStraw : Straw
+public sealed class BufferStraw : Straw
 {
     private readonly ReadOnlyMemory<byte> _buffer;
     private int _index;

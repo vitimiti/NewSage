@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class CacheStraw : Straw
+public sealed class CacheStraw : Straw
 {
     private readonly byte[] _cache;
     private int _index;

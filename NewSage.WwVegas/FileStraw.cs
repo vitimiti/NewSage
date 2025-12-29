@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class FileStraw : Straw
+public sealed class FileStraw : Straw
 {
     private readonly FileStream _stream;
 

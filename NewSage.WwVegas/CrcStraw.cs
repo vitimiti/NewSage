@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class CrcStraw : Straw
+public sealed class CrcStraw : Straw
 {
     protected CrcEngine Crc { get; } = new();
 

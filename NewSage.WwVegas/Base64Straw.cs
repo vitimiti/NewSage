@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas;
 
-public class Base64Straw(CodeControl control) : Straw
+public sealed class Base64Straw(CodeControl control) : Straw
 {
     private readonly byte[] _cBuffer = new byte[4];
 
