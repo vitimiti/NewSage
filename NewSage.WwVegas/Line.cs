@@ -72,7 +72,7 @@ public static class Line
             buffer[count] = 0;
         }
 
-        return TrimInPlace(buffer, ref count);
+        return Trim.InPlace(buffer[..count]);
     }
 
     public static int Read(Straw straw, Span<char> buffer, out bool eof)
@@ -119,31 +119,6 @@ public static class Line
             buffer[count] = '\0';
         }
 
-        return TrimInPlace(buffer, ref count);
-    }
-
-    private static int TrimInPlace(Span<byte> buffer, ref int count)
-    {
-        var str = Encoding.ASCII.GetString(buffer[..count]).Trim();
-        var trimmedBytes = Encoding.ASCII.GetBytes(str);
-        trimmedBytes.CopyTo(buffer);
-        if (trimmedBytes.Length < buffer.Length)
-        {
-            buffer[trimmedBytes.Length] = 0;
-        }
-
-        return trimmedBytes.Length;
-    }
-
-    private static int TrimInPlace(Span<char> buffer, ref int count)
-    {
-        var trimmed = buffer[..count].ToString().Trim();
-        trimmed.AsSpan().CopyTo(buffer);
-        if (trimmed.Length < buffer.Length)
-        {
-            buffer[trimmed.Length] = '\0';
-        }
-
-        return trimmed.Length;
+        return Trim.InPlace(buffer[..count]);
     }
 }
