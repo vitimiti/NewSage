@@ -66,34 +66,6 @@ public abstract class GenericMultiList : IDisposable
         return false;
     }
 
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            while (!IsEmpty)
-            {
-                MultiListObject? obj = SentinelHead.Next?.Object;
-                if (obj is not null)
-                {
-                    _ = InternalRemove(obj);
-                }
-            }
-        }
-
-        _disposed = true;
-    }
-
     internal bool InternalAdd(MultiListObject obj, bool onlyOnce)
     {
         using (new MemorySample(MemoryCategory.GameData))
@@ -151,5 +123,33 @@ public abstract class GenericMultiList : IDisposable
 
         node.Dispose();
         return true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            while (!IsEmpty)
+            {
+                MultiListObject? obj = SentinelHead.Next?.Object;
+                if (obj is not null)
+                {
+                    _ = InternalRemove(obj);
+                }
+            }
+        }
+
+        _disposed = true;
     }
 }
