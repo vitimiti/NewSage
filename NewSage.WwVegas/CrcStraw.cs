@@ -22,9 +22,9 @@ namespace NewSage.WwVegas;
 
 public class CrcStraw : Straw
 {
-    public long Result => Crc;
-
     protected CrcEngine Crc { get; } = new();
+
+    public long Result => Crc.ToInt64();
 
     public override int Get(Span<byte> buffer)
     {

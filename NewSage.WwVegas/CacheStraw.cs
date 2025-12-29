@@ -20,16 +20,25 @@
 
 namespace NewSage.WwVegas;
 
-public class CacheStraw(BufferedStream bufferedStream) : Straw
+public class CacheStraw : Straw
 {
+    private readonly byte[] _cache;
     private int _index;
     private int _length;
+
+    public CacheStraw(int length = 4096)
+    {
+        _cache = new byte[length];
+        _index = 0;
+        _length = 0;
+    }
 
     public override int Get(Span<byte> buffer)
     {
         var total = 0;
         var sourceLength = buffer.Length;
-        var sourceIndex = 0;
+        var currentOffset = 0;
+
         if (sourceLength <= 0)
         {
             return total;
@@ -40,15 +49,13 @@ public class CacheStraw(BufferedStream bufferedStream) : Straw
             if (_length > 0)
             {
                 var toCopy = _length < sourceLength ? _length : sourceLength;
-                var count = sourceIndex + toCopy;
-                bufferedStream.Position = _index;
-                _ = bufferedStream.Read(buffer[sourceIndex..count]);
+                _cache.AsSpan(_index, toCopy).CopyTo(buffer.Slice(currentOffset, toCopy));
 
                 sourceLength -= toCopy;
                 _index += toCopy;
                 total += toCopy;
                 _length -= toCopy;
-                sourceIndex += toCopy;
+                currentOffset += toCopy;
             }
 
             if (sourceLength == 0)
@@ -56,7 +63,7 @@ public class CacheStraw(BufferedStream bufferedStream) : Straw
                 break;
             }
 
-            _length = base.Get(buffer[sourceIndex..]);
+            _length = base.Get(_cache);
             _index = 0;
             if (_length == 0)
             {

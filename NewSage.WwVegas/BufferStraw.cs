@@ -22,58 +22,37 @@ namespace NewSage.WwVegas;
 
 public class BufferStraw : Straw
 {
-    private readonly BufferedStream _stream;
-
+    private readonly ReadOnlyMemory<byte> _buffer;
     private int _index;
-    private bool _disposed;
 
-    public BufferStraw(BufferedStream stream) => _stream = stream;
-
-    public BufferStraw(ReadOnlySpan<byte> buffer)
+    public BufferStraw(ReadOnlyMemory<byte> buffer)
     {
-        using var ms = new MemoryStream(buffer.ToArray());
-        _stream = new BufferedStream(ms);
+        _buffer = buffer;
+        _index = 0;
     }
-
-    private bool IsValid => _stream.CanRead;
 
     public override int Get(Span<byte> buffer)
     {
-        if (!IsValid || buffer.Length <= 0)
+        var total = 0;
+        var sourceLength = buffer.Length;
+
+        if (_buffer.IsEmpty || sourceLength <= 0)
         {
-            return 0;
+            return total;
         }
 
-        var length = buffer.Length;
-        if (_stream.Length != 0)
+        var theoreticalMax = _buffer.Length - _index;
+        var len = (sourceLength < theoreticalMax) ? sourceLength : theoreticalMax;
+
+        if (len <= 0)
         {
-            var theoreticalMax = _stream.Length - _index;
-            length = (int)(buffer.Length < theoreticalMax ? buffer.Length : theoreticalMax);
+            return total;
         }
 
-        if (length > 0)
-        {
-            _stream.Position = _index;
-            _ = _stream.Read(buffer[..length]);
-        }
+        _buffer.Span.Slice(_index, len).CopyTo(buffer);
+        _index += len;
+        total += len;
 
-        _index += length;
-        return length;
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            _stream.Dispose();
-        }
-
-        base.Dispose(disposing);
-        _disposed = true;
+        return total;
     }
 }

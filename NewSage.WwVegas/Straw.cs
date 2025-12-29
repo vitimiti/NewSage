@@ -30,26 +30,19 @@ public class Straw : IDisposable
 
     public virtual void GetFrom(Straw? straw)
     {
-        if (ReferenceEquals(ChainTo, straw))
+        if (ChainTo != straw)
         {
-            return;
-        }
+            if (straw?.ChainFrom != null)
+            {
+                straw.ChainFrom.GetFrom(null);
+                straw.ChainFrom = null;
+            }
 
-        if (straw?.ChainFrom is not null)
-        {
-            straw.ChainFrom.GetFrom(null);
-            straw.ChainFrom.Dispose();
-            straw.ChainFrom = null;
-        }
+            _ = ChainTo?.ChainFrom = null;
 
-        if (ChainTo is not null)
-        {
-            ChainTo.ChainFrom?.Dispose();
-            ChainTo.ChainFrom = null;
+            ChainTo = straw;
+            _ = ChainTo?.ChainFrom = this;
         }
-
-        ChainTo = straw;
-        _ = ChainTo?.ChainFrom = this;
     }
 
     public virtual int Get(Span<byte> buffer) => ChainTo?.Get(buffer) ?? 0;
