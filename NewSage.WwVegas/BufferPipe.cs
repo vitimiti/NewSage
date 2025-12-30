@@ -23,6 +23,7 @@ namespace NewSage.WwVegas;
 public class BufferPipe : Pipe
 {
     private readonly Memory<byte> _buffer;
+
     private int _index;
 
     public BufferPipe(Memory<byte> buffer) => _buffer = buffer;
