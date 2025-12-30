@@ -18,113 +18,74 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
-public record Point3D<TNumber>(TNumber X, TNumber Y, TNumber Z)
+[StructLayout(LayoutKind.Sequential)]
+public struct Point3D<TNumber> : IEquatable<Point3D<TNumber>>
     where TNumber : INumber<TNumber>
 {
-    public Point3D<TNumber> DotProduct(Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X * other.X, Y * other.Y, Z * other.Z);
-    }
+    public Point3D() => (X, Y, Z) = (TNumber.Zero, TNumber.Zero, TNumber.Zero);
 
-    public Point3D<TNumber> CrossProduct(Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(
-            (Y * other.Z) - (Z * other.Y),
-            (Z * other.X) - (X * other.Z),
-            (X * other.Y) - (Y * other.X)
-        );
-    }
+    public Point3D(TNumber x, TNumber y, TNumber z) => (X, Y, Z) = (x, y, z);
 
-    public Point3D<TNumber> Add(Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X + other.X, Y + other.Y, Z + other.Z);
-    }
+    public TNumber X;
+    public TNumber Y;
+    public TNumber Z;
 
-    public Point3D<TNumber> Add(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X + other.X, Y + other.Y, Z);
-    }
+    public readonly Point3D<TNumber> DotProduct(Point3D<TNumber> other) => new(X * other.X, Y * other.Y, Z * other.Z);
 
-    public Point3D<TNumber> Subtract(Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X - other.X, Y - other.Y, Z - other.Z);
-    }
+    public readonly Point3D<TNumber> CrossProduct(Point3D<TNumber> other) =>
+        new((Y * other.Z) - (Z * other.Y), (Z * other.X) - (X * other.Z), (X * other.Y) - (Y * other.X));
 
-    public Point3D<TNumber> Subtract(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X - other.X, Y - other.Y, Z);
-    }
+    public readonly Point3D<TNumber> Add(Point3D<TNumber> other) => new(X + other.X, Y + other.Y, Z + other.Z);
 
-    public Point3D<TNumber> Multiply(TNumber scalar) => new(X * scalar, Y * scalar, Z * scalar);
+    public readonly Point3D<TNumber> Add(Point2D<TNumber> other) => new(X + other.X, Y + other.Y, Z);
 
-    public Point3D<TNumber> Multiply(Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point3D<TNumber>(X * other.X, Y * other.Y, Z * other.Z);
-    }
+    public readonly Point3D<TNumber> Subtract(Point3D<TNumber> other) => new(X - other.X, Y - other.Y, Z - other.Z);
 
-    public Point3D<TNumber> Divide(TNumber scalar) =>
+    public readonly Point3D<TNumber> Subtract(Point2D<TNumber> other) => new(X - other.X, Y - other.Y, Z);
+
+    public readonly Point3D<TNumber> Multiply(TNumber scalar) => new(X * scalar, Y * scalar, Z * scalar);
+
+    public readonly Point3D<TNumber> Multiply(Point3D<TNumber> other) => new(X * other.X, Y * other.Y, Z * other.Z);
+
+    public readonly Point3D<TNumber> Divide(TNumber scalar) =>
         scalar == TNumber.Zero
             ? new Point3D<TNumber>(TNumber.Zero, TNumber.Zero, TNumber.Zero)
             : new Point3D<TNumber>(X / scalar, Y / scalar, Z / scalar);
 
-    public Point3D<TNumber> Negate() => new(-X, -Y, -Z);
+    public readonly Point3D<TNumber> Negate() => new(-X, -Y, -Z);
 
-    public static Point3D<TNumber> operator +(Point3D<TNumber> x, Point3D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Add(y);
-    }
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) =>
+        obj is Point3D<TNumber> other && Equals(other);
 
-    public static Point3D<TNumber> operator +(Point3D<TNumber> x, Point2D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Add(y);
-    }
+    public readonly bool Equals(Point3D<TNumber> other) => X == other.X && Y == other.Y && Z == other.Z;
 
-    public static Point3D<TNumber> operator -(Point3D<TNumber> x, Point3D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Subtract(y);
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
-    public static Point3D<TNumber> operator -(Point3D<TNumber> x, Point2D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Subtract(y);
-    }
+    public override readonly string ToString() => $"({X}, {Y}, {Z})";
 
-    public static Point3D<TNumber> operator *(Point3D<TNumber> point, TNumber scalar)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Multiply(scalar);
-    }
+    public static Point3D<TNumber> operator +(Point3D<TNumber> x, Point3D<TNumber> y) => x.Add(y);
 
-    public static Point3D<TNumber> operator *(Point3D<TNumber> point, Point3D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Multiply(other);
-    }
+    public static Point3D<TNumber> operator +(Point3D<TNumber> x, Point2D<TNumber> y) => x.Add(y);
 
-    public static Point3D<TNumber> operator /(Point3D<TNumber> point, TNumber scalar)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Divide(scalar);
-    }
+    public static Point3D<TNumber> operator -(Point3D<TNumber> x, Point3D<TNumber> y) => x.Subtract(y);
 
-    public static Point3D<TNumber> operator -(Point3D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Negate();
-    }
+    public static Point3D<TNumber> operator -(Point3D<TNumber> x, Point2D<TNumber> y) => x.Subtract(y);
+
+    public static Point3D<TNumber> operator *(Point3D<TNumber> point, TNumber scalar) => point.Multiply(scalar);
+
+    public static Point3D<TNumber> operator *(Point3D<TNumber> point, Point3D<TNumber> other) => point.Multiply(other);
+
+    public static Point3D<TNumber> operator /(Point3D<TNumber> point, TNumber scalar) => point.Divide(scalar);
+
+    public static Point3D<TNumber> operator -(Point3D<TNumber> point) => point.Negate();
+
+    public static bool operator ==(Point3D<TNumber> x, Point3D<TNumber> y) => x.Equals(y);
+
+    public static bool operator !=(Point3D<TNumber> x, Point3D<TNumber> y) => !x.Equals(y);
 }

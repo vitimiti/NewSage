@@ -25,24 +25,16 @@ namespace NewSage.WwVegas;
 public static class PointExtensions
 {
     public static TNumber GetLength<TNumber>(this Point2D<TNumber> point)
-        where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return TNumber.Sqrt((point.X * point.X) + (point.Y * point.Y));
-    }
+        where TNumber : INumber<TNumber>, IRootFunctions<TNumber> =>
+        TNumber.Sqrt((point.X * point.X) + (point.Y * point.Y));
 
     public static TNumber GetLength<TNumber>(this Point3D<TNumber> point)
-        where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return TNumber.Sqrt((point.X * point.X) + (point.Y * point.Y) + (point.Z * point.Z));
-    }
+        where TNumber : INumber<TNumber>, IRootFunctions<TNumber> =>
+        TNumber.Sqrt((point.X * point.X) + (point.Y * point.Y) + (point.Z * point.Z));
 
     public static Point2D<TNumber> GetNormalized<TNumber>(this Point2D<TNumber> point)
         where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
     {
-        ArgumentNullException.ThrowIfNull(point);
-
         TNumber length = point.GetLength();
         return length != TNumber.Zero ? new Point2D<TNumber>(point.X / length, point.Y / length) : point;
     }
@@ -50,8 +42,6 @@ public static class PointExtensions
     public static Point3D<TNumber> GetNormalized<TNumber>(this Point3D<TNumber> point)
         where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
     {
-        ArgumentNullException.ThrowIfNull(point);
-
         TNumber length = point.GetLength();
         return length != TNumber.Zero
             ? new Point3D<TNumber>(point.X / length, point.Y / length, point.Z / length)

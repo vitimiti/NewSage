@@ -20,42 +20,53 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
-public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber Height)
+[StructLayout(LayoutKind.Sequential)]
+public struct Rectangle<TNumber> : IEquatable<Rectangle<TNumber>>
     where TNumber : INumber<TNumber>
 {
-    public Rectangle([NotNull] Point2D<TNumber> point, TNumber width, TNumber height)
-        : this(point.X, point.Y, width, height) { }
+    public Rectangle() => (X, Y, Width, Height) = (TNumber.Zero, TNumber.Zero, TNumber.Zero, TNumber.Zero);
 
-    public bool IsValid => Width > TNumber.Zero && Height > TNumber.Zero;
+    public Rectangle(TNumber x, TNumber y, TNumber width, TNumber height) =>
+        (X, Y, Width, Height) = (x, y, width, height);
 
-    public TNumber Size => Width * Height;
+    public Rectangle(Point2D<TNumber> point, TNumber width, TNumber height) =>
+        (X, Y, Width, Height) = (point.X, point.Y, width, height);
 
-    public Point2D<TNumber> TopLeft => new(X, Y);
+    public TNumber X;
+    public TNumber Y;
+    public TNumber Width;
+    public TNumber Height;
 
-    public Point2D<TNumber> TopRight => new(X + Width - TNumber.One, Y);
+    public readonly bool IsValid => Width > TNumber.Zero && Height > TNumber.Zero;
 
-    public Point2D<TNumber> BottomLeft => new(X, Y + Height - TNumber.One);
+    public readonly TNumber Size => Width * Height;
 
-    public Point2D<TNumber> BottomRight => new(X + Width - TNumber.One, Y + Height - TNumber.One);
+    public readonly Point2D<TNumber> TopLeft => new(X, Y);
 
-    public Rectangle<TNumber> Intersect(Rectangle<TNumber> other, ref TNumber x, ref TNumber y)
+    public readonly Point2D<TNumber> TopRight => new(X + Width - TNumber.One, Y);
+
+    public readonly Point2D<TNumber> BottomLeft => new(X, Y + Height - TNumber.One);
+
+    public readonly Point2D<TNumber> BottomRight => new(X + Width - TNumber.One, Y + Height - TNumber.One);
+
+    public readonly Rectangle<TNumber> Intersect(Rectangle<TNumber> other, ref TNumber x, ref TNumber y)
     {
-        ArgumentNullException.ThrowIfNull(other);
-
-        var rect = new Rectangle<TNumber>(TNumber.Zero, TNumber.Zero, TNumber.Zero, TNumber.Zero);
+        Rectangle<TNumber> rect = new(TNumber.Zero, TNumber.Zero, TNumber.Zero, TNumber.Zero);
         Rectangle<TNumber> r = other;
 
-        if (!IsValid || !other.IsValid)
+        if (!IsValid || !r.IsValid)
         {
             return rect;
         }
 
         if (r.X < X)
         {
-            r = r with { Width = r.Width - X - r.X, X = X };
+            r.Width -= X - r.X;
+            r.X = X;
         }
 
         if (r.Width < TNumber.One)
@@ -65,7 +76,8 @@ public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber He
 
         if (r.Y < Y)
         {
-            r = r with { Height = r.Height - Y - r.Y, Y = Y };
+            r.Height -= Y - r.Y;
+            r.Y = y;
         }
 
         if (r.Height < TNumber.One)
@@ -75,7 +87,7 @@ public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber He
 
         if (r.X + r.Width > X + Width)
         {
-            r = r with { Width = r.Width - (r.X + r.Width) - (X + Width) };
+            r.Width -= r.X + r.Width - (X + Width);
         }
 
         if (r.Width < TNumber.One)
@@ -85,7 +97,7 @@ public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber He
 
         if (r.Y + r.Height > Y + Height)
         {
-            r = r with { Height = r.Height - (r.Y + r.Height) - (Y + Height) };
+            r.Height -= r.Y + r.Height - (Y + Height);
         }
 
         if (r.Height < TNumber.One)
@@ -95,14 +107,11 @@ public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber He
 
         x -= r.X - X;
         y -= r.Y - Y;
-
         return r;
     }
 
-    public Rectangle<TNumber> Union(Rectangle<TNumber> other)
+    public readonly Rectangle<TNumber> Union(Rectangle<TNumber> other)
     {
-        ArgumentNullException.ThrowIfNull(other);
-
         if (!IsValid)
         {
             return other;
@@ -116,66 +125,58 @@ public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber He
         Rectangle<TNumber> result = this;
         if (result.X > other.X)
         {
-            result = result with { Width = result.Width + result.X - other.X, X = other.X };
+            result.Width += result.X - other.X;
+            result.X = other.X;
         }
 
         if (result.Y > other.Y)
         {
-            result = result with { Height = result.Height + result.Y - other.Y, Y = other.Y };
+            result.Height += result.Y - other.Y;
+            result.Y = other.Y;
         }
 
         if (result.X + result.Width < other.X + other.Width)
         {
-            result = result with { Width = other.X + other.Width - result.X + TNumber.One };
+            result.Width = other.X + other.Width - result.X + TNumber.One;
         }
 
         if (result.Y + result.Height < other.Y + other.Height)
         {
-            result = result with { Height = other.Y + other.Height - result.Y + TNumber.One };
+            result.Height = other.Y + other.Height - result.Y + TNumber.One;
         }
 
         return result;
     }
 
-    public Rectangle<TNumber> BiasTo(Rectangle<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return this with { X = X + other.X, Y = Y + other.Y };
-    }
+    public readonly Rectangle<TNumber> BiasTo(Rectangle<TNumber> other) => new(X + other.X, Y + other.Y, Width, Height);
 
-    public bool IsOverlapping(Rectangle<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return X < other.X + other.Width && Y < other.Y + other.Height && X + Width > other.X && Y + Height > other.Y;
-    }
+    public readonly bool IsOverlapping(Rectangle<TNumber> other) =>
+        X < other.X + other.Width && Y < other.Y + other.Height && X + Width > other.X && Y + Height > other.Y;
 
-    public bool IsPointWithin(Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.X >= X && point.X < X + Width && point.Y >= Y && point.Y < Y + Height;
-    }
+    public readonly bool IsPointWithin(Point2D<TNumber> point) =>
+        point.X >= X && point.X < X + Width && point.Y >= Y && point.Y < Y + Height;
 
-    public Rectangle<TNumber> Add(Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return this with { X = X + point.X, Y = Y + point.Y };
-    }
+    public readonly Rectangle<TNumber> Add(Point2D<TNumber> point) => new(X + point.X, Y + point.Y, Width, Height);
 
-    public Rectangle<TNumber> Subtract(Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return this with { X = X - point.X, Y = Y - point.Y };
-    }
+    public readonly Rectangle<TNumber> Subtract(Point2D<TNumber> point) => new(X - point.X, Y - point.Y, Width, Height);
 
-    public static Rectangle<TNumber> operator +(Rectangle<TNumber> rectangle, Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(rectangle);
-        return rectangle.Add(point);
-    }
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) =>
+        obj is Rectangle<TNumber> other && Equals(other);
 
-    public static Rectangle<TNumber> operator -(Rectangle<TNumber> rectangle, Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(rectangle);
-        return rectangle.Subtract(point);
-    }
+    public readonly bool Equals(Rectangle<TNumber> other) =>
+        X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
+
+    public override readonly string ToString() => $"({X}, {Y}, {Width}, {Height})";
+
+    public static Rectangle<TNumber> operator +(Rectangle<TNumber> rectangle, Point2D<TNumber> point) =>
+        rectangle.Add(point);
+
+    public static Rectangle<TNumber> operator -(Rectangle<TNumber> rectangle, Point2D<TNumber> point) =>
+        rectangle.Subtract(point);
+
+    public static bool operator ==(Rectangle<TNumber> x, Rectangle<TNumber> y) => x.Equals(y);
+
+    public static bool operator !=(Rectangle<TNumber> x, Rectangle<TNumber> y) => !x.Equals(y);
 }

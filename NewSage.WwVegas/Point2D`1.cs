@@ -18,87 +18,66 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
-public record Point2D<TNumber>(TNumber X, TNumber Y)
+[StructLayout(LayoutKind.Sequential)]
+public struct Point2D<TNumber> : IEquatable<Point2D<TNumber>>
     where TNumber : INumber<TNumber>
 {
-    public Point2D<TNumber> BiasTo(Rectangle<TNumber> rectangle)
-    {
-        ArgumentNullException.ThrowIfNull(rectangle);
-        return new Point2D<TNumber>(X + rectangle.X, Y + rectangle.Y);
-    }
+    public Point2D() => (X, Y) = (TNumber.Zero, TNumber.Zero);
 
-    public Point2D<TNumber> DotProduct(Point2D<TNumber> other) => Multiply(other);
+    public Point2D(TNumber x, TNumber y) => (X, Y) = (x, y);
 
-    public Point2D<TNumber> CrossProduct(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point2D<TNumber>(Y - other.Y, X - other.X);
-    }
+    public TNumber X;
+    public TNumber Y;
 
-    public Point2D<TNumber> Add(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point2D<TNumber>(X + other.X, Y + other.Y);
-    }
+    public readonly Point2D<TNumber> BiasTo(Rectangle<TNumber> rectangle) => new(X + rectangle.X, Y + rectangle.Y);
 
-    public Point2D<TNumber> Subtract(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point2D<TNumber>(X - other.X, Y - other.Y);
-    }
+    public readonly Point2D<TNumber> DotProduct(Point2D<TNumber> other) => Multiply(other);
 
-    public Point2D<TNumber> Multiply(TNumber scalar) => new(X * scalar, Y * scalar);
+    public readonly Point2D<TNumber> CrossProduct(Point2D<TNumber> other) => new(Y - other.Y, X - other.X);
 
-    public Point2D<TNumber> Multiply(Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Point2D<TNumber>(X * other.X, Y * other.Y);
-    }
+    public readonly Point2D<TNumber> Add(Point2D<TNumber> other) => new(X + other.X, Y + other.Y);
 
-    public Point2D<TNumber> Divide(TNumber scalar) =>
+    public readonly Point2D<TNumber> Subtract(Point2D<TNumber> other) => new(X - other.X, Y - other.Y);
+
+    public readonly Point2D<TNumber> Multiply(TNumber scalar) => new(X * scalar, Y * scalar);
+
+    public readonly Point2D<TNumber> Multiply(Point2D<TNumber> other) => new(X * other.X, Y * other.Y);
+
+    public readonly Point2D<TNumber> Divide(TNumber scalar) =>
         scalar == TNumber.Zero
             ? new Point2D<TNumber>(TNumber.Zero, TNumber.Zero)
             : new Point2D<TNumber>(X / scalar, Y / scalar);
 
-    public Point2D<TNumber> Negate() => new(-X, -Y);
+    public readonly Point2D<TNumber> Negate() => new(-X, -Y);
 
-    public static Point2D<TNumber> operator +(Point2D<TNumber> x, Point2D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Add(y);
-    }
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) =>
+        obj is Point2D<TNumber> other && Equals(other);
 
-    public static Point2D<TNumber> operator -(Point2D<TNumber> x, Point2D<TNumber> y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Subtract(y);
-    }
+    public readonly bool Equals(Point2D<TNumber> other) => X == other.X && Y == other.Y;
 
-    public static Point2D<TNumber> operator *(Point2D<TNumber> point, TNumber scalar)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Multiply(scalar);
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
-    public static Point2D<TNumber> operator *(Point2D<TNumber> point, Point2D<TNumber> other)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Multiply(other);
-    }
+    public override readonly string ToString() => $"({X}, {Y})";
 
-    public static Point2D<TNumber> operator /(Point2D<TNumber> point, TNumber scalar)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Divide(scalar);
-    }
+    public static Point2D<TNumber> operator +(Point2D<TNumber> x, Point2D<TNumber> y) => x.Add(y);
 
-    public static Point2D<TNumber> operator -(Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return point.Negate();
-    }
+    public static Point2D<TNumber> operator -(Point2D<TNumber> x, Point2D<TNumber> y) => x.Subtract(y);
+
+    public static Point2D<TNumber> operator *(Point2D<TNumber> point, TNumber scalar) => point.Multiply(scalar);
+
+    public static Point2D<TNumber> operator *(Point2D<TNumber> point, Point2D<TNumber> other) => point.Multiply(other);
+
+    public static Point2D<TNumber> operator /(Point2D<TNumber> point, TNumber scalar) => point.Divide(scalar);
+
+    public static Point2D<TNumber> operator -(Point2D<TNumber> point) => point.Negate();
+
+    public static bool operator ==(Point2D<TNumber> x, Point2D<TNumber> y) => x.Equals(y);
+
+    public static bool operator !=(Point2D<TNumber> x, Point2D<TNumber> y) => !x.Equals(y);
 }
