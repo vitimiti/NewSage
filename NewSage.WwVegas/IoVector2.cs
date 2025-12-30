@@ -18,23 +18,27 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.WwVegas;
 
-public record IoVector2(float X, float Y)
+[StructLayout(LayoutKind.Sequential)]
+public struct IoVector2 : IEquatable<IoVector2>
 {
-    internal static int BufferSize => sizeof(float) * 2;
+    public float X;
+    public float Y;
 
-    internal static IoVector2 FromBuffer(ReadOnlySpan<byte> buffer)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
-        return new IoVector2(BitConverter.ToSingle(buffer), BitConverter.ToSingle(buffer[sizeof(float)..]));
-    }
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is IoVector2 other && Equals(other);
 
-    internal byte[] ToBuffer()
-    {
-        var buffer = new byte[BufferSize];
-        BitConverter.GetBytes(X).CopyTo(buffer, 0);
-        BitConverter.GetBytes(Y).CopyTo(buffer, sizeof(float));
-        return buffer;
-    }
+    public readonly bool Equals(IoVector2 other) =>
+        float.Abs(X - other.X) < float.Epsilon && float.Abs(Y - other.Y) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+
+    public override readonly string ToString() => $"({X}, {Y})";
+
+    public static bool operator ==(IoVector2 x, IoVector2 y) => x.Equals(y);
+
+    public static bool operator !=(IoVector2 x, IoVector2 y) => !x.Equals(y);
 }

@@ -18,32 +18,66 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.WwVegas;
 
-public record IoQuaternion
+[StructLayout(LayoutKind.Sequential)]
+public struct IoQuaternion : IEquatable<IoQuaternion>
 {
-    public IList<float> Q { get; } = new float[4];
+    public float X;
+    public float Y;
+    public float Z;
+    public float W;
 
-    internal static int BufferSize => sizeof(float) * 4;
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) =>
+        obj is IoQuaternion quaternion && Equals(quaternion);
 
-    internal static IoQuaternion FromBuffer(ReadOnlySpan<byte> buffer)
+    public readonly bool Equals(IoQuaternion other) =>
+        float.Abs(X - other.X) < float.Epsilon
+        && float.Abs(Y - other.Y) < float.Epsilon
+        && float.Abs(Z - other.Z) < float.Epsilon
+        && float.Abs(W - other.W) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
+
+    public override readonly string ToString() => $"({X}, {Y}, {Z}, {W})";
+
+    public static bool operator ==(IoQuaternion x, IoQuaternion y) => x.Equals(y);
+
+    public static bool operator !=(IoQuaternion x, IoQuaternion y) => !x.Equals(y);
+
+    public float this[int index]
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
-        var q = new IoQuaternion();
-        q.Q[0] = BitConverter.ToSingle(buffer);
-        q.Q[1] = BitConverter.ToSingle(buffer[sizeof(float)..]);
-        q.Q[2] = BitConverter.ToSingle(buffer[(sizeof(float) * 2)..]);
-        q.Q[3] = BitConverter.ToSingle(buffer[(sizeof(float) * 3)..]);
-        return q;
-    }
-
-    internal byte[] ToBuffer()
-    {
-        var buffer = new byte[BufferSize];
-        BitConverter.GetBytes(Q[0]).CopyTo(buffer, 0);
-        BitConverter.GetBytes(Q[1]).CopyTo(buffer, sizeof(float));
-        BitConverter.GetBytes(Q[2]).CopyTo(buffer, sizeof(float) * 2);
-        BitConverter.GetBytes(Q[3]).CopyTo(buffer, sizeof(float) * 3);
-        return buffer;
+        readonly get =>
+            index switch
+            {
+                0 => X,
+                1 => Y,
+                2 => Z,
+                3 => W,
+                _ => throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3 inclusive."),
+            };
+        set
+        {
+            switch (index)
+            {
+                case 0:
+                    X = value;
+                    break;
+                case 1:
+                    Y = value;
+                    break;
+                case 2:
+                    Z = value;
+                    break;
+                case 3:
+                    W = value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3 inclusive.");
+            }
+        }
     }
 }

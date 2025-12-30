@@ -19,6 +19,8 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
@@ -165,25 +167,41 @@ public class ChunkSave(FileStream file)
 
     public uint Write(IoVector2 v)
     {
-        ArgumentNullException.ThrowIfNull(v);
-        return Write(v.ToBuffer());
+        ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(
+            ref Unsafe.As<IoVector2, byte>(ref v),
+            Marshal.SizeOf<IoVector2>()
+        );
+
+        return Write(span);
     }
 
     public uint Write(IoVector3 v)
     {
-        ArgumentNullException.ThrowIfNull(v);
-        return Write(v.ToBuffer());
+        ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(
+            ref Unsafe.As<IoVector3, byte>(ref v),
+            Marshal.SizeOf<IoVector3>()
+        );
+
+        return Write(span);
     }
 
     public uint Write(IoVector4 v)
     {
-        ArgumentNullException.ThrowIfNull(v);
-        return Write(v.ToBuffer());
+        ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(
+            ref Unsafe.As<IoVector4, byte>(ref v),
+            Marshal.SizeOf<IoVector4>()
+        );
+
+        return Write(span);
     }
 
     public uint Write(IoQuaternion q)
     {
-        ArgumentNullException.ThrowIfNull(q);
-        return Write(q.ToBuffer());
+        ReadOnlySpan<byte> span = MemoryMarshal.CreateReadOnlySpan(
+            ref Unsafe.As<IoQuaternion, byte>(ref q),
+            Marshal.SizeOf<IoQuaternion>()
+        );
+
+        return Write(span);
     }
 }

@@ -18,28 +18,30 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.WwVegas;
 
-public record IoVector3(float X, float Y, float Z)
+[StructLayout(LayoutKind.Sequential)]
+public struct IoVector3 : IEquatable<IoVector3>
 {
-    internal static int BufferSize => sizeof(float) * 3;
+    public float X;
+    public float Y;
+    public float Z;
 
-    internal static IoVector3 FromBuffer(ReadOnlySpan<byte> buffer)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, BufferSize);
-        return new IoVector3(
-            BitConverter.ToSingle(buffer),
-            BitConverter.ToSingle(buffer[sizeof(float)..]),
-            BitConverter.ToSingle(buffer[(sizeof(float) * 2)..])
-        );
-    }
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is IoVector3 other && Equals(other);
 
-    internal byte[] ToBuffer()
-    {
-        var buffer = new byte[BufferSize];
-        BitConverter.GetBytes(X).CopyTo(buffer, 0);
-        BitConverter.GetBytes(Y).CopyTo(buffer, sizeof(float));
-        BitConverter.GetBytes(Z).CopyTo(buffer, sizeof(float) * 2);
-        return buffer;
-    }
+    public readonly bool Equals(IoVector3 other) =>
+        float.Abs(X - other.X) < float.Epsilon
+        && float.Abs(Y - other.Y) < float.Epsilon
+        && float.Abs(Z - other.Z) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
+
+    public override readonly string ToString() => $"({X}, {Y}, {Z})";
+
+    public static bool operator ==(IoVector3 x, IoVector3 y) => x.Equals(y);
+
+    public static bool operator !=(IoVector3 x, IoVector3 y) => !x.Equals(y);
 }

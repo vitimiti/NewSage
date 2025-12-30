@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
@@ -226,33 +227,33 @@ public class ChunkLoad(FileStream file)
 
     public uint Read(out IoVector2 v)
     {
-        var buffer = new byte[IoVector2.BufferSize];
+        Span<byte> buffer = stackalloc byte[Marshal.SizeOf<IoVector2>()];
         var result = Read(buffer);
-        v = IoVector2.FromBuffer(buffer);
+        v = MemoryMarshal.Read<IoVector2>(buffer);
         return result;
     }
 
     public uint Read(out IoVector3 v)
     {
-        var buffer = new byte[IoVector3.BufferSize];
+        Span<byte> buffer = stackalloc byte[Marshal.SizeOf<IoVector3>()];
         var result = Read(buffer);
-        v = IoVector3.FromBuffer(buffer);
+        v = MemoryMarshal.Read<IoVector3>(buffer);
         return result;
     }
 
     public uint Read(out IoVector4 v)
     {
-        var buffer = new byte[IoVector4.BufferSize];
+        Span<byte> buffer = stackalloc byte[Marshal.SizeOf<IoVector4>()];
         var result = Read(buffer);
-        v = IoVector4.FromBuffer(buffer);
+        v = MemoryMarshal.Read<IoVector4>(buffer);
         return result;
     }
 
     public uint Read(out IoQuaternion q)
     {
-        var buffer = new byte[IoQuaternion.BufferSize];
+        Span<byte> buffer = stackalloc byte[Marshal.SizeOf<IoQuaternion>()];
         var result = Read(buffer);
-        q = IoQuaternion.FromBuffer(buffer);
+        q = MemoryMarshal.Read<IoQuaternion>(buffer);
         return result;
     }
 }
