@@ -693,8 +693,8 @@ public sealed class MeshBuilder : IDisposable
         {
             for (var faceVertexIdx = 0; faceVertexIdx < 3; faceVertexIdx++)
             {
-                minVector = maxVector.UpdateMin(_faces![faceIdx].Vertices[faceVertexIdx].Position);
-                maxVector = maxVector.UpdateMax(_faces![faceIdx].Vertices[faceVertexIdx].Position);
+                minVector.UpdateMin(_faces![faceIdx].Vertices[faceVertexIdx].Position);
+                maxVector.UpdateMax(_faces![faceIdx].Vertices[faceVertexIdx].Position);
             }
         }
 
@@ -1100,7 +1100,8 @@ public sealed class MeshBuilder : IDisposable
             Vertex v0 = _vertices![_faces![faceIdx].VertexIndices[0]];
             Vertex v1 = _vertices![_faces![faceIdx].VertexIndices[1]];
             Vertex v2 = _vertices![_faces![faceIdx].VertexIndices[2]];
-            Vector3 normal = Vector3.CrossProduct(v1.Position - v2.Position, v2.Position - v0.Position).Normalized;
+            var normal = Vector3.CrossProduct(v1.Position - v2.Position, v2.Position - v0.Position);
+            normal.Normalize();
 
             var dn = (_faces![faceIdx].Normal - normal).Length;
             if (dn > float.Epsilon)
@@ -1147,7 +1148,7 @@ public sealed class MeshBuilder : IDisposable
         {
             var shadeIndex = _vertices![vertexIdx].ShadeIndex;
             _vertices![vertexIdx].Normal = _vertices![shadeIndex].Normal;
-            _vertices![vertexIdx].Normal = _vertices![vertexIdx].Normal.Normalized;
+            _vertices![vertexIdx].Normal.Normalize();
         }
     }
 

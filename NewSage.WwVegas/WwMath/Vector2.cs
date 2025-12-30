@@ -18,64 +18,66 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.WwVegas.WwMath;
 
-public record Vector2(float X, float Y)
+[StructLayout(LayoutKind.Explicit)]
+public struct Vector2 : IEquatable<Vector2>
 {
+    public Vector2() { }
+
+    public Vector2(Vector2 other) => Set(other);
+
+    public Vector2(float x, float y) => Set(x, y);
+
     public Vector2(ReadOnlySpan<float> values)
-        : this(values[0], values[1]) { }
-
-    public float U => X;
-
-    public float V => Y;
-
-    public float Length2 => (X * X) + (Y * Y);
-
-    public float Length => float.Sqrt(Length2);
-
-    public Vector2 Normalized
     {
-        get
+        ArgumentOutOfRangeException.ThrowIfNotEqual(values.Length, 2);
+        Set(values[0], values[1]);
+    }
+
+    [FieldOffset(0)]
+    public float X;
+
+    [FieldOffset(0)]
+    public float U;
+
+    [FieldOffset(4)]
+    public float Y;
+
+    [FieldOffset(4)]
+    public float V;
+
+    public readonly float Length2 => (X * X) + (Y * Y);
+
+    public readonly float Length => float.Sqrt(Length2);
+
+    public readonly bool IsValid => WwMath.IsValid(X) && WwMath.IsValid(Y);
+
+    public static Vector2 Normalize(Vector2 vector)
+    {
+        var length2 = vector.Length2;
+        if (float.Abs(length2) < float.Epsilon)
         {
-            var length2 = Length2;
-            return float.Abs(length2) > float.Epsilon ? new Vector2(X / length2, Y / length2) : this;
+            return new Vector2(0, 0);
         }
+
+        var oneOverLength = WwMath.InvSqrt(length2);
+        return vector / oneOverLength;
     }
 
-    public bool IsValid => WwMath.IsValid(X) && WwMath.IsValid(Y);
+    public static float DotProduct(Vector2 x, Vector2 y) => x.Multiply(y);
 
-    public static float DotProduct(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Multiply(y);
-    }
+    public static float PerpendicularDotProduct(Vector2 x, Vector2 y) => (x.X * -y.Y) + (x.Y * y.X);
 
-    public static float PerpendicularDotProduct(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        ArgumentNullException.ThrowIfNull(y);
-
-        return (x.X * -y.Y) + (x.Y * y.X);
-    }
-
-    public static float Distance(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        ArgumentNullException.ThrowIfNull(y);
-
-        return Distance(x.X, x.Y, y.X, y.Y);
-    }
+    public static float Distance(Vector2 x, Vector2 y) => Distance(x.X, x.Y, y.X, y.Y);
 
     public static float Distance(float x1, float y1, float x2, float y2) =>
         float.Sqrt(float.Pow(x1 - x2, 2) + float.Pow(y1 - y2, 2));
 
-    public static float QuickDistance(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        ArgumentNullException.ThrowIfNull(y);
-
-        return QuickDistance(x.X, x.Y, y.X, y.Y);
-    }
+    public static float QuickDistance(Vector2 x, Vector2 y) => QuickDistance(x.X, x.Y, y.X, y.Y);
 
     public static float QuickDistance(float x1, float y1, float x2, float y2)
     {
@@ -85,146 +87,160 @@ public record Vector2(float X, float Y)
         return xDiff > yDiff ? (yDiff / 2) + xDiff : (xDiff / 2) + yDiff;
     }
 
-    public static Vector2 Lerp(Vector2 x, Vector2 y, float t)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        ArgumentNullException.ThrowIfNull(y);
+    public static Vector2 Lerp(Vector2 x, Vector2 y, float t) => new(x.X + ((y.X - x.X) * t), x.Y + ((y.Y - x.Y) * t));
 
-        return new Vector2(x.X + ((y.X - x.X) * t), x.Y + ((y.Y - x.Y) * t));
+    public void Set(float x, float y) => (X, Y) = (x, y);
+
+    public void Set(Vector2 other) => (X, Y) = (other.X, other.Y);
+
+    public void Normalize()
+    {
+        var length2 = Length2;
+        if (float.Abs(length2) < float.Epsilon)
+        {
+            return;
+        }
+
+        var oneOverLength = WwMath.InvSqrt(length2);
+        X *= oneOverLength;
+        Y *= oneOverLength;
     }
 
-    public Vector2 Rotate(float theta) => Rotate(float.Sin(theta), float.Cos(theta));
+    public void Rotate(float theta) => Rotate(float.Sin(theta), float.Cos(theta));
 
-    public Vector2 Rotate(float sin, float cos) => new((X * cos) + (Y * -sin), (X * sin) + (Y * cos));
+    public void Rotate(float sin, float cos)
+    {
+        var newX = (X * cos) + (Y * -sin);
+        var newY = (X * sin) + (Y * cos);
+        X = newX;
+        Y = newY;
+    }
 
-    public bool RotateTowards(Vector2 target, float maxTheta, out Vector2 result, out bool positiveTurn) =>
-        RotateTowards(target, float.Sin(maxTheta), float.Cos(maxTheta), out result, out positiveTurn);
+    public bool RotateTowards(Vector2 target, float maxTheta, out bool positiveTurn) =>
+        RotateTowards(target, float.Sin(maxTheta), float.Cos(maxTheta), out positiveTurn);
 
-    public bool RotateTowards(Vector2 target, float maxSin, float maxCos, out Vector2 result, out bool positiveTurn)
+    public bool RotateTowards(Vector2 target, float maxSin, float maxCos, out bool positiveTurn)
     {
         var returnValue = false;
-        positiveTurn = PerpendicularDotProduct(target, this) > 0F;
+        positiveTurn = PerpendicularDotProduct(target, this) > 0;
 
         if (DotProduct(this, target) >= maxCos)
         {
-            result = target;
+            Set(target);
             returnValue = true;
         }
         else
         {
-            result = positiveTurn ? Rotate(maxSin, maxCos) : Rotate(-maxSin, maxCos);
+            if (positiveTurn)
+            {
+                Rotate(maxSin, maxCos);
+            }
+            else
+            {
+                Rotate(-maxSin, maxCos);
+            }
         }
 
         return returnValue;
     }
 
-    public Vector2 UpdateMin(Vector2 other)
+    public void UpdateMin(Vector2 other)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Vector2(float.Min(X, other.X), float.Min(Y, other.Y));
+        X = float.Min(X, other.X);
+        Y = float.Min(Y, other.Y);
     }
 
-    public Vector2 UpdateMax(Vector2 other)
+    public void UpdateMax(Vector2 other)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Vector2(float.Max(X, other.X), float.Max(Y, other.Y));
+        X = float.Max(X, other.X);
+        Y = float.Max(Y, other.Y);
     }
 
-    public Vector2 Scale(float x, float y) => new(X * x, Y * y);
-
-    public Vector2 Scale(Vector2 other)
+    public void Scale(float x, float y)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return Scale(other.X, other.Y);
+        X *= x;
+        Y *= y;
     }
 
-    public Vector2 Add(Vector2 other)
+    public void Scale(Vector2 other)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Vector2(X + other.X, Y + other.Y);
+        X *= other.X;
+        Y *= other.Y;
     }
 
-    public Vector2 Subtract(Vector2 other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new Vector2(X - other.X, Y - other.Y);
-    }
+    public readonly Vector2 Add(Vector2 other) => new(X + other.X, Y + other.Y);
 
-    public Vector2 Multiply(float scalar) => new(X * scalar, Y * scalar);
+    public readonly Vector2 Subtract(Vector2 other) => new(X - other.X, Y - other.Y);
 
-    public float Multiply(Vector2 other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return (X * other.X) + (Y * other.Y);
-    }
+    public readonly Vector2 Multiply(float scalar) => new(X * scalar, Y * scalar);
 
-    public Vector2 Divide(float scalar)
+    public readonly float Multiply(Vector2 other) => (X * other.X) + (Y * other.Y);
+
+    public readonly Vector2 Divide(float scalar)
     {
         var oneOverScalar = 1F / scalar;
         return Multiply(oneOverScalar);
     }
 
-    public Vector2 Plus() => new(+X, +Y);
+    public readonly Vector2 Plus() => new(+X, +Y);
 
-    public Vector2 Negate() => new(-X, -Y);
+    public readonly Vector2 Negate() => new(-X, -Y);
 
-    public static Vector2 operator +(Vector2 x, Vector2 y)
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Vector2 other && Equals(other);
+
+    public readonly bool Equals(Vector2 other) =>
+        float.Abs(X - other.X) < float.Epsilon && float.Abs(Y - other.Y) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+
+    public override readonly string ToString() => $"({X}, {Y})";
+
+    public static Vector2 operator +(Vector2 x, Vector2 y) => x.Add(y);
+
+    public static Vector2 operator -(Vector2 x, Vector2 y) => x.Subtract(y);
+
+    public static Vector2 operator *(Vector2 vector, float scalar) => vector.Multiply(scalar);
+
+    public static Vector2 operator *(float scalar, Vector2 vector) => vector.Multiply(scalar);
+
+    public static float operator *(Vector2 x, Vector2 y) => x.Multiply(y);
+
+    public static Vector2 operator /(Vector2 vector, float scalar) => vector.Divide(scalar);
+
+    public static Vector2 operator +(Vector2 vector) => vector.Plus();
+
+    public static Vector2 operator -(Vector2 vector) => vector.Negate();
+
+    public static bool operator ==(Vector2 x, Vector2 y) => x.Equals(y);
+
+    public static bool operator !=(Vector2 x, Vector2 y) => !x.Equals(y);
+
+    public float this[int index]
     {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Add(y);
-    }
-
-    public static Vector2 operator -(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Subtract(y);
-    }
-
-    public static Vector2 operator *(Vector2 vector, float scalar)
-    {
-        ArgumentNullException.ThrowIfNull(vector);
-        return vector.Multiply(scalar);
-    }
-
-    public static Vector2 operator *(float scalar, Vector2 vector)
-    {
-        ArgumentNullException.ThrowIfNull(vector);
-        return vector.Multiply(scalar);
-    }
-
-    public static float operator *(Vector2 x, Vector2 y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Multiply(y);
-    }
-
-    public static Vector2 operator /(Vector2 vector, float scalar)
-    {
-        ArgumentNullException.ThrowIfNull(vector);
-        return vector.Divide(scalar);
-    }
-
-    public static Vector2 operator +(Vector2 vector)
-    {
-        ArgumentNullException.ThrowIfNull(vector);
-        return vector.Plus();
-    }
-
-    public static Vector2 operator -(Vector2 vector)
-    {
-        ArgumentNullException.ThrowIfNull(vector);
-        return vector.Negate();
-    }
-
-    public float this[int index] =>
-        index switch
+        readonly get =>
+            index switch
+            {
+                0 => X,
+                1 => Y,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(index),
+                    index,
+                    "Index must be between 0 and 1 inclusive."
+                ),
+            };
+        set
         {
-            0 => X,
-            1 => Y,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(index),
-                index,
-                $"Index {index} is out of range for {nameof(Vector2)}"
-            ),
-        };
+            switch (index)
+            {
+                case 0:
+                    X = value;
+                    break;
+                case 1:
+                    Y = value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 1 inclusive.");
+            }
+        }
+    }
 }

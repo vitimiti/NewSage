@@ -18,7 +18,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
 using NewSage.WwVegas.WwMath;
 
 namespace NewSage.WwVegas;
@@ -72,11 +71,7 @@ public class Face
                         return true;
                     }
 
-                    if (
-                        float.Abs(Vertices[v0].Position.X - Vertices[v1].Position.X) < float.Epsilon
-                        && float.Abs(Vertices[v0].Position.Y - Vertices[v1].Position.Y) < float.Epsilon
-                        && float.Abs(Vertices[v0].Position.Z - Vertices[v1].Position.Z) < float.Epsilon
-                    )
+                    if (Vertices[v0].Position == Vertices[v1].Position)
                     {
                         return true;
                     }
@@ -117,10 +112,12 @@ public class Face
 
     public void ComputePlane()
     {
-        Normal = Vector3
-            .CrossProduct(Vertices[1].Position - Vertices[0].Position, Vertices[2].Position - Vertices[0].Position)
-            .Normalized;
+        Normal = Vector3.CrossProduct(
+            Vertices[1].Position - Vertices[0].Position,
+            Vertices[2].Position - Vertices[0].Position
+        );
 
+        Normal.Normalize();
         Distance = Vector3.DotProduct(Normal, Vertices[0].Position);
     }
 }
