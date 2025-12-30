@@ -24,7 +24,7 @@ using System.Numerics;
 namespace NewSage.WwVegas;
 
 public record Rectangle<TNumber>(TNumber X, TNumber Y, TNumber Width, TNumber Height)
-    where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
+    where TNumber : INumber<TNumber>
 {
     public Rectangle([NotNull] Point2D<TNumber> point, TNumber width, TNumber height)
         : this(point.X, point.Y, width, height) { }

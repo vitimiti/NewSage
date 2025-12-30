@@ -23,26 +23,13 @@ using System.Numerics;
 namespace NewSage.WwVegas;
 
 public record Point2D<TNumber>(TNumber X, TNumber Y)
-    where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
+    where TNumber : INumber<TNumber>
 {
-    public TNumber Length => TNumber.Sqrt((X * X) + (Y * Y));
-
-    public Point2D<TNumber> Normalized
-    {
-        get
-        {
-            TNumber length = Length;
-            return length != TNumber.Zero ? new Point2D<TNumber>(X / length, Y / length) : this;
-        }
-    }
-
     public Point2D<TNumber> BiasTo(Rectangle<TNumber> rectangle)
     {
         ArgumentNullException.ThrowIfNull(rectangle);
         return new Point2D<TNumber>(X + rectangle.X, Y + rectangle.Y);
     }
-
-    public TNumber DistanceTo(Point2D<TNumber> point) => (this - point).Length;
 
     public Point2D<TNumber> DotProduct(Point2D<TNumber> other) => Multiply(other);
 

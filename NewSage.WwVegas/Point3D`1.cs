@@ -23,31 +23,8 @@ using System.Numerics;
 namespace NewSage.WwVegas;
 
 public record Point3D<TNumber>(TNumber X, TNumber Y, TNumber Z)
-    where TNumber : INumber<TNumber>, IRootFunctions<TNumber>
+    where TNumber : INumber<TNumber>
 {
-    public TNumber Length => TNumber.Sqrt((X * X) + (Y * Y) + (Z * Z));
-
-    public Point3D<TNumber> Normalized
-    {
-        get
-        {
-            TNumber length = Length;
-            return length != TNumber.Zero ? new Point3D<TNumber>(X / length, Y / length, Z / length) : this;
-        }
-    }
-
-    public TNumber DistanceTo(Point3D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return (this - point).Length;
-    }
-
-    public TNumber DistanceTo(Point2D<TNumber> point)
-    {
-        ArgumentNullException.ThrowIfNull(point);
-        return (this - new Point3D<TNumber>(point.X, point.Y, TNumber.Zero)).Length;
-    }
-
     public Point3D<TNumber> DotProduct(Point3D<TNumber> other)
     {
         ArgumentNullException.ThrowIfNull(other);
