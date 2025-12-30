@@ -57,7 +57,11 @@ public struct IoQuaternion : IEquatable<IoQuaternion>
                 1 => Y,
                 2 => Z,
                 3 => W,
-                _ => throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 3 inclusive."),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(index),
+                    index,
+                    "Index must be between 0 and 3 inclusive."
+                ),
             };
         set
         {
