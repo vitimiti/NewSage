@@ -26,8 +26,6 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector3I : IEquatable<Vector3I>
 {
-    public Vector3I() { }
-
     public Vector3I(int i, int j, int k) => Set(i, j, k);
 
     public int I;

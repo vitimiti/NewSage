@@ -26,8 +26,6 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector3 : IEquatable<Vector3>
 {
-    public Vector3() { }
-
     public Vector3(Vector3 other) => (X, Y, Z) = (other.X, other.Y, other.Z);
 
     public Vector3(float x, float y, float z) => (X, Y, Z) = (x, y, z);

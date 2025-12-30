@@ -26,8 +26,6 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Explicit)]
 public struct Vector2 : IEquatable<Vector2>
 {
-    public Vector2() { }
-
     public Vector2(Vector2 other) => Set(other);
 
     public Vector2(float x, float y) => Set(x, y);
