@@ -18,11 +18,24 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record Coord3D(int X, int Y, int Z)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct Coord3D
 {
-    public static Coord3D Zero => new(0, 0, 0);
+    public int X;
+    public int Y;
+    public int Z;
 
-    public int Length => (int)float.Sqrt((X * X) + (Y * Y) + (Z * Z));
+    public static Coord3D Zero => default;
+
+    public readonly int Length => (int)float.Sqrt((X * X) + (Y * Y) + (Z * Z));
 }

@@ -18,11 +18,23 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FRegion2D(FCoord2D Low, FCoord2D High)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FRegion2D
 {
-    public float Width => High.X - Low.X;
+    public FCoord2D Lo;
+    public FCoord2D Hi;
 
-    public float Height => High.Y - Low.Y;
+    public readonly float Width => Hi.X - Lo.X;
+
+    public readonly float Height => Hi.Y - Lo.Y;
 }

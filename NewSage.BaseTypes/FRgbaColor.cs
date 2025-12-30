@@ -18,6 +18,21 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FRgbaColor(float Red, float Green, float Blue, float Alpha);
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FRgbaColor
+{
+    public float R;
+    public float G;
+    public float B;
+    public float A;
+}

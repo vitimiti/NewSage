@@ -18,13 +18,25 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FRange(float Low, float High)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FRange
 {
-    public FRange Combine(FRange other)
+    public float Lo;
+    public float Hi;
+
+    public void Combine(FRange other)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new FRange(float.Min(Low, other.Low), float.Max(High, other.High));
+        Lo = float.Min(Lo, other.Lo);
+        Hi = float.Max(Hi, other.Hi);
     }
 }

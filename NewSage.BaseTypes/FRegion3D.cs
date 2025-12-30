@@ -18,27 +18,32 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FRegion3D(FCoord3D Low, FCoord3D High)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FRegion3D
 {
-    public static FRegion3D Zero => new(FCoord3D.Zero, FCoord3D.Zero);
+    public FCoord3D Lo;
+    public FCoord3D Hi;
 
-    public float Width => High.X - Low.X;
+    public static FRegion3D Zero => default;
 
-    public float Height => High.Y - Low.Y;
+    public readonly float Width => Hi.X - Lo.X;
 
-    public float Depth => High.Z - Low.Z;
+    public readonly float Height => Hi.Y - Lo.Y;
 
-    public bool IsInRegionNoZ(FCoord3D query)
-    {
-        ArgumentNullException.ThrowIfNull(query);
-        return Low.X < query.X && query.X < High.X && Low.Y < query.Y && query.Y < High.Y;
-    }
+    public readonly float Depth => Hi.Z - Lo.Z;
 
-    public bool IsInRegion(FCoord3D query)
-    {
-        ArgumentNullException.ThrowIfNull(query);
-        return IsInRegionNoZ(query) && Low.Z < query.Z && query.Z < High.Z;
-    }
+    public readonly bool IsInRegionNoZ(FCoord3D query) =>
+        Lo.X < query.X && query.X < Hi.X && Lo.Y < query.Y && query.Y < Hi.Y;
+
+    public readonly bool IsInRegion(FCoord3D query) => IsInRegionNoZ(query) && Lo.Z < query.Z && query.Z < Hi.Z;
 }

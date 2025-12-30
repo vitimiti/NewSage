@@ -18,70 +18,83 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FCoord3D(float X, float Y, float Z)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FCoord3D
 {
-    public static FCoord3D Zero => new(0F, 0F, 0F);
+    public float X;
+    public float Y;
+    public float Z;
 
-    public float Length => float.Sqrt((X * X) + (Y * Y) + (Z * Z));
+    public static FCoord3D Zero => default;
 
-    public float LengthSqr => (X * X) + (Y * Y) + (Z * Z);
+    public readonly float Length => float.Sqrt((X * X) + (Y * Y) + (Z * Z));
 
-    public FCoord3D Normalized
-    {
-        get
-        {
-            var length = Length;
-            return float.Abs(length) > float.Epsilon ? new FCoord3D(X / length, Y / length, Z / length) : this;
-        }
-    }
+    public readonly float LengthSqr => (X * X) + (Y * Y) + (Z * Z);
 
     public static FCoord3D CrossProduct(FCoord3D x, FCoord3D y) => x * y;
 
-    public FCoord3D Scale(float scale) => Multiply(scale);
-
-    public FCoord3D Add(FCoord3D other)
+    public void Normalize()
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new FCoord3D(X + other.X, Y + other.Y, Z + other.Z);
+        var length = Length;
+        X /= length;
+        Y /= length;
+        Z /= length;
     }
 
-    public FCoord3D Subtract(FCoord3D other)
+    public void Scale(float scale)
     {
-        ArgumentNullException.ThrowIfNull(other);
-        return new FCoord3D(X - other.X, Y - other.Y, Z - other.Z);
+        X *= scale;
+        Y *= scale;
+        Z *= scale;
     }
 
-    public FCoord3D Multiply(FCoord3D other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-        return new FCoord3D(X * other.X, Y * other.Y, Z * other.Z);
-    }
+    public readonly FCoord3D Add(FCoord3D other) =>
+        new()
+        {
+            X = X + other.X,
+            Y = Y + other.Y,
+            Z = Z + other.Z,
+        };
 
-    public FCoord3D Multiply(float scalar) => new(X * scalar, Y * scalar, Z * scalar);
+    public readonly FCoord3D Subtract(FCoord3D other) =>
+        new()
+        {
+            X = X - other.X,
+            Y = Y - other.Y,
+            Z = Z - other.Z,
+        };
 
-    public static FCoord3D operator +(FCoord3D x, FCoord3D y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Add(y);
-    }
+    public readonly FCoord3D Multiply(FCoord3D other) =>
+        new()
+        {
+            X = X * other.X,
+            Y = Y * other.Y,
+            Z = Z * other.Z,
+        };
 
-    public static FCoord3D operator -(FCoord3D x, FCoord3D y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Subtract(y);
-    }
+    public readonly FCoord3D Multiply(float scalar) =>
+        new()
+        {
+            X = X * scalar,
+            Y = Y * scalar,
+            Z = Z * scalar,
+        };
 
-    public static FCoord3D operator *(FCoord3D x, FCoord3D y)
-    {
-        ArgumentNullException.ThrowIfNull(x);
-        return x.Multiply(y);
-    }
+    public static FCoord3D operator +(FCoord3D x, FCoord3D y) => x.Add(y);
 
-    public static FCoord3D operator *(FCoord3D coord3D, float scalar)
-    {
-        ArgumentNullException.ThrowIfNull(coord3D);
-        return coord3D.Multiply(scalar);
-    }
+    public static FCoord3D operator -(FCoord3D x, FCoord3D y) => x.Subtract(y);
+
+    public static FCoord3D operator *(FCoord3D x, FCoord3D y) => x.Multiply(y);
+
+    public static FCoord3D operator *(FCoord3D coord3D, float scalar) => coord3D.Multiply(scalar);
 }

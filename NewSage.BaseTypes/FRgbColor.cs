@@ -18,20 +18,34 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FRgbColor(float Red, float Green, float Blue)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FRgbColor
 {
-    public static FRgbColor FromInt32(int color) =>
-        new(((color >> 16) & 0xFF) / 255F, ((color >> 8) & 0xFF) / 255F, (color & 0xFF) / 255F);
+    public float R;
+    public float G;
+    public float B;
 
-    public int ToInt32() => ((int)(Red * 255) << 16) | ((int)(Green * 255) << 8) | (int)(Blue * 255);
+    public static FRgbColor FromInt32(int color) =>
+        new()
+        {
+            R = ((color >> 16) & 0xFF) / 255F,
+            G = ((color >> 8) & 0xFF) / 255F,
+            B = (color & 0xFF) / 255F,
+        };
+
+    public readonly int ToInt32() => ((int)(R * 255) << 16) | ((int)(G * 255) << 8) | (int)(B * 255);
 
     public static explicit operator FRgbColor(int color) => FromInt32(color);
 
-    public static explicit operator int(FRgbColor color)
-    {
-        ArgumentNullException.ThrowIfNull(color);
-        return color.ToInt32();
-    }
+    public static explicit operator int(FRgbColor color) => color.ToInt32();
 }

@@ -18,13 +18,25 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record Region3D(Coord3D Low, Coord3D High)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct Region3D
 {
-    public int Width => High.X - Low.X;
+    public Coord3D Lo;
+    public Coord3D Hi;
 
-    public int Height => High.Y - Low.Y;
+    public readonly int Width => Hi.X - Lo.X;
 
-    public int Depth => High.Z - Low.Z;
+    public readonly int Height => Hi.Y - Lo.Y;
+
+    public readonly int Depth => Hi.Z - Lo.Z;
 }

@@ -18,22 +18,32 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record FCoord2D(float X, float Y)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct FCoord2D
 {
-    public float Length => float.Sqrt((X * X) + (Y * Y));
+    public float X;
+    public float Y;
 
-    public FCoord2D Normalized
+    public readonly float Length => float.Sqrt((X * X) + (Y * Y));
+
+    public void Normalize()
     {
-        get
-        {
-            var length = Length;
-            return float.Abs(length) > float.Epsilon ? new FCoord2D(X / length, Y / length) : this;
-        }
+        var length = Length;
+        X /= length;
+        Y /= length;
     }
 
-    public float ToAngle()
+    public readonly float ToAngle()
     {
         var length = Length;
         if (float.Abs(length) < float.Epsilon)

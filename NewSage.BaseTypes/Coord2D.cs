@@ -18,9 +18,21 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record Coord2D(int X, int Y)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct Coord2D
 {
-    public int Length => (int)float.Sqrt((X * X) + (Y * Y));
+    public int X;
+    public int Y;
+
+    public readonly int Length => (int)float.Sqrt((X * X) + (Y * Y));
 }

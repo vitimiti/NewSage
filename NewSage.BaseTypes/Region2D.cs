@@ -18,11 +18,23 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 namespace NewSage.BaseTypes;
 
-public record Region2D(Coord2D Low, Coord2D High)
+[StructLayout(LayoutKind.Sequential)]
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in these types."
+)]
+public struct Region2D
 {
-    public int Width => High.X - Low.X;
+    public Coord2D Lo;
+    public Coord2D Hi;
 
-    public int Height => High.Y - Low.Y;
+    public readonly int Width => Hi.X - Lo.X;
+
+    public readonly int Height => Hi.Y - Lo.Y;
 }
