@@ -24,6 +24,9 @@ public class BufferPipe : Pipe
 {
     public BufferPipe(Memory<byte> buffer) => Buffer = buffer;
 
+    public BufferPipe(Span<byte> buffer)
+        : this(buffer.ToArray().AsMemory()) { }
+
     public Memory<byte> Buffer { get; }
 
     public int Index { get; private set; }
