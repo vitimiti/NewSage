@@ -22,23 +22,26 @@ namespace NewSage.WwVegas;
 
 public sealed class BufferStraw : Straw
 {
-    private readonly ReadOnlyMemory<byte> _buffer;
+    public BufferStraw(ReadOnlyMemory<byte> buffer) => Buffer = buffer;
 
-    private int _index;
+    public BufferStraw(ReadOnlySpan<byte> buffer)
+        : this(buffer.ToArray().AsMemory()) { }
 
-    public BufferStraw(ReadOnlyMemory<byte> buffer) => _buffer = buffer;
+    public ReadOnlyMemory<byte> Buffer { get; }
+
+    public int Index { get; private set; }
 
     public override int Get(Span<byte> buffer)
     {
         var total = 0;
         var sourceLength = buffer.Length;
 
-        if (_buffer.IsEmpty || sourceLength <= 0)
+        if (Buffer.IsEmpty || sourceLength <= 0)
         {
             return total;
         }
 
-        var theoreticalMax = _buffer.Length - _index;
+        var theoreticalMax = Buffer.Length - Index;
         var len = (sourceLength < theoreticalMax) ? sourceLength : theoreticalMax;
 
         if (len <= 0)
@@ -46,8 +49,8 @@ public sealed class BufferStraw : Straw
             return total;
         }
 
-        _buffer.Span.Slice(_index, len).CopyTo(buffer);
-        _index += len;
+        Buffer.Span.Slice(Index, len).CopyTo(buffer);
+        Index += len;
         total += len;
 
         return total;

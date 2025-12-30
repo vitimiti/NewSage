@@ -22,35 +22,35 @@ namespace NewSage.WwVegas;
 
 public class BufferPipe : Pipe
 {
-    private readonly Memory<byte> _buffer;
+    public BufferPipe(Memory<byte> buffer) => Buffer = buffer;
 
-    private int _index;
+    public Memory<byte> Buffer { get; }
 
-    public BufferPipe(Memory<byte> buffer) => _buffer = buffer;
+    public int Index { get; private set; }
 
     public override int Put(ReadOnlySpan<byte> source)
     {
         var total = 0;
         var sourceLength = source.Length;
 
-        if (_buffer.IsEmpty || sourceLength <= 0)
+        if (Buffer.IsEmpty || sourceLength <= 0)
         {
             return total;
         }
 
         var len = sourceLength;
-        if (_buffer.Length != 0)
+        if (Buffer.Length != 0)
         {
-            var theoreticalMax = _buffer.Length - _index;
+            var theoreticalMax = Buffer.Length - Index;
             len = (sourceLength < theoreticalMax) ? sourceLength : theoreticalMax;
         }
 
         if (len > 0)
         {
-            source[..len].CopyTo(_buffer.Span[_index..]);
+            source[..len].CopyTo(Buffer.Span[Index..]);
         }
 
-        _index += len;
+        Index += len;
         total += len;
 
         return total;
