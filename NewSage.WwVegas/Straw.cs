@@ -36,7 +36,7 @@ public class Straw : IDisposable
         {
             if (straw?.ChainFrom is not null)
             {
-                straw.ChainFrom.GetFrom((Straw?)null);
+                straw.ChainFrom.GetFrom(null);
                 straw.ChainFrom = null;
             }
 
