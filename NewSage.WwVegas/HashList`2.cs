@@ -22,28 +22,18 @@ using System.Diagnostics;
 
 namespace NewSage.WwVegas;
 
-public class HashList<T, TUser> : IDisposable
+public class HashList<T, TUser>(int numHashValues = HashList<T, TUser>.LargePrimeNumber) : IDisposable
     where TUser : class, new()
 {
     private const int LargePrimeNumber = 257;
 
-    private readonly HashNode<T, TUser>?[] _hashTable;
+    private readonly HashNode<T, TUser>?[] _hashTable = new HashNode<T, TUser>?[numHashValues];
     private readonly List<HashNode<T, TUser>> _list = new();
-    private readonly int _numHashValues;
-
-    private int _numRecords;
-    private int _usedValues;
     private bool _disposed;
 
-    public HashList(int numHashValues = LargePrimeNumber)
-    {
-        _numHashValues = numHashValues;
-        _hashTable = new HashNode<T, TUser>?[numHashValues];
-    }
+    public int NumRecords { get; private set; }
 
-    public int NumRecords => _numRecords;
-
-    public int NumUsedValues => _usedValues;
+    public int NumUsedValues { get; private set; }
 
     public HashNode<T, TUser>? First => _list.First;
 
@@ -59,7 +49,7 @@ public class HashList<T, TUser> : IDisposable
         ArgumentNullException.ThrowIfNull(node);
 
         Debug.Assert(!node.IsInList, "Cannot add a node that is already in a list.");
-        var hashIdx = node.Key % (uint)_numHashValues;
+        var hashIdx = node.Key % (uint)numHashValues;
 
         node.InList = true;
         node.SetNewInList(true);
@@ -80,16 +70,16 @@ public class HashList<T, TUser> : IDisposable
             node.FirstInTable = true;
             node.LastInTable = true;
             _hashTable[hashIdx] = node;
-            _usedValues++;
+            NumUsedValues++;
         }
 
-        _numRecords++;
+        NumRecords++;
         return node;
     }
 
     public HashNode<T, TUser>? Find(uint key)
     {
-        var hashIdx = key % (uint)_numHashValues;
+        var hashIdx = key % (uint)numHashValues;
         HashNode<T, TUser>? cur = _hashTable[hashIdx];
 
         while (cur is not null)
@@ -117,14 +107,14 @@ public class HashList<T, TUser> : IDisposable
 
         if (node.FirstInTable)
         {
-            var hashIdx = node.Key % (uint)_numHashValues;
+            var hashIdx = node.Key % (uint)numHashValues;
             node.FirstInTable = false;
 
             if (node.LastInTable)
             {
                 node.LastInTable = false;
                 _hashTable[hashIdx] = null;
-                _usedValues--;
+                NumUsedValues--;
             }
             else
             {
@@ -148,7 +138,7 @@ public class HashList<T, TUser> : IDisposable
             node.Unlink();
         }
 
-        _numRecords--;
+        NumRecords--;
     }
 
     public void Dispose()
