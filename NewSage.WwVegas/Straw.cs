@@ -18,6 +18,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace NewSage.WwVegas;
 
 public class Straw : IDisposable
@@ -45,7 +47,8 @@ public class Straw : IDisposable
         }
     }
 
-    public virtual int GetFrom(Span<byte> buffer) => ChainTo?.GetFrom(buffer) ?? 0;
+    [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is a valid name.")]
+    public virtual int Get(Span<byte> buffer) => ChainTo?.Get(buffer) ?? 0;
 
     public void Dispose()
     {

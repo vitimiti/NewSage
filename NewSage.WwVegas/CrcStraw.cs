@@ -26,14 +26,14 @@ public sealed class CrcStraw : Straw
 
     public long Result => Crc.ToInt64();
 
-    public override int GetFrom(Span<byte> buffer)
+    public override int Get(Span<byte> buffer)
     {
         if (buffer.Length < 1)
         {
             return 0;
         }
 
-        var counter = base.GetFrom(buffer);
+        var counter = base.Get(buffer);
         _ = Crc.ToInt64(buffer[..counter]);
         return counter;
     }

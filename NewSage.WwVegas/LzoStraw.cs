@@ -49,7 +49,7 @@ public sealed class LzoStraw : Straw
         "S3776:Cognitive Complexity of methods should not be too high",
         Justification = "This is a complex algorithm and breaking into chunks may make it difficult to follow."
     )]
-    public override int GetFrom(Span<byte> buffer)
+    public override int Get(Span<byte> buffer)
     {
         var total = 0;
         var sourceLength = buffer.Length;
@@ -83,7 +83,7 @@ public sealed class LzoStraw : Straw
             if (_control is CompressionMode.Decompress)
             {
                 Span<byte> header = new byte[4];
-                if (base.GetFrom(header) != 4)
+                if (base.Get(header) != 4)
                 {
                     break;
                 }
@@ -92,7 +92,7 @@ public sealed class LzoStraw : Straw
                 _headerUncompCount = BitConverter.ToUInt16(header[2..]);
 
                 var staging = new byte[_headerCompCount];
-                if (base.GetFrom(staging) != _headerCompCount)
+                if (base.Get(staging) != _headerCompCount)
                 {
                     break;
                 }
@@ -102,7 +102,7 @@ public sealed class LzoStraw : Straw
             }
             else
             {
-                var read = base.GetFrom(_buffer.AsSpan(0, _blockSize));
+                var read = base.Get(_buffer.AsSpan(0, _blockSize));
                 if (read == 0)
                 {
                     break;

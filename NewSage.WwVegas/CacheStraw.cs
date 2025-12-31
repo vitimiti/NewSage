@@ -33,7 +33,7 @@ public sealed class CacheStraw : Straw
         _length = 0;
     }
 
-    public override int GetFrom(Span<byte> buffer)
+    public override int Get(Span<byte> buffer)
     {
         var total = 0;
         var sourceLength = buffer.Length;
@@ -63,7 +63,7 @@ public sealed class CacheStraw : Straw
                 break;
             }
 
-            _length = base.GetFrom(_cache);
+            _length = base.Get(_cache);
             _index = 0;
             if (_length == 0)
             {

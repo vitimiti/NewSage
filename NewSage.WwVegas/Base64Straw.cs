@@ -28,7 +28,7 @@ public sealed class Base64Straw(CodeControl control) : Straw
 
     private int _counter;
 
-    public override int GetFrom(Span<byte> buffer)
+    public override int Get(Span<byte> buffer)
     {
         var sourceLength = buffer.Length;
         var sourceIndex = 0;
@@ -70,7 +70,7 @@ public sealed class Base64Straw(CodeControl control) : Straw
                 break;
             }
 
-            var inCount = base.GetFrom(from.AsSpan()[..fromSize]);
+            var inCount = base.Get(from.AsSpan()[..fromSize]);
             _counter =
                 control is CodeControl.Encode
                     ? Base64.Encode(from.AsSpan()[..inCount], to.AsSpan()[..toSize])
