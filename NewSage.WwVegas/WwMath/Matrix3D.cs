@@ -881,7 +881,7 @@ public struct Matrix3D : IEquatable<Matrix3D>
             (this[0][2] * vector[0]) + (this[1][2] * vector[1]) + (this[2][2] * vector[2])
         );
 
-    public (Vector3 Min, Vector3 Max) TransformMinMaxAxisAlignedBox(Vector3 min, Vector3 max)
+    public readonly (Vector3 Min, Vector3 Max) TransformMinMaxAxisAlignedBox(Vector3 min, Vector3 max)
     {
         Vector3 minResult = default;
         Vector3 maxResult = default;
@@ -912,7 +912,7 @@ public struct Matrix3D : IEquatable<Matrix3D>
         return (minResult, maxResult);
     }
 
-    public (Vector3 Center, Vector3 Extent) TransformCenterExtentAxisAlignedBox(Vector3 center, Vector3 extent)
+    public readonly (Vector3 Center, Vector3 Extent) TransformCenterExtentAxisAlignedBox(Vector3 center, Vector3 extent)
     {
         Vector3 centerResult = default;
         Vector3 extentResult = default;
@@ -1000,7 +1000,7 @@ public struct Matrix3D : IEquatable<Matrix3D>
         return result;
     }
 
-    public IList<Vector3> Multiply(IReadOnlyList<Vector3> vectors)
+    public readonly IList<Vector3> Multiply(IReadOnlyList<Vector3> vectors)
     {
         ArgumentNullException.ThrowIfNull(vectors);
         var result = new Vector3[vectors.Count];

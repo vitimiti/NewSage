@@ -225,15 +225,15 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
         Row3[3] = 0F;
     }
 
-    public Matrix4X4 Add(Matrix4X4 other) =>
+    public readonly Matrix4X4 Add(Matrix4X4 other) =>
         new(Row0 + other.Row0, Row1 + other.Row1, Row2 + other.Row2, Row3 + other.Row3);
 
-    public Matrix4X4 Subtract(Matrix4X4 other) =>
+    public readonly Matrix4X4 Subtract(Matrix4X4 other) =>
         new(Row0 - other.Row0, Row1 - other.Row1, Row2 - other.Row2, Row3 - other.Row3);
 
-    public Matrix4X4 Multiply(float scalar) => new(Row0 * scalar, Row1 * scalar, Row2 * scalar, Row3 * scalar);
+    public readonly Matrix4X4 Multiply(float scalar) => new(Row0 * scalar, Row1 * scalar, Row2 * scalar, Row3 * scalar);
 
-    public Matrix4X4 Multiply(Matrix4X4 other)
+    public readonly Matrix4X4 Multiply(Matrix4X4 other)
     {
         return new Matrix4X4(
             new Vector4(RowCol(this, 0, 0), RowCol(this, 0, 1), RowCol(this, 0, 2), RowCol(this, 0, 3)),
@@ -249,7 +249,7 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
             + (self[i][3] * other[3][j]);
     }
 
-    public Matrix4X4 Multiply(Matrix3D other)
+    public readonly Matrix4X4 Multiply(Matrix3D other)
     {
         return new Matrix4X4(
             new Vector4(RowCol(this, 0, 0), RowCol(this, 0, 1), RowCol(this, 0, 2), RowColLast(this, 0, 3)),
@@ -265,7 +265,7 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
             (self[i][0] * other[0][j]) + (self[i][1] * other[1][j]) + (self[i][2] * other[2][j]) + self[i][3];
     }
 
-    public Vector4 Multiply(Vector4 vector) =>
+    public readonly Vector4 Multiply(Vector4 vector) =>
         new(
             (this[0][0] * vector[0]) + (this[0][1] * vector[1]) + (this[0][2] * vector[2]) + (this[0][3] * vector[3]),
             (this[1][0] * vector[0]) + (this[1][1] * vector[1]) + (this[1][2] * vector[2]) + (this[1][3] * vector[3]),
@@ -273,7 +273,7 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
             (this[3][0] * vector[0]) + (this[3][1] * vector[1]) + (this[3][2] * vector[2]) + (this[3][3] * vector[3])
         );
 
-    public Vector4 Multiply(Vector3 vector) =>
+    public readonly Vector4 Multiply(Vector3 vector) =>
         new(
             (this[0][0] * vector[0]) + (this[0][1] * vector[1]) + (this[0][2] * vector[2]) + (this[0][3] * 1F),
             (this[1][0] * vector[0]) + (this[1][1] * vector[1]) + (this[1][2] * vector[2]) + (this[1][3] * 1F),
@@ -281,14 +281,14 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
             (this[3][0] * vector[0]) + (this[3][1] * vector[1]) + (this[3][2] * vector[2]) + (this[3][3] * 1F)
         );
 
-    public Matrix4X4 Divide(float scalar)
+    public readonly Matrix4X4 Divide(float scalar)
     {
         // FIX: this is different, in the original code they do `float ood = d`, which is a bug!
         var oneOverScalar = 1F / scalar;
         return Multiply(oneOverScalar);
     }
 
-    public Matrix4X4 Negate() => new(-Row0, -Row1, -Row2, -Row3);
+    public readonly Matrix4X4 Negate() => new(-Row0, -Row1, -Row2, -Row3);
 
     public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Matrix4X4 other && Equals(other);
 
