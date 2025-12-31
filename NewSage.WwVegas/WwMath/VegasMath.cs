@@ -18,17 +18,103 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
+
 namespace NewSage.WwVegas.WwMath;
 
 public static class VegasMath
 {
+    public const float Sqrt2 = 1.414213562F;
+
+    private const int ArcTableSize = 1_024;
+    private const int SinTableSize = 1_024;
+
     private static readonly Lock SyncLock = new();
+    private static readonly float[] FastAcosTable = new float[ArcTableSize];
+    private static readonly float[] FastSinTable = new float[SinTableSize];
 
     private static uint _randNext = 1;
+
+    static VegasMath()
+    {
+        for (var a = 0; a < ArcTableSize; a++)
+        {
+            var cv = (a - (ArcTableSize / 2F)) * (1F / (ArcTableSize / 2F));
+            FastAcosTable[a] = float.Acos(cv);
+        }
+
+        for (var a = 0; a < SinTableSize; a++)
+        {
+            var cv = a * 2F * float.Pi / SinTableSize;
+            FastSinTable[a] = float.Sin(cv);
+        }
+    }
+
+    public static float FastAcos(float value)
+    {
+        if (float.Abs(value) > 0.975F)
+        {
+            return float.Acos(value);
+        }
+
+        var localValue = value * ArcTableSize / 2F;
+
+        var idx0 = SingleToInt32Floor(value);
+        var idx1 = idx0 + 1;
+        var frac = localValue - idx0;
+
+        idx0 += ArcTableSize / 2;
+        idx1 += ArcTableSize / 2;
+
+        Debug.Assert(idx0 is >= 0 and < ArcTableSize, "Index out of bounds for acos table");
+        Debug.Assert(idx1 is >= 0 and < ArcTableSize, "Index out of bounds for acos table");
+
+        return ((1F - frac) * FastAcosTable[idx0]) + (frac * FastAcosTable[idx1]);
+    }
+
+    public static float FastSin(float value)
+    {
+        var localValue = value * SinTableSize / (2F * float.Pi);
+
+        var idx0 = SingleToInt32Floor(value);
+        var idx1 = idx0 + 1;
+        var frac = localValue - idx0;
+
+        idx0 &= SinTableSize - 1;
+        idx1 &= SinTableSize - 1;
+
+        return ((1F - frac) * FastSinTable[idx0]) + (frac * FastSinTable[idx1]);
+    }
+
+    public static int SingleToInt32Floor(float value)
+    {
+        var a = BitConverter.SingleToInt32Bits(value);
+        var sign = a >> 31;
+        a &= 0x7FFF_FFFF;
+
+        var exponent = (a >> 23) - 127;
+        var expSign = ~(exponent >> 31);
+        var iMask = (1 << (31 - exponent)) - 1;
+        var mantissa = a & ((1 << 23) - 1);
+        var r = unchecked((int)((uint)(mantissa | (1 << 23)) << 8) >> (31 - exponent));
+
+        return ((r & expSign) ^ sign) + (~((mantissa << 8) & iMask) & (expSign ^ ((a - 1) >> 31)) & sign);
+    }
 
     public static float InvSqrt(float value) => 1F / float.Sqrt(value);
 
     public static bool IsValid(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+    public static int Rand()
+    {
+        lock (SyncLock)
+        {
+            // The MSVC LCG: next = next * 214013 + 2531011
+            // The result is the bits 16 through 30 (0x7FFF)
+            _randNext = (_randNext * 214_013U) + 2_531_011U;
+            return (int)((_randNext >> 16) & 0x7FFF);
+        }
+    }
 
     public static float RandomFloat() => (Rand() & 0x0FFF) / (float)0x0FFF;
 
@@ -82,16 +168,5 @@ public static class VegasMath
         }
 
         return (uint)(recCount < 2 ? recPosition : recPosition + 1);
-    }
-
-    private static int Rand()
-    {
-        lock (SyncLock)
-        {
-            // The MSVC LCG: next = next * 214013 + 2531011
-            // The result is the bits 16 through 30 (0x7FFF)
-            _randNext = (_randNext * 214_013U) + 2_531_011U;
-            return (int)((_randNext >> 16) & 0x7FFF);
-        }
     }
 }
