@@ -34,7 +34,7 @@ public class Base64
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"u8.ToArray();
 
     // csharpier-ignore
-    private static byte[] Decoder =
+    private static readonly byte[] Decoder =
     [
         Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad,
         Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, Bad, 0x3E,
