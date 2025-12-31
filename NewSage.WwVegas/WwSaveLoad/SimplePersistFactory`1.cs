@@ -20,15 +20,14 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas.WwSaveLoad;
 
 public class SimplePersistFactory<T>(uint chunkId) : PersistFactory
-    where T : struct
+    where T : Persist, new()
 {
-    public const uint SimpleFactoryChunkIdObjPointer = 0x0010_0100;
-    public const uint SimpleFactoryChunkIdObjData = SimpleFactoryChunkIdObjPointer + 1;
+    public const uint ChunkIdObjPointer = 0x0010_0100;
+    public const uint ChunkIdObjData = 0x0010_0101;
 
     public override uint ChunkId => chunkId;
 
@@ -36,36 +35,31 @@ public class SimplePersistFactory<T>(uint chunkId) : PersistFactory
     {
         ArgumentNullException.ThrowIfNull(cLoad);
 
+        T newObj = new();
         nuint oldPtr = 0;
-        T data = default;
 
         _ = cLoad.OpenChunk();
         Debug.Assert(
-            cLoad.CurrentChunkId == SimpleFactoryChunkIdObjPointer,
-            $"Expected chunk {SimpleFactoryChunkIdObjPointer}, got {cLoad.CurrentChunkId}"
+            cLoad.CurrentChunkId == ChunkIdObjPointer,
+            $"Expected chunk {ChunkIdObjPointer}, got {cLoad.CurrentChunkId}"
         );
 
         _ = cLoad.Read(new Span<byte>(&oldPtr, sizeof(nuint)));
         _ = cLoad.CloseChunk();
 
+        // Load the object's actual data via its overridden Load method
         _ = cLoad.OpenChunk();
         Debug.Assert(
-            cLoad.CurrentChunkId == SimpleFactoryChunkIdObjData,
-            $"Expected chunk {SimpleFactoryChunkIdObjData}, got {cLoad.CurrentChunkId}"
+            cLoad.CurrentChunkId == ChunkIdObjData,
+            $"Expected chunk {ChunkIdObjData}, got {cLoad.CurrentChunkId}"
         );
 
-        Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
-        if (cLoad.Read(buffer) == (uint)buffer.Length)
-        {
-            data = MemoryMarshal.Read<T>(buffer);
-        }
-
+        _ = newObj.Load(cLoad);
         _ = cLoad.CloseChunk();
 
-        var container = new PersistStructContainer<T>(this, data);
-        SaveLoadSystem.RegisterPointer((void*)oldPtr, Unsafe.AsPointer(ref container));
+        SaveLoadSystem.RegisterPointer((void*)oldPtr, Unsafe.AsPointer(ref newObj));
 
-        return container;
+        return newObj;
     }
 
     public override unsafe void Save(ChunkSave cSave, Persist persist)
@@ -73,23 +67,19 @@ public class SimplePersistFactory<T>(uint chunkId) : PersistFactory
         ArgumentNullException.ThrowIfNull(cSave);
         ArgumentNullException.ThrowIfNull(persist);
 
-        if (persist is not PersistStructContainer<T> container)
+        if (persist is not T obj)
         {
-            throw new ArgumentException($"Persist object is not a container for {typeof(T).Name}");
+            throw new ArgumentException($"Object provided to factory is not of type {typeof(T).Name}");
         }
 
-        var objId = (nuint)Unsafe.AsPointer(ref container);
+        var objPtr = (nuint)Unsafe.AsPointer(ref obj);
 
-        _ = cSave.BeginChunk(SimpleFactoryChunkIdObjPointer);
-        _ = cSave.Write(new ReadOnlySpan<byte>(&objId, sizeof(nuint)));
+        _ = cSave.BeginChunk(ChunkIdObjPointer);
+        _ = cSave.Write(new ReadOnlySpan<byte>(&objPtr, sizeof(nuint)));
         _ = cSave.EndChunk();
 
-        _ = cSave.BeginChunk(SimpleFactoryChunkIdObjData);
-
-        T data = container.Data;
-        ReadOnlySpan<byte> buffer = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref data, 1));
-        _ = cSave.Write(buffer);
-
+        _ = cSave.BeginChunk(ChunkIdObjData);
+        _ = obj.Save(cSave);
         _ = cSave.EndChunk();
     }
 }
