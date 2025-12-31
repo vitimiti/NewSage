@@ -95,7 +95,7 @@ public class Targa : IDisposable
                                     if ((Flags & TgaOptions.Tga2) != 0)
                                     {
                                         _ = FileSeek(extOffset, SeekOrigin.Begin);
-                                        var extBytes = new byte[Marshal.SizeOf<Tga2Extension>()];
+                                        Span<byte> extBytes = stackalloc byte[Marshal.SizeOf<Tga2Extension>()];
                                         _ = FileRead(extBytes);
                                         Extension = MemoryMarshal.AsRef<Tga2Extension>(extBytes);
                                     }
@@ -104,7 +104,7 @@ public class Targa : IDisposable
                         }
 
                         _ = FileSeek(0, SeekOrigin.Begin);
-                        var headerBytes = new byte[Marshal.SizeOf<TgaHeader>()];
+                        Span<byte> headerBytes = stackalloc byte[Marshal.SizeOf<TgaHeader>()];
                         if (FileRead(headerBytes) != headerBytes.Length)
                         {
                             throw new TgaReadException("Unable to read TGA header");
@@ -363,7 +363,7 @@ public class Targa : IDisposable
                 header.ImageType += 8;
             }
 
-            var hBuf = new byte[Marshal.SizeOf<TgaHeader>()];
+            Span<byte> hBuf = stackalloc byte[Marshal.SizeOf<TgaHeader>()];
             MemoryMarshal.Write(hBuf, header);
             if (FileWrite(hBuf) != hBuf.Length)
             {
@@ -425,12 +425,12 @@ public class Targa : IDisposable
             if (addExtension)
             {
                 footer.Extension = (int)TgaFile!.Position;
-                var extBytes = new byte[Marshal.SizeOf<Tga2Extension>()];
+                Span<byte> extBytes = stackalloc byte[Marshal.SizeOf<Tga2Extension>()];
                 MemoryMarshal.Write(extBytes, Extension);
                 _ = FileWrite(extBytes);
             }
 
-            var footerBytes = new byte[Marshal.SizeOf<Tga2Footer>()];
+            Span<byte> footerBytes = stackalloc byte[Marshal.SizeOf<Tga2Footer>()];
             MemoryMarshal.Write(footerBytes, footer);
             _ = FileWrite(footerBytes);
         }
