@@ -26,5 +26,5 @@ public class IniEntry(string? entry = null, string? value = null) : Node<IniEntr
 
     public string? Value { get; set; } = value;
 
-    public int IndexId => (int)Crc.String(entry);
+    public int IndexId => (int)Crc.String(Entry);
 }
