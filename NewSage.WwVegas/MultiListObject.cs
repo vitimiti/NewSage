@@ -43,7 +43,7 @@ public class MultiListObject : IDisposable
         {
             while (ListNodeHead is not null)
             {
-                _ = (ListNodeHead.List?.InternalRemove(this));
+                _ = ListNodeHead.List?.InternalRemove(this);
             }
         }
 
