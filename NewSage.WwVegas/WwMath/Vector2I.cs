@@ -26,10 +26,10 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector2I : IEquatable<Vector2I>
 {
-    public Vector2I(int i, int j) => Set(i, j);
-
     public int I;
     public int J;
+
+    public Vector2I(int i, int j) => Set(i, j);
 
     public void Set(int i, int j) => (I, J) = (i, j);
 

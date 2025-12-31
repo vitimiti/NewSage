@@ -26,6 +26,11 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector4 : IEquatable<Vector4>
 {
+    public float X;
+    public float Y;
+    public float Z;
+    public float W;
+
     public Vector4(Vector4 other) => Set(other.X, other.Y, other.Z, other.W);
 
     public Vector4(float x, float y, float z, float w) => Set(x, y, z, w);
@@ -35,11 +40,6 @@ public struct Vector4 : IEquatable<Vector4>
         ArgumentOutOfRangeException.ThrowIfNotEqual(values.Length, 4);
         Set(values[0], values[1], values[2], values[3]);
     }
-
-    public float X;
-    public float Y;
-    public float Z;
-    public float W;
 
     public readonly float Length2 => (X * X) + (Y * Y) + (Z * Z) + (W * W);
 

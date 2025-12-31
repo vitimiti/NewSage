@@ -27,6 +27,10 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Matrix3X3 : IEquatable<Matrix3X3>
 {
+    public Vector3 Row0;
+    public Vector3 Row1;
+    public Vector3 Row2;
+
     public Matrix3X3() { }
 
     public Matrix3X3(Matrix3X3 other) => Set(other.Row0, other.Row1, other.Row2);
@@ -146,10 +150,6 @@ public struct Matrix3X3 : IEquatable<Matrix3X3>
             0F, 0F, 1F
         ]
     );
-
-    public Vector3 Row0;
-    public Vector3 Row1;
-    public Vector3 Row2;
 
     public readonly Matrix3X3 Transpose =>
         new(

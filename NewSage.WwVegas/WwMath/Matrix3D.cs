@@ -28,6 +28,10 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Matrix3D : IEquatable<Matrix3D>
 {
+    public Vector4 Row0;
+    public Vector4 Row1;
+    public Vector4 Row2;
+
     public Matrix3D(bool identity)
     {
         if (!identity)
@@ -145,10 +149,6 @@ public struct Matrix3D : IEquatable<Matrix3D>
             0F, 0F, 1F, 0F
         ]
     );
-
-    public Vector4 Row0;
-    public Vector4 Row1;
-    public Vector4 Row2;
 
     public Vector3 Translation
     {

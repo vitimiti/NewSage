@@ -26,11 +26,11 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector3I : IEquatable<Vector3I>
 {
-    public Vector3I(int i, int j, int k) => Set(i, j, k);
-
     public int I;
     public int J;
     public int K;
+
+    public Vector3I(int i, int j, int k) => Set(i, j, k);
 
     public void Set(int i, int j, int k) => (I, J, K) = (i, j, k);
 

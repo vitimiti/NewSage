@@ -26,6 +26,10 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Sequential)]
 public struct Vector3 : IEquatable<Vector3>
 {
+    public float X;
+    public float Y;
+    public float Z;
+
     public Vector3(Vector3 other) => (X, Y, Z) = (other.X, other.Y, other.Z);
 
     public Vector3(float x, float y, float z) => (X, Y, Z) = (x, y, z);
@@ -35,10 +39,6 @@ public struct Vector3 : IEquatable<Vector3>
         ArgumentOutOfRangeException.ThrowIfNotEqual(values.Length, 3);
         (X, Y, Z) = (values[0], values[1], values[2]);
     }
-
-    public float X;
-    public float Y;
-    public float Z;
 
     public readonly float Length2 => (X * X) + (Y * Y) + (Z * Z);
 

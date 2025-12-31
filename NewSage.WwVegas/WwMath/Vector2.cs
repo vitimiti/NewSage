@@ -26,16 +26,6 @@ namespace NewSage.WwVegas.WwMath;
 [StructLayout(LayoutKind.Explicit)]
 public struct Vector2 : IEquatable<Vector2>
 {
-    public Vector2(Vector2 other) => Set(other);
-
-    public Vector2(float x, float y) => Set(x, y);
-
-    public Vector2(ReadOnlySpan<float> values)
-    {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(values.Length, 2);
-        Set(values[0], values[1]);
-    }
-
     [FieldOffset(0)]
     public float X;
 
@@ -47,6 +37,16 @@ public struct Vector2 : IEquatable<Vector2>
 
     [FieldOffset(4)]
     public float V;
+
+    public Vector2(Vector2 other) => Set(other);
+
+    public Vector2(float x, float y) => Set(x, y);
+
+    public Vector2(ReadOnlySpan<float> values)
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(values.Length, 2);
+        Set(values[0], values[1]);
+    }
 
     public readonly float Length2 => (X * X) + (Y * Y);
 
