@@ -20,9 +20,9 @@
 
 namespace NewSage.WwVegas.WwDebug;
 
-public sealed class ProfileNode : Node<ProfileNode>
+public sealed class ProfileNode(string name, ProfileNode? parent) : Node<ProfileNode>
 {
-    public string Name { get; }
+    public string Name { get; } = name;
 
     public int TotalCalls { get; set; }
 
@@ -32,15 +32,9 @@ public sealed class ProfileNode : Node<ProfileNode>
 
     public int RecursionCounter { get; set; }
 
-    public ProfileNode? Parent { get; }
+    public ProfileNode? Parent { get; } = parent;
 
     public List<ProfileNode> Children { get; } = new();
-
-    public ProfileNode(string name, ProfileNode? parent)
-    {
-        Name = name;
-        Parent = parent;
-    }
 
     public ProfileNode GetSubNode(string name)
     {
