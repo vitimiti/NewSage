@@ -32,7 +32,7 @@ public class Random2 : IRandomGenerator
     public Random2(uint seed = 0)
     {
         var primer = new Random3(seed);
-        for (int i = 0; i < _table.Length; i++)
+        for (var i = 0; i < _table.Length; i++)
         {
             _table[i] = primer.GetNext();
         }
