@@ -43,7 +43,7 @@ public static class Line
 
         while (true)
         {
-            if (straw.Get(c) != 1)
+            if (straw.GetFrom(c) != 1)
             {
                 eof = true;
                 if (count < buffer.Length)
@@ -88,7 +88,7 @@ public static class Line
 
         while (true)
         {
-            if (straw.Get(bytes) != 2)
+            if (straw.GetFrom(bytes) != 2)
             {
                 eof = true;
                 if (count < buffer.Length)

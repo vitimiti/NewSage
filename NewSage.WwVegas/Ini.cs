@@ -332,7 +332,7 @@ public class Ini : IDisposable
         var buffer = new byte[71];
         while (true)
         {
-            var len = encoder.Get(buffer);
+            var len = encoder.GetFrom(buffer);
             if (len == 0)
             {
                 break;

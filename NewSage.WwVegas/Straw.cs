@@ -34,7 +34,7 @@ public class Straw : IDisposable
         {
             if (straw?.ChainFrom is not null)
             {
-                straw.ChainFrom.GetFrom(null);
+                straw.ChainFrom.GetFrom((Straw?)null);
                 straw.ChainFrom = null;
             }
 
@@ -45,7 +45,7 @@ public class Straw : IDisposable
         }
     }
 
-    public virtual int Get(Span<byte> buffer) => ChainTo?.Get(buffer) ?? 0;
+    public virtual int GetFrom(Span<byte> buffer) => ChainTo?.GetFrom(buffer) ?? 0;
 
     public void Dispose()
     {

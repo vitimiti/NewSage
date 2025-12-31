@@ -31,7 +31,7 @@ public sealed class BufferStraw : Straw
 
     public int Index { get; private set; }
 
-    public override int Get(Span<byte> buffer)
+    public override int GetFrom(Span<byte> buffer)
     {
         var total = 0;
         var sourceLength = buffer.Length;

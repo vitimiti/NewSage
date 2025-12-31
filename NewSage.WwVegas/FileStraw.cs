@@ -29,7 +29,7 @@ public sealed class FileStraw : Straw
 
     public FileStraw(FileStream fileStream) => _stream = fileStream;
 
-    public override int Get(Span<byte> buffer)
+    public override int GetFrom(Span<byte> buffer)
     {
         if (buffer.Length == 0)
         {
