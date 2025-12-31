@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="PostLoadable.cs" company="NewSage">
+// <copyright file="Persist.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -20,9 +20,11 @@
 
 namespace NewSage.WwVegas.WwSaveLoad;
 
-public abstract class PostLoadable
+public abstract class Persist : PostLoadable
 {
-    public bool IsPostLoadRegistered { get; set; }
+    public abstract PersistFactory Factory { get; }
 
-    public virtual void OnPostLoad() { }
+    public virtual bool Save(ChunkSave cSave) => true;
+
+    public virtual bool Load(ChunkLoad cLoad) => true;
 }
