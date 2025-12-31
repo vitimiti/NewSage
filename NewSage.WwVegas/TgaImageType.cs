@@ -22,6 +22,7 @@ namespace NewSage.WwVegas;
 
 public enum TgaImageType
 {
+    Unknown = 0,
     CMapped = 1,
     TrueColor = 2,
     Mono = 3,
