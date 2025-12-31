@@ -108,7 +108,7 @@ public sealed class LzoStraw : Straw
                     break;
                 }
 
-                _ = Lzo.Compress(_buffer.AsSpan(0, read), _buffer2.AsSpan(4), out int compLen);
+                _ = Lzo.Compress(_buffer.AsSpan(0, read), _buffer2.AsSpan(4), out var compLen);
                 _headerCompCount = (ushort)compLen;
                 _headerUncompCount = (ushort)read;
 

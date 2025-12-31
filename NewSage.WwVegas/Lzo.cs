@@ -44,7 +44,7 @@ public static class Lzo
         if (input[ip] > 17)
         {
             t = input[ip++] - 17;
-            input.Slice(ip, t).CopyTo(output.Slice(op));
+            input.Slice(ip, t).CopyTo(output[op..]);
             ip += t;
             op += t;
         }
@@ -68,7 +68,7 @@ public static class Lzo
                     t += input[ip++];
                 }
 
-                input.Slice(ip, t + 3).CopyTo(output.Slice(op));
+                input.Slice(ip, t + 3).CopyTo(output[op..]);
                 ip += t + 3;
                 op += t + 3;
 

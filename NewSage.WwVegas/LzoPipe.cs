@@ -119,7 +119,7 @@ public sealed class LzoPipe : Pipe
 
                 if (_counter == _blockSize)
                 {
-                    _ = Lzo.Compress(_buffer.AsSpan(0, _blockSize), _buffer2, out int compressedLen);
+                    _ = Lzo.Compress(_buffer.AsSpan(0, _blockSize), _buffer2, out var compressedLen);
                     Span<byte> header = stackalloc byte[4];
                     _ = BitConverter.TryWriteBytes(header, (ushort)compressedLen);
                     _ = BitConverter.TryWriteBytes(header[2..], (ushort)_blockSize);
@@ -131,7 +131,7 @@ public sealed class LzoPipe : Pipe
 
             while (sourceLength >= _blockSize)
             {
-                _ = Lzo.Compress(source.Slice(sourceIndex, _blockSize), _buffer2, out int compressedLen);
+                _ = Lzo.Compress(source.Slice(sourceIndex, _blockSize), _buffer2, out var compressedLen);
                 Span<byte> header = new byte[4];
                 _ = BitConverter.TryWriteBytes(header, (ushort)compressedLen);
                 _ = BitConverter.TryWriteBytes(header[2..], (ushort)_blockSize);
