@@ -28,7 +28,7 @@ public class SimplePersistFactory<T>(uint chunkId) : PersistFactory
     where T : struct
 {
     public const uint SimpleFactoryChunkIdObjPointer = 0x0010_0100;
-    public const uint SimpleFactoryChunkIdObjData = 0x0010_0101;
+    public const uint SimpleFactoryChunkIdObjData = SimpleFactoryChunkIdObjPointer + 1;
 
     public override uint ChunkId => chunkId;
 
