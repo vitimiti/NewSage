@@ -31,7 +31,7 @@ namespace NewSage.WwVegas.WwMath;
 )]
 public struct Triangle
 {
-    public Vector3 N;
+    public Vector3 Normal;
     public Vector3 V0;
     public Vector3 V1;
     public Vector3 V2;
@@ -248,7 +248,7 @@ public struct Triangle
                     V0 = triangle.Point0,
                     V1 = triangle.Point1,
                     V2 = triangle.Point2,
-                    N = new Vector3(triangle.Plane.X, triangle.Plane.Y, triangle.Plane.Z),
+                    Normal = new Vector3(triangle.Plane.X, triangle.Plane.Y, triangle.Plane.Z),
                 };
 
                 if (tri.ContainsPoint(rayStart))
@@ -263,8 +263,8 @@ public struct Triangle
 
     public void ComputeNormal()
     {
-        N = Vector3.CrossProduct(V1 - V0, V2 - V0);
-        N.Normalize();
+        Normal = Vector3.CrossProduct(V1 - V0, V2 - V0);
+        Normal.Normalize();
     }
 
     public readonly bool ContainsPoint(Vector3 point)
@@ -306,9 +306,9 @@ public struct Triangle
 
     public readonly (int Axis1, int Axis2) FindDominantPlane()
     {
-        var x = float.Abs(N.X);
-        var y = float.Abs(N.Y);
-        var z = float.Abs(N.Z);
+        var x = float.Abs(Normal.X);
+        var y = float.Abs(Normal.Y);
+        var z = float.Abs(Normal.Z);
         var value = x;
         var ni = 0;
 
