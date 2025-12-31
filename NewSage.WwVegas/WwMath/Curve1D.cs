@@ -62,7 +62,7 @@ public abstract class Curve1D : Persist
 
     public virtual void ClearKeys() => Keys.Clear();
 
-    public virtual bool Save(ChunkSave cSave)
+    public override bool Save(ChunkSave cSave)
     {
         ArgumentNullException.ThrowIfNull(cSave);
 
