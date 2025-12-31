@@ -40,6 +40,50 @@ public static class VegasMath
         }
     }
 
+    public static int FindPot(int value)
+    {
+        var recPosition = 0;
+        var recCount = 0;
+        var localValue = value;
+
+        var lp = 0;
+        while (localValue != 0)
+        {
+            if ((localValue & 1) != 0)
+            {
+                recPosition = lp;
+                recCount++;
+            }
+
+            localValue >>= 1;
+            lp++;
+        }
+
+        return recCount < 2 ? 1 << recPosition : 1 << (recPosition + 1);
+    }
+
+    public static uint FindPotLog2(uint value)
+    {
+        var recPosition = 0;
+        var recCount = 0;
+        var localValue = value;
+
+        var lp = 0;
+        while (localValue != 0)
+        {
+            if ((value & 1) != 0)
+            {
+                recPosition = lp;
+                recCount++;
+            }
+
+            localValue >>= 1;
+            lp++;
+        }
+
+        return (uint)(recCount < 2 ? recPosition : recPosition + 1);
+    }
+
     private static int Rand()
     {
         lock (SyncLock)
