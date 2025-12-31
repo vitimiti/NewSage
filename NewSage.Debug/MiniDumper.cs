@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="DumpService.cs" company="NewSage">
+// <copyright file="MiniDumper.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -24,7 +24,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 
 namespace NewSage.Debug;
 
-internal class MiniDumper
+internal sealed class MiniDumper
 {
     private readonly DumpOptions _options;
 
