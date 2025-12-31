@@ -115,8 +115,6 @@ public struct Vector4 : IEquatable<Vector4>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
-    public override readonly string ToString() => $"({X}, {Y}, {Z}, {W})";
-
     public static Vector4 operator +(Vector4 x, Vector4 y) => x.Add(y);
 
     public static Vector4 operator -(Vector4 x, Vector4 y) => x.Subtract(y);

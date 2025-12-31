@@ -297,8 +297,6 @@ public struct Matrix4X4 : IEquatable<Matrix4X4>
 
     public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2, Row3);
 
-    public override readonly string ToString() => $"Matrix4X4({Row0}, {Row1}, {Row2}, {Row3})";
-
     public static Matrix4X4 operator +(Matrix4X4 x, Matrix4X4 y) => x.Add(y);
 
     public static Matrix4X4 operator -(Matrix4X4 x, Matrix4X4 y) => x.Subtract(y);

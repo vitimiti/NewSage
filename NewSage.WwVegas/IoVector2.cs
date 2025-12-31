@@ -36,8 +36,6 @@ public struct IoVector2 : IEquatable<IoVector2>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
-    public override readonly string ToString() => $"({X}, {Y})";
-
     public static bool operator ==(IoVector2 x, IoVector2 y) => x.Equals(y);
 
     public static bool operator !=(IoVector2 x, IoVector2 y) => !x.Equals(y);

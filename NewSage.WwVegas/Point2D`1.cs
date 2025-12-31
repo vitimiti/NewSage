@@ -63,8 +63,6 @@ public struct Point2D<TNumber> : IEquatable<Point2D<TNumber>>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
-    public override readonly string ToString() => $"({X}, {Y})";
-
     public static Point2D<TNumber> operator +(Point2D<TNumber> x, Point2D<TNumber> y) => x.Add(y);
 
     public static Point2D<TNumber> operator -(Point2D<TNumber> x, Point2D<TNumber> y) => x.Subtract(y);

@@ -42,8 +42,6 @@ public struct IoQuaternion : IEquatable<IoQuaternion>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
-    public override readonly string ToString() => $"({X}, {Y}, {Z}, {W})";
-
     public static bool operator ==(IoQuaternion x, IoQuaternion y) => x.Equals(y);
 
     public static bool operator !=(IoQuaternion x, IoQuaternion y) => !x.Equals(y);

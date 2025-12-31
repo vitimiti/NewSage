@@ -268,8 +268,6 @@ public struct Vector3 : IEquatable<Vector3>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
-    public override readonly string ToString() => $"({X}, {Y}, {Z})";
-
     public static Vector3 operator +(Vector3 x, Vector3 y) => x.Add(y);
 
     public static Vector3 operator -(Vector3 x, Vector3 y) => x.Subtract(y);

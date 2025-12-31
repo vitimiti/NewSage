@@ -1030,8 +1030,6 @@ public struct Matrix3D : IEquatable<Matrix3D>
 
     public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2);
 
-    public override readonly string ToString() => $"Matrix3D({Row0}, {Row1}, {Row2})";
-
     public static Matrix3D operator *(Matrix3D x, Matrix3D y) => x.Multiply(y);
 
     public static IList<Vector3> operator *(Matrix3D matrix, IReadOnlyList<Vector3> vectors) =>

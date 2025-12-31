@@ -50,8 +50,6 @@ public struct Vector2I : IEquatable<Vector2I>
 
     public override readonly int GetHashCode() => HashCode.Combine(I, J);
 
-    public override readonly string ToString() => $"({I}, {J})";
-
     public static bool operator ==(Vector2I x, Vector2I y) => x.Equals(y);
 
     public static bool operator !=(Vector2I x, Vector2I y) => !x.Equals(y);

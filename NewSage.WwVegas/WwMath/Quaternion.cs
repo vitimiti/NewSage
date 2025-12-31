@@ -129,8 +129,6 @@ public struct Quaternion : IEquatable<Quaternion>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
-    public override readonly string ToString() => $"Quaternion({X}, {Y}, {Z}, {W})";
-
     public static bool operator ==(Quaternion x, Quaternion y) => x.Equals(y);
 
     public static bool operator !=(Quaternion x, Quaternion y) => !x.Equals(y);

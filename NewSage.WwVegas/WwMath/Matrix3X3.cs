@@ -586,8 +586,6 @@ public struct Matrix3X3 : IEquatable<Matrix3X3>
 
     public override readonly int GetHashCode() => HashCode.Combine(Row0, Row1, Row2);
 
-    public override readonly string ToString() => $"Matrix3X3({Row0}, {Row1}, {Row2})";
-
     public static Matrix3X3 operator +(Matrix3X3 x, Matrix3X3 y) => x.Add(y);
 
     public static Matrix3X3 operator -(Matrix3X3 x, Matrix3X3 y) => x.Subtract(y);

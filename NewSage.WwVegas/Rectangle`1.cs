@@ -168,8 +168,6 @@ public struct Rectangle<TNumber> : IEquatable<Rectangle<TNumber>>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
 
-    public override readonly string ToString() => $"({X}, {Y}, {Width}, {Height})";
-
     public static Rectangle<TNumber> operator +(Rectangle<TNumber> rectangle, Point2D<TNumber> point) =>
         rectangle.Add(point);
 

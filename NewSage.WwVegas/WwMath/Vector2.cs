@@ -191,8 +191,6 @@ public struct Vector2 : IEquatable<Vector2>
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
-    public override readonly string ToString() => $"({X}, {Y})";
-
     public static Vector2 operator +(Vector2 x, Vector2 y) => x.Add(y);
 
     public static Vector2 operator -(Vector2 x, Vector2 y) => x.Subtract(y);

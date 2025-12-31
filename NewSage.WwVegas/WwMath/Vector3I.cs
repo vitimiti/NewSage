@@ -40,8 +40,6 @@ public struct Vector3I : IEquatable<Vector3I>
 
     public override readonly int GetHashCode() => HashCode.Combine(I, J, K);
 
-    public override readonly string ToString() => $"({I}, {J}, {K})";
-
     public static bool operator ==(Vector3I x, Vector3I y) => x.Equals(y);
 
     public static bool operator !=(Vector3I x, Vector3I y) => !x.Equals(y);
