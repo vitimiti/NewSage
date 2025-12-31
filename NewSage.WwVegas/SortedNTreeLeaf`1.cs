@@ -38,7 +38,7 @@ public sealed class SortedNTreeLeaf<T> : NTreeLeaf<T>
         return newSibling;
     }
 
-    private void InsertionSort(SortedNTreeLeaf<T> start, SortedNTreeLeaf<T> newSibling)
+    private static void InsertionSort(SortedNTreeLeaf<T> start, SortedNTreeLeaf<T> newSibling)
     {
         var inserted = false;
         SortedNTreeLeaf<T>? current = start;
