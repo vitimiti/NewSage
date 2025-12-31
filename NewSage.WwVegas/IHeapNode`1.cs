@@ -36,7 +36,7 @@ public interface IHeapNode<TKey> : IComparable<IHeapNode<TKey>>
         "IDE0046:Convert to conditional expression",
         Justification = "This would result in a multiconditional ternary operator. Difficult to read."
     )]
-    public static bool operator <(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
+    static bool operator <(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
     {
         if (x is null)
         {
@@ -51,7 +51,7 @@ public interface IHeapNode<TKey> : IComparable<IHeapNode<TKey>>
         "IDE0046:Convert to conditional expression",
         Justification = "This would result in a multiconditional ternary operator. Difficult to read."
     )]
-    public static bool operator <=(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
+    static bool operator <=(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
     {
         if (x is null)
         {
@@ -66,7 +66,7 @@ public interface IHeapNode<TKey> : IComparable<IHeapNode<TKey>>
         "IDE0046:Convert to conditional expression",
         Justification = "This would result in a multiconditional ternary operator. Difficult to read."
     )]
-    public static bool operator >(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
+    static bool operator >(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
     {
         if (x is null)
         {
@@ -81,7 +81,7 @@ public interface IHeapNode<TKey> : IComparable<IHeapNode<TKey>>
         "IDE0046:Convert to conditional expression",
         Justification = "This would result in a multiconditional ternary operator. Difficult to read."
     )]
-    public static bool operator >=(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
+    static bool operator >=(IHeapNode<TKey>? x, IHeapNode<TKey>? y)
     {
         if (x is null)
         {
