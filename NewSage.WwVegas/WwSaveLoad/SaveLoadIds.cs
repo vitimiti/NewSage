@@ -22,16 +22,5 @@ namespace NewSage.WwVegas.WwSaveLoad;
 
 public static class SaveLoadIds
 {
-    public const uint ChunkIdSaveLoadBegin = 0x0000_0100;
-    public const uint ChunkIdSaveLoadDefMgr = ChunkIdSaveLoadBegin + 1;
-    public const uint ChunkIdTwiddler = ChunkIdSaveLoadBegin + 2;
-    public const uint ChunkIdWw3DBegin = 0x0001_0000;
-    public const uint ChunkIdWwPhysBegin = 0x0002_0000;
-    public const uint ChunkIdWwAudioBegin = 0x0003_0000;
-    public const uint ChunkIdCombatBegin = 0x0004_0000;
-    public const uint ChunkIdCommandoEditorBegin = 0x0005_0000;
-    public const uint ChunkIdPhysTestBegin = 0x0006_0000;
-    public const uint ChunkIdCommandoBegin = 0x0007_0000;
     public const uint ChunkIdWwMathBegin = 0x0008_0000;
-    public const uint ChunkIdWwTranslateDbBegin = 0x0009_0000;
 }
