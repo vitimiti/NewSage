@@ -498,7 +498,7 @@ public class Targa : IDisposable
         return old;
     }
 
-    public Tga2Extension? GetExtension() => Flags.HasFlag(TgaOptions.Tga2) ? Extension : null;
+    public Tga2Extension? TryGetExtension() => Flags.HasFlag(TgaOptions.Tga2) ? Extension : null;
 
     public void Dispose()
     {
