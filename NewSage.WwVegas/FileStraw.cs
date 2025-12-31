@@ -20,14 +20,10 @@
 
 namespace NewSage.WwVegas;
 
-public sealed class FileStraw : Straw
+public sealed class FileStraw(FileStream fileStream) : Straw
 {
-    private readonly FileStream _stream;
-
     private bool _hasOpened;
     private bool _disposed;
-
-    public FileStraw(FileStream fileStream) => _stream = fileStream;
 
     public override int Get(Span<byte> buffer)
     {
@@ -38,10 +34,10 @@ public sealed class FileStraw : Straw
 
         if (!_hasOpened)
         {
-            _hasOpened = _stream.CanRead;
+            _hasOpened = fileStream.CanRead;
         }
 
-        return _hasOpened && buffer.Length > 0 ? _stream.Read(buffer) : 0;
+        return _hasOpened && buffer.Length > 0 ? fileStream.Read(buffer) : 0;
     }
 
     protected override void Dispose(bool disposing)
@@ -53,7 +49,7 @@ public sealed class FileStraw : Straw
 
         if (disposing)
         {
-            _stream.Dispose();
+            fileStream.Dispose();
         }
 
         base.Dispose(disposing);
