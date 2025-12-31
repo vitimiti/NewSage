@@ -8,7 +8,7 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!--TODO: For development, remove - KEEP: AD0001;-->
-    <NoWarn>$(NoWarn);AD0001;SA1600;SA1602;CS1591</NoWarn>
+    <NoWarn>$(NoWarn);AD0001;SA1600;SA1602;CS1591;CS0114;SA1601</NoWarn>
   </PropertyGroup>
   <PropertyGroup Label="Deterministic Builds">
     <Deterministic>true</Deterministic>
