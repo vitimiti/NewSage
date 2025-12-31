@@ -38,11 +38,11 @@ public class Registry(string subKey, bool create = true) : IDisposable
 
     static Registry() => IsLocked = false;
 
+    public static bool IsLocked { get; set; }
+
     public static string ProviderName { get; set; } = "NewSage";
 
     public bool IsValid { get; private set; }
-
-    public static bool IsLocked { get; set; }
 
     [SuppressMessage(
         "Design",
