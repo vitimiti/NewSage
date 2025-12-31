@@ -1017,6 +1017,13 @@ public struct Matrix3D : IEquatable<Matrix3D>
         return result;
     }
 
+    public readonly Vector3 Multiply(Vector3 vector) =>
+        new(
+            (this[0].X * vector.X) + (this[0].Y * vector.Y) + (this[0].Z * vector.Z) + this[0].W,
+            (this[1].X * vector.X) + (this[1].Y * vector.Y) + (this[1].Z * vector.Z) + this[1].W,
+            (this[2].X * vector.X) + (this[2].Y * vector.Y) + (this[2].Z * vector.Z) + this[2].W
+        );
+
     public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Matrix3D other && Equals(other);
 
     public readonly bool Equals(Matrix3D other) => Row0 == other.Row0 && Row1 == other.Row1 && Row2 == other.Row2;
@@ -1029,6 +1036,8 @@ public struct Matrix3D : IEquatable<Matrix3D>
 
     public static IList<Vector3> operator *(Matrix3D matrix, IReadOnlyList<Vector3> vectors) =>
         matrix.Multiply(vectors);
+
+    public static Vector3 operator *(Matrix3D matrix, Vector3 vector) => matrix.Multiply(vector);
 
     public static bool operator ==(Matrix3D x, Matrix3D y) => x.Equals(y);
 
