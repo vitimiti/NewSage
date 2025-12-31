@@ -45,7 +45,8 @@ public struct Vector4 : IEquatable<Vector4>
 
     public readonly float Length => float.Sqrt(Length2);
 
-    public readonly bool IsValid => WwMath.IsValid(X) && WwMath.IsValid(Y) && WwMath.IsValid(Z) && WwMath.IsValid(W);
+    public readonly bool IsValid =>
+        VegasMath.IsValid(X) && VegasMath.IsValid(Y) && VegasMath.IsValid(Z) && VegasMath.IsValid(W);
 
     public static Vector4 Normalize(Vector4 vector)
     {
@@ -55,7 +56,7 @@ public struct Vector4 : IEquatable<Vector4>
             return new Vector4(0, 0, 0, 0);
         }
 
-        var oneOverLength = WwMath.InvSqrt(length2);
+        var oneOverLength = VegasMath.InvSqrt(length2);
         return vector * oneOverLength;
     }
 
@@ -79,7 +80,7 @@ public struct Vector4 : IEquatable<Vector4>
             return;
         }
 
-        var oneOverLength = WwMath.InvSqrt(length2);
+        var oneOverLength = VegasMath.InvSqrt(length2);
         X *= oneOverLength;
         Y *= oneOverLength;
         Z *= oneOverLength;

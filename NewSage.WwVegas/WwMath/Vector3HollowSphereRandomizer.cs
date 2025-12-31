@@ -46,7 +46,7 @@ public class Vector3HollowSphereRandomizer : Vector3Randomizer
             } while (length2 is not (<= 1F and > 0F));
 #pragma warning restore SA1008 // Opening parenthesis must be spaced correctly
 
-            var scale = Radius * WwMath.InvSqrt(length2);
+            var scale = Radius * VegasMath.InvSqrt(length2);
             return result * scale;
         }
     }

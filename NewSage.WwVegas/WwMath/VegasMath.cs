@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas.WwMath;
 
-public static class WwMath
+public static class VegasMath
 {
     public static float InvSqrt(float value) => 1F / float.Sqrt(value);
 

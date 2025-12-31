@@ -1191,14 +1191,14 @@ public sealed class MeshBuilder : IDisposable
 
         public WingedEdgeClass? Next { get; set; }
 
-        public IList<int> Vertex { get; } = new int[2];
+        public int[] Vertex { get; } = new int[2];
 
-        public IList<int> Polygons { get; } = new int[2];
+        public int[] Polygons { get; } = new int[2];
     }
 
     private sealed class WingedEdgePolygonClass
     {
-        public IList<WingedEdgeClass> Edges { get; } = new WingedEdgeClass[3];
+        public WingedEdgeClass[] Edges { get; } = new WingedEdgeClass[3];
     }
 
     private sealed class VertexArray
@@ -1230,7 +1230,7 @@ public sealed class MeshBuilder : IDisposable
 
         public int UvSplits { get; set; }
 
-        public IList<Vertex> Vertices { get; }
+        public Vertex[] Vertices { get; }
 
         public static bool VerticesShadingMatch(Vertex v0, Vertex v1)
         {
