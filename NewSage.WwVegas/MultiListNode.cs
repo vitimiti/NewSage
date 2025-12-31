@@ -18,6 +18,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace NewSage.WwVegas;
 
 public sealed class MultiListNode : AutoPool<MultiListNode>, IPoolable
@@ -28,6 +30,11 @@ public sealed class MultiListNode : AutoPool<MultiListNode>, IPoolable
 
     public MultiListNode? NextList { get; set; }
 
+    [SuppressMessage(
+        "Naming",
+        "CA1720:Identifiers should not contain type names",
+        Justification = "Naming conventions of the engine."
+    )]
     public MultiListObject? Object { get; set; }
 
     public GenericMultiList? List { get; set; }
