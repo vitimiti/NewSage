@@ -18,10 +18,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace NewSage.WwVegas;
 
-public class SafeContextDataNode<TContext, TData> : ContextDataNode<TContext, TData>
-{
-    public SafeContextDataNode(TContext context, TData data)
-        : base(context, data) { }
-}
+[SuppressMessage(
+    "StyleCop.CSharp.ReadabilityRules",
+    "SA1106:Code should not contain empty statements",
+    Justification = "This is intentional."
+)]
+public class SafeContextDataNode<TContext, TData>(TContext context, TData data)
+    : ContextDataNode<TContext, TData>(context, data);
