@@ -20,14 +20,12 @@
 
 namespace NewSage.WwVegas;
 
-public class BufferPipe : Pipe
+public class BufferPipe(Memory<byte> buffer) : Pipe
 {
-    public BufferPipe(Memory<byte> buffer) => Buffer = buffer;
-
     public BufferPipe(Span<byte> buffer)
         : this(buffer.ToArray().AsMemory()) { }
 
-    public Memory<byte> Buffer { get; }
+    public Memory<byte> Buffer { get; } = buffer;
 
     public int Index { get; private set; }
 

@@ -20,14 +20,12 @@
 
 namespace NewSage.WwVegas;
 
-public sealed class BufferStraw : Straw
+public sealed class BufferStraw(ReadOnlyMemory<byte> buffer) : Straw
 {
-    public BufferStraw(ReadOnlyMemory<byte> buffer) => Buffer = buffer;
-
     public BufferStraw(ReadOnlySpan<byte> buffer)
         : this(buffer.ToArray().AsMemory()) { }
 
-    public ReadOnlyMemory<byte> Buffer { get; }
+    public ReadOnlyMemory<byte> Buffer { get; } = buffer;
 
     public int Index { get; private set; }
 

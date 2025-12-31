@@ -20,18 +20,11 @@
 
 namespace NewSage.WwVegas;
 
-public sealed class CacheStraw : Straw
+public sealed class CacheStraw(int length = 4096) : Straw
 {
-    private readonly byte[] _cache;
+    private readonly byte[] _cache = new byte[length];
     private int _index;
     private int _length;
-
-    public CacheStraw(int length = 4096)
-    {
-        _cache = new byte[length];
-        _index = 0;
-        _length = 0;
-    }
 
     public override int Get(Span<byte> buffer)
     {
