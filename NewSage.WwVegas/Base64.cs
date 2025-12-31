@@ -23,13 +23,13 @@ using System.Runtime.InteropServices;
 
 namespace NewSage.WwVegas;
 
-public class Base64
+public static class Base64
 {
     private const byte Bad = 0xFE;
     private const byte End = 0xFF;
     private const int PacketChars = 4;
+    private const byte Pad = (byte)'=';
 
-    private static readonly byte Pad = (byte)'=';
     private static readonly byte[] Encoder =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"u8.ToArray();
 
