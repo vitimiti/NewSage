@@ -18,6 +18,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace NewSage.WwVegas;
@@ -79,6 +80,11 @@ public static class RealCrc
         return crc ^ 0xFFFF_FFFF;
     }
 
+    [SuppressMessage(
+        "Naming",
+        "CA1720:Identifiers should not contain type names",
+        Justification = "Naming conventions of the engine."
+    )]
     public static ulong String(string str, ulong crc = 0)
     {
         crc ^= 0xFFFF_FFFF;
