@@ -66,6 +66,12 @@ public abstract class GenericMultiList : IDisposable
         return false;
     }
 
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
     internal bool InternalAdd(MultiListObject obj, bool onlyOnce)
     {
         using (new MemorySample(MemoryCategory.GameData))
@@ -123,12 +129,6 @@ public abstract class GenericMultiList : IDisposable
 
         node.Dispose();
         return true;
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
