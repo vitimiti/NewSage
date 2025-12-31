@@ -25,7 +25,25 @@ public abstract class AutoPool<T> : IDisposable
 {
     private static readonly ObjectPool<T> Allocator = new(64);
 
+    private bool _disposed;
+
     public static T Create() => Allocator.Allocate();
 
-    public void Dispose() => Allocator.Free((T)this);
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        Allocator.Free((T)this);
+
+        _disposed = true;
+    }
 }
