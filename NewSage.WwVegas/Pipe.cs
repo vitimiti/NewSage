@@ -18,8 +18,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Runtime.InteropServices;
-
 namespace NewSage.WwVegas;
 
 public class Pipe : IDisposable

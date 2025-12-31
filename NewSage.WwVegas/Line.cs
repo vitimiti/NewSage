@@ -18,8 +18,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Text;
-
 namespace NewSage.WwVegas;
 
 public static class Line
