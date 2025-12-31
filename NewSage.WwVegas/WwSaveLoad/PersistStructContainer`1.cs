@@ -20,7 +20,7 @@
 
 namespace NewSage.WwVegas.WwSaveLoad;
 
-internal class PersistStructContainer<T>(PersistFactory factory, T data) : Persist
+internal sealed class PersistStructContainer<T>(PersistFactory factory, T data) : Persist
     where T : struct
 {
     public override PersistFactory Factory => factory;
