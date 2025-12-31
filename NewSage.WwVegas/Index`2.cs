@@ -35,7 +35,7 @@ public sealed class Index<TKey, TValue> : IDisposable
 
     public int Count { get; private set; }
 
-    public TValue this[TKey id] => IsPresent(id) ? _indexTable![_archiveIndex].Data : default(TValue);
+    public TValue? this[TKey id] => IsPresent(id) ? _indexTable![_archiveIndex].Data : default;
 
     public bool AddIndex(TKey id, TValue data)
     {
