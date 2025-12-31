@@ -20,11 +20,11 @@
 
 namespace NewSage.WwVegas;
 
-public sealed class CrcStraw : Straw
+public class CrcStraw : Straw
 {
-    protected CrcEngine Crc { get; } = new();
-
     public long Result => Crc.ToInt64();
+
+    protected CrcEngine Crc { get; } = new();
 
     public override int Get(Span<byte> buffer)
     {

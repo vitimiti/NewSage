@@ -22,7 +22,7 @@ namespace NewSage.WwVegas;
 
 public abstract class Hashable
 {
-    internal Hashable? NextHash { get; set; }
-
     public abstract string Key { get; }
+
+    internal Hashable? NextHash { get; set; }
 }
