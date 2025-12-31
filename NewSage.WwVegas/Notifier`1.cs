@@ -25,11 +25,11 @@ public class Notifier<TEvent> : IDisposable
     private readonly System.Collections.Generic.List<Observer<TEvent>> _observers = [];
     private bool _disposed;
 
-    public event Action<TEvent>? OnEvent;
+    public event EventHandler<TEvent>? OnEvent;
 
     public bool HasObservers => _observers.Count > 0;
 
-    public virtual void NotifyObservers(TEvent e) => OnEvent?.Invoke(e);
+    public virtual void NotifyObservers(TEvent e) => OnEvent?.Invoke(this, e);
 
     public void AddObserver(Observer<TEvent> observer)
     {

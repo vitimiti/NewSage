@@ -25,7 +25,7 @@ public abstract class Observer<TEvent> : IDisposable
     private readonly System.Collections.Generic.List<Notifier<TEvent>> _notifiers = [];
     private bool _disposed;
 
-    public abstract void HandleNotification(TEvent e);
+    public abstract void HandleNotification(object? sender, TEvent e);
 
     public void NotifyMe(Notifier<TEvent> notifier)
     {
