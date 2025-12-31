@@ -18,6 +18,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace NewSage.WwVegas;
 
 public class Pipe : IDisposable
@@ -30,6 +32,7 @@ public class Pipe : IDisposable
 
     public virtual int Flush() => ChainTo?.Flush() ?? 0;
 
+    [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is a valid name.")]
     public virtual int End() => Flush();
 
     public virtual void PutTo(Pipe? pipe)
