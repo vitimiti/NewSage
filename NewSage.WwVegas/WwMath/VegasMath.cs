@@ -18,11 +18,67 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+
 namespace NewSage.WwVegas.WwMath;
 
-public static class VegasMath
+public static partial class VegasMath
 {
     public static float InvSqrt(float value) => 1F / float.Sqrt(value);
 
     public static bool IsValid(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+    [SuppressMessage(
+        "Security",
+        "CA5394:Do not use insecure randomness",
+        Justification = "This is not designed for safety."
+    )]
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Worse readability.")]
+    public static float RandomFloat()
+    {
+        int randValue;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            randValue = Native.MsVcRtRand();
+        }
+        else if (
+            RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD)
+        )
+        {
+            randValue = Native.LibCRand();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            randValue = Native.LibSystemRand();
+        }
+        else
+        {
+            randValue = Random.Shared.Next();
+        }
+
+        const int mask = 0x0FFF;
+        return (randValue & mask) / (float)mask;
+    }
+
+    private static partial class Native
+    {
+        [SupportedOSPlatform("windows")]
+        [LibraryImport("msvcrt.dll", EntryPoint = "rand")]
+        [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int MsVcRtRand();
+
+        [SupportedOSPlatform("macos")]
+        [LibraryImport("libSystem", EntryPoint = "rand")]
+        [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int LibSystemRand();
+
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("freebsd")]
+        [LibraryImport("libc", EntryPoint = "rand")]
+        [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int LibCRand();
+    }
 }
