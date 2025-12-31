@@ -29,7 +29,7 @@ public interface IHeapNode<TKey> : IComparable<IHeapNode<TKey>>
 
     TKey HeapKey { get; }
 
-    int CompareTo(IHeapNode<TKey>? other) => other is null ? 1 : HeapKey.CompareTo(other.HeapKey);
+    new int CompareTo(IHeapNode<TKey>? other) => other is null ? 1 : HeapKey.CompareTo(other.HeapKey);
 
     [SuppressMessage(
         "Style",
