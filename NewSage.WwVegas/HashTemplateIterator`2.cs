@@ -18,8 +18,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace NewSage.WwVegas;
 
+[SuppressMessage(
+    "Performance",
+    "CA1815:Override equals and operator equals on value types",
+    Justification = "Not used in this type."
+)]
 public struct HashTemplateIterator<TKey, TValue>
     where TKey : IConvertibleToUInt32
 {
