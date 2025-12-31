@@ -21,6 +21,7 @@
 namespace NewSage.WwVegas;
 
 public class Notifier<TEvent> : IDisposable
+    where TEvent : EventArgs
 {
     private readonly System.Collections.Generic.List<Observer<TEvent>> _observers = [];
     private bool _disposed;
