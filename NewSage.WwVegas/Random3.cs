@@ -26,11 +26,11 @@ public class Random3(uint seed1 = 0, uint seed2 = 0) : IRandomGenerator
 
     private int _index = (int)seed2;
 
+    public int SignificantBits => 32;
+
     private static ReadOnlySpan<int> Mix1 => [unchecked((int)0xbaa96887), 0x1e17d32c, 0x03bcdc3c, 0x0f33d1b2];
 
     private static ReadOnlySpan<int> Mix2 => [0x4b0f3b58, unchecked((int)0xe874f0c3), 0x6955c5a6, 0x55a7ca46];
-
-    public int SignificantBits => 32;
 
     public int GetNext()
     {

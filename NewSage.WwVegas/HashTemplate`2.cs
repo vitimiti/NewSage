@@ -170,6 +170,19 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
         }
     }
 
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        InternalHash = null;
+        InternalTable = null;
+
+        _disposed = true;
+    }
+
     private uint GetHashValue(TKey key, uint hashArraySize) => _keyHasher.GetHashValue(key) & (hashArraySize - 1);
 
     private void ReHash()
@@ -226,19 +239,6 @@ public sealed class HashTemplate<TKey, TValue> : IDisposable
         var hash = _first;
         _first = InternalTable![_first].Next;
         return hash;
-    }
-
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        InternalHash = null;
-        InternalTable = null;
-
-        _disposed = true;
     }
 
     internal struct Entry
