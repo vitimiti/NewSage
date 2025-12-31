@@ -20,7 +20,7 @@
 
 using NewSage.WwVegas.WwMath;
 
-namespace NewSage.WwVegas;
+namespace NewSage.WwVegas.Ww3D2;
 
 public class Vertex
 {

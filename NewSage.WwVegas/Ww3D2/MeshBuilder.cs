@@ -22,7 +22,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using NewSage.WwVegas.WwMath;
 
-namespace NewSage.WwVegas;
+namespace NewSage.WwVegas.Ww3D2;
 
 public sealed class MeshBuilder : IDisposable
 {
@@ -400,29 +400,6 @@ public sealed class MeshBuilder : IDisposable
         "IDE0046:Convert to conditional expression",
         Justification = "This will create a multiline ternary operator. Difficult to read."
     )]
-    private static int FaceMaterialCompare(object elem1, object elem2)
-    {
-        var f0 = (Face)elem1;
-        var f1 = (Face)elem2;
-
-        if (f0.TextureIndex[0][0] < f1.TextureIndex[0][0])
-        {
-            return -1;
-        }
-
-        if (f0.TextureIndex[0][0] > f1.TextureIndex[0][0])
-        {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    [SuppressMessage(
-        "Style",
-        "IDE0046:Convert to conditional expression",
-        Justification = "This will create a multiline ternary operator. Difficult to read."
-    )]
     private static int TextureCompare(object elem1, object elem2, int pass, int stage)
     {
         var f0 = (Face)elem1;
@@ -532,7 +509,7 @@ public sealed class MeshBuilder : IDisposable
         }
 
         var shaderIndices = new int[MaxPasses];
-        var vertexMatrialIndices = new int[MaxPasses];
+        var vertexMaterialIndices = new int[MaxPasses];
 
         _stats.Reset();
 
@@ -544,7 +521,7 @@ public sealed class MeshBuilder : IDisposable
             }
 
             shaderIndices[pass] = _faces![0].ShaderIndex[pass];
-            vertexMatrialIndices[pass] = _vertices![0].VertexMaterialIndex[pass];
+            vertexMaterialIndices[pass] = _vertices![0].VertexMaterialIndex[pass];
         }
 
         for (var pass = 0; pass < MaxPasses; pass++)
@@ -587,7 +564,7 @@ public sealed class MeshBuilder : IDisposable
 
             for (var vertexIndex = 0; vertexIndex < _vertexCount; vertexIndex++)
             {
-                if (_vertices![vertexIndex].VertexMaterialIndex[pass] != vertexMatrialIndices[pass])
+                if (_vertices![vertexIndex].VertexMaterialIndex[pass] != vertexMaterialIndices[pass])
                 {
                     continue;
                 }
@@ -1130,7 +1107,7 @@ public sealed class MeshBuilder : IDisposable
             }
         }
 
-        if (WorldInformation is not null && WorldInformation.AreMeshesSmoothed)
+        if (WorldInformation?.AreMeshesSmoothed == true)
         {
             for (var vertexIdx = 0; vertexIdx < _vertexCount; vertexIdx++)
             {
@@ -1185,6 +1162,11 @@ public sealed class MeshBuilder : IDisposable
         }
     }
 
+    [SuppressMessage(
+        "Performance",
+        "CA1812:Avoid uninstantiated internal classes",
+        Justification = "Instantiated though list/array initialization."
+    )]
     private sealed class WingedEdgeClass
     {
         public int MaterialIndex { get; set; }
@@ -1196,6 +1178,11 @@ public sealed class MeshBuilder : IDisposable
         public int[] Polygons { get; } = new int[2];
     }
 
+    [SuppressMessage(
+        "Performance",
+        "CA1812:Avoid uninstantiated internal classes",
+        Justification = "Instantiated though list/array initialization."
+    )]
     private sealed class WingedEdgePolygonClass
     {
         public WingedEdgeClass[] Edges { get; } = new WingedEdgeClass[3];
