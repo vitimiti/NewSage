@@ -44,7 +44,7 @@ public class HashNode<T, TUser> : DataNode<HashNode<T, TUser>>
         Key = uint.MaxValue;
     }
 
-    public T Record { get; set; }
+    public T? Record { get; set; }
 
     public uint Key { get; private set; }
 
