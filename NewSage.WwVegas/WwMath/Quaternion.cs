@@ -81,7 +81,7 @@ public struct Quaternion : IEquatable<Quaternion>
         }
 
         float beta;
-        if (1F - cosT < float.Epsilon * float.Epsilon)
+        if (1F - cosT < VegasMath.EpsilonSquared)
         {
             beta = 1F - alpha;
         }
@@ -122,7 +122,7 @@ public struct Quaternion : IEquatable<Quaternion>
         }
 
         float beta;
-        if (1F - cosT < float.Epsilon * float.Epsilon)
+        if (1F - cosT < VegasMath.EpsilonSquared)
         {
             beta = 1F - alpha;
         }
