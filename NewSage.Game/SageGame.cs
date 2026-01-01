@@ -19,15 +19,22 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text.Json;
 using NewSage.Debug;
 using NewSage.Profile;
+using NewSage.Utilities;
+using NewSage.Video;
 
 namespace NewSage.Game;
 
 public sealed class SageGame : IDisposable
 {
+    private const string SplashScreenName = "Install_Final.bmp";
+
     private readonly GameOptions _options;
+
+    private Image? _loadScreenBitmap;
 
     private bool _disposed;
 
@@ -41,14 +48,12 @@ public sealed class SageGame : IDisposable
 
     public void Run() => Initialize();
 
+    ~SageGame() => Dispose(disposing: false);
+
     public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
-        _disposed = true;
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     [SuppressMessage(
@@ -79,5 +84,95 @@ public sealed class SageGame : IDisposable
     {
         using var profiler = Profiler.Start("Game initialization", _options.EnableProfiling);
         UnhandledExceptionHandler.Install(_options.DumpOptions);
+
+        _loadScreenBitmap = LoadSplashScreen();
+
+        if (_loadScreenBitmap is { IsLoaded: true })
+        {
+            // Show the splash screen
+        }
+
+        // Start background initialization here
+
+        // Then, once finished:
+        _loadScreenBitmap?.Dispose();
+        _loadScreenBitmap = null;
+
+        System.Diagnostics.Debug.WriteLine($"Game initialized after {profiler.Elapsed.TotalMicroseconds}us");
+    }
+
+    private Image? LoadSplashScreen()
+    {
+        try
+        {
+            using Stream? stream = ResourceLoader.GetEmbeddedStream(SplashScreenName);
+            if (stream is not null)
+            {
+                var img = new Image();
+                try
+                {
+                    img.Load(stream);
+                    return img;
+                }
+                catch
+                {
+                    img.Dispose();
+                    throw;
+                }
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.Error.WriteLine($"Failed to load the splash screen image from embedded resources.\n{ex}");
+        }
+
+        var paths = new[]
+        {
+            Path.Combine(
+                _options.GameDirectory,
+                "Data",
+                CultureInfo.CurrentCulture.TwoLetterISOLanguageName,
+                SplashScreenName
+            ),
+            Path.Combine(_options.GameDirectory, SplashScreenName),
+        };
+
+        foreach (var path in paths)
+        {
+            if (!File.Exists(path))
+            {
+                continue;
+            }
+
+            var img = new Image();
+            try
+            {
+                img.Load(path);
+                return img;
+            }
+            catch (InvalidOperationException ex)
+            {
+                img.Dispose();
+                Console.Error.WriteLine($"Failed to load splash screen image from '{path}'.\n{ex}");
+            }
+        }
+
+        return null;
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _loadScreenBitmap?.Dispose();
+            _loadScreenBitmap = null;
+        }
+
+        _disposed = true;
     }
 }

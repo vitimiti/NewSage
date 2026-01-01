@@ -34,6 +34,7 @@ internal static class CommandLine
         { "--dump-max", "DumpOptions:MaxDumpFiles" },
         { "--dump-prefix", "DumpOptions:FilePrefix" },
         { "--working-dir", "WorkingDirectory" },
+        { "--game-dir", "GameDirectory" },
     };
 
     public static void ApplyUserRuntimeOptions(string[] args, GameOptions options)
@@ -50,6 +51,7 @@ internal static class CommandLine
 
         ProcessProfilingOptions(config, options);
         ProcessDumpOptions(config, options);
+        ProcessGameCopyOptions(config, options);
     }
 
     private static void ProcessProfilingOptions(IConfigurationRoot config, GameOptions options)
@@ -87,6 +89,15 @@ internal static class CommandLine
         if (!string.IsNullOrEmpty(prefix))
         {
             options.DumpOptions.FilePrefix = prefix;
+        }
+    }
+
+    private static void ProcessGameCopyOptions(IConfigurationRoot config, GameOptions options)
+    {
+        var dir = config["GameDirectory"];
+        if (!string.IsNullOrEmpty(dir))
+        {
+            options.GameDirectory = dir;
         }
     }
 }

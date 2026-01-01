@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="GameOptions.cs" company="NewSage">
+// <copyright file="ResourceLoader.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,15 +18,26 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Debug;
+using System.Reflection;
 
-namespace NewSage.Game;
+namespace NewSage.Utilities;
 
-internal sealed class GameOptions
+public static class ResourceLoader
 {
-    public bool EnableProfiling { get; set; }
+    public static Stream? GetEmbeddedStream(string resourceName)
+    {
+        var assembly = Assembly.GetCallingAssembly();
+        return GetEmbeddedStream(assembly, resourceName);
+    }
 
-    public DumpOptions DumpOptions { get; set; } = new();
+    public static Stream? GetEmbeddedStream(Assembly assembly, string resourceName)
+    {
+        ArgumentNullException.ThrowIfNull(assembly);
 
-    public string GameDirectory { get; set; } = Environment.CurrentDirectory;
+        var manifestName = assembly
+            .GetManifestResourceNames()
+            .FirstOrDefault(n => n.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));
+
+        return manifestName is not null ? assembly.GetManifestResourceStream(manifestName) : null;
+    }
 }

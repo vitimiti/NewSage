@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="GameOptions.cs" company="NewSage">
+// <copyright file="SdlImage.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,15 +18,20 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Debug;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace NewSage.Game;
+namespace NewSage.Video.Internals;
 
-internal sealed class GameOptions
+internal static partial class SdlImage
 {
-    public bool EnableProfiling { get; set; }
+    [LibraryImport("SDL3_image", EntryPoint = "IMG_Load", StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    public static partial Sdl.Surface Load(string file);
 
-    public DumpOptions DumpOptions { get; set; } = new();
-
-    public string GameDirectory { get; set; } = Environment.CurrentDirectory;
+    [LibraryImport("SDL3_image", EntryPoint = "IMG_Load_IO")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    public static partial Sdl.Surface Load(Sdl.IoStream io, [MarshalAs(UnmanagedType.I1)] bool closeIo);
 }
