@@ -27,6 +27,4 @@ internal sealed class GameOptions
     public bool EnableProfiling { get; set; }
 
     public DumpOptions DumpOptions { get; set; } = new();
-
-    public string WorkingDirectory { get; set; } = Environment.CurrentDirectory;
 }
