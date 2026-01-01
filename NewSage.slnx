@@ -3,5 +3,4 @@
   <Project Path="NewSage.Debug/NewSage.Debug.csproj" />
   <Project Path="NewSage.Game/NewSage.Game.csproj" />
   <Project Path="NewSage.Profile/NewSage.Profile.csproj" />
-  <Project Path="NewSage.WwVegas/NewSage.WwVegas.csproj" />
 </Solution>
