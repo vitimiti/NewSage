@@ -25,7 +25,7 @@ using NewSage.Profile;
 
 namespace NewSage.Game;
 
-internal sealed class SageGame : IDisposable
+public sealed class SageGame : IDisposable
 {
     private readonly GameOptions _options;
 
@@ -33,6 +33,7 @@ internal sealed class SageGame : IDisposable
 
     public SageGame(string[] args, string configPath = "settings.json")
     {
+        ArgumentNullException.ThrowIfNull(args);
         _options = LoadOptions(configPath);
 
         CommandLine.ApplyUserRuntimeOptions(args, _options);

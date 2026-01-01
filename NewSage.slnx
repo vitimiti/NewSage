@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Games/">
+    <Project Path="NewSage.Games.Generals/NewSage.Games.Generals.csproj" />
+  </Folder>
   <Project Path="NewSage.BaseTypes/NewSage.BaseTypes.csproj" />
   <Project Path="NewSage.Debug/NewSage.Debug.csproj" />
   <Project Path="NewSage.Game/NewSage.Game.csproj" />
