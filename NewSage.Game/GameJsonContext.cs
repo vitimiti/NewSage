@@ -20,6 +20,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Microsoft.Diagnostics.NETCore.Client;
 
 namespace NewSage.Game;
 
@@ -30,8 +31,9 @@ namespace NewSage.Game;
 )]
 [JsonSourceGenerationOptions(
     WriteIndented = true,
-    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,
-    GenerationMode = JsonSourceGenerationMode.Default
+    GenerationMode = JsonSourceGenerationMode.Default,
+    PropertyNameCaseInsensitive = true,
+    Converters = [typeof(JsonStringEnumConverter<DumpType>)]
 )]
 [JsonSerializable(typeof(GameOptions))]
-internal partial class GameJsonContext : JsonSerializerContext;
+internal sealed partial class GameJsonContext : JsonSerializerContext;
