@@ -22,9 +22,9 @@ using NewSage.Debug;
 
 namespace NewSage.Game;
 
-internal class GameOptions
+internal sealed class GameOptions
 {
     public bool EnableProfiling { get; set; }
 
-    public DumpOptions? DumpOptions { get; set; }
+    public DumpOptions DumpOptions { get; set; } = new();
 }

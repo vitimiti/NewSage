@@ -20,6 +20,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Extensions.Configuration;
 using NewSage.Debug;
 using NewSage.Profile;
 
@@ -27,14 +29,18 @@ namespace NewSage.Game;
 
 internal sealed class SageGame : IDisposable
 {
+    private readonly string[] _args;
     private readonly GameOptions _options;
 
     private Profiler? _profiler;
     private bool _disposed;
 
-    public SageGame(string configPath = "settings.json")
+    public SageGame(string[] args, string configPath = "settings.json")
     {
+        _args = args;
         _options = LoadOptions(configPath);
+
+        ApplyCommandLineOverrides();
     }
 
     public void Run() => Initialize();
@@ -72,6 +78,61 @@ internal sealed class SageGame : IDisposable
         {
             Console.Error.WriteLine($"Failed to load settings from file '{path}'.\n{ex}");
             return new GameOptions();
+        }
+    }
+
+    private void ApplyCommandLineOverrides()
+    {
+        if (_args.Length == 0)
+        {
+            return;
+        }
+
+        var switchMappings = new Dictionary<string, string>
+        {
+            { "--profile", "EnableProfiling" },
+            { "--dump", "DumpOptions:Enabled" },
+            { "--dump-dir", "DumpOptions:DumpDirectory" },
+            { "--dump-type", "DumpOptions:DumpType" },
+            { "--dump-max", "DumpOptions:MaxDumpFiles" },
+            { "--dump-prefix", "DumpOptions:FilePrefix" },
+        };
+
+        var builder = new ConfigurationBuilder();
+        _ = builder.AddCommandLine(_args, switchMappings);
+
+        IConfigurationRoot config = builder.Build();
+
+        if (bool.TryParse(config["EnableProfiling"], out var profile))
+        {
+            _options.EnableProfiling = profile;
+        }
+
+        if (bool.TryParse(config["DumpOptions:Enabled"], out var dump))
+        {
+            _options.DumpOptions.Enabled = dump;
+        }
+
+        var dir = config["DumpOptions:DumpDirectory"];
+        if (!string.IsNullOrEmpty(dir))
+        {
+            _options.DumpOptions.DumpDirectory = dir;
+        }
+
+        if (Enum.TryParse(config["DumpOptions:DumpType"], ignoreCase: true, out DumpType dumpType))
+        {
+            _options.DumpOptions.DumpType = dumpType;
+        }
+
+        if (uint.TryParse(config["DumpOptions:MaxDumpFiles"], out var maxFiles))
+        {
+            _options.DumpOptions.MaxDumpFiles = maxFiles;
+        }
+
+        var prefix = config["DumpOptions:FilePrefix"];
+        if (!string.IsNullOrEmpty(prefix))
+        {
+            _options.DumpOptions.FilePrefix = prefix;
         }
     }
 
