@@ -81,6 +81,11 @@ internal sealed class SageGame : IDisposable
         }
     }
 
+    [SuppressMessage(
+        "Design",
+        "CA1031:Do not catch general exception types",
+        Justification = "Do not throw before initialization actually starts."
+    )]
     private void ApplyCommandLineOverrides()
     {
         if (_args.Length == 0)
@@ -96,6 +101,7 @@ internal sealed class SageGame : IDisposable
             { "--dump-type", "DumpOptions:DumpType" },
             { "--dump-max", "DumpOptions:MaxDumpFiles" },
             { "--dump-prefix", "DumpOptions:FilePrefix" },
+            { "--working-dir", "WorkingDirectory" },
         };
 
         var builder = new ConfigurationBuilder();
@@ -133,6 +139,19 @@ internal sealed class SageGame : IDisposable
         if (!string.IsNullOrEmpty(prefix))
         {
             _options.DumpOptions.FilePrefix = prefix;
+        }
+
+        var workingDir = config["WorkingDirectory"];
+        if (!string.IsNullOrEmpty(workingDir))
+        {
+            try
+            {
+                Directory.SetCurrentDirectory(workingDir);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Failed to set working directory to '{workingDir}'.\n{ex.Message}");
+            }
         }
     }
 
