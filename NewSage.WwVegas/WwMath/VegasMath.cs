@@ -23,7 +23,6 @@ namespace NewSage.WwVegas.WwMath;
 public static class VegasMath
 {
     public const float Sqrt2 = 1.414213562F;
-    public const float EpsilonSquared = 1e-10f;
 
     private static readonly Lock SyncLock = new();
 
