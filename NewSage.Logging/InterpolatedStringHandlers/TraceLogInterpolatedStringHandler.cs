@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="LogInterpolatedStringHandler.cs" company="NewSage">
+// <copyright file="TraceLogInterpolatedStringHandler.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -19,36 +19,22 @@
 // -----------------------------------------------------------------------
 
 using System.Runtime.CompilerServices;
-using System.Text;
 
-namespace NewSage.Logging;
+namespace NewSage.Logging.InterpolatedStringHandlers;
 
 [InterpolatedStringHandler]
-public readonly ref struct LogInterpolatedStringHandler
+public readonly ref struct TraceLogInterpolatedStringHandler
 {
-    private readonly StringBuilder? _builder;
+    private readonly LogInterpolatedStringHandler _inner;
 
-    public LogInterpolatedStringHandler(
-        int literalLength,
-        int formattedCount,
-        LogLevel level,
-        LogLevel minLevel,
-        out bool isEnabled
-    )
-    {
-        isEnabled = level >= minLevel;
-        IsEnabled = isEnabled;
-        if (isEnabled)
-        {
-            _builder = new StringBuilder(literalLength + (formattedCount * 16));
-        }
-    }
+    public TraceLogInterpolatedStringHandler(int literalLength, int formattedCount, out bool isEnabled) =>
+        _inner = new LogInterpolatedStringHandler(literalLength, formattedCount, LogLevel.Trace, out isEnabled);
 
-    public bool IsEnabled { get; }
+    public bool IsEnabled => _inner.IsEnabled;
 
-    public readonly void AppendLiteral(string value) => _builder?.Append(value);
+    public void AppendLiteral(string value) => _inner.AppendLiteral(value);
 
-    public readonly void AppendFormatted<T>(T value) => _builder?.Append(value);
+    public void AppendFormatted<T>(T value) => _inner.AppendFormatted(value);
 
-    public override readonly string ToString() => _builder?.ToString() ?? string.Empty;
+    public override string ToString() => _inner.ToString();
 }

@@ -20,6 +20,8 @@
 
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using NewSage.Logging.InterpolatedStringHandlers;
 
 namespace NewSage.Logging;
 
@@ -33,7 +35,7 @@ public static class Log
 
     public static void Trace(string message) => Write(LogLevel.Trace, message);
 
-    public static void Trace(ref LogInterpolatedStringHandler handler)
+    public static void Trace(ref TraceLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
@@ -43,7 +45,7 @@ public static class Log
 
     public static void Debug(string message) => Write(LogLevel.Debug, message);
 
-    public static void Debug(ref LogInterpolatedStringHandler handler)
+    public static void Debug(ref DebugLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
@@ -53,7 +55,7 @@ public static class Log
 
     public static void Information(string message) => Write(LogLevel.Information, message);
 
-    public static void Information(ref LogInterpolatedStringHandler handler)
+    public static void Information(ref InformationLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
@@ -63,7 +65,7 @@ public static class Log
 
     public static void Warning(string message) => Write(LogLevel.Warning, message);
 
-    public static void Warning(ref LogInterpolatedStringHandler handler)
+    public static void Warning(ref WarningLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
@@ -73,7 +75,7 @@ public static class Log
 
     public static void Error(string message) => Write(LogLevel.Error, message);
 
-    public static void Error(ref LogInterpolatedStringHandler handler)
+    public static void Error(ref ErrorLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
@@ -83,7 +85,7 @@ public static class Log
 
     public static void Critical(string message) => Write(LogLevel.Critical, message);
 
-    public static void Critical(ref LogInterpolatedStringHandler handler)
+    public static void Critical(ref CriticalLogInterpolatedStringHandler handler)
     {
         if (handler.IsEnabled)
         {
