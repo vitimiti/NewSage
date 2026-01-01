@@ -18,6 +18,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Diagnostics;
+using NewSage.Game;
 
-Debug.Fail("Not implemented yet.");
+using var game = new SageGame();
+game.Run();
