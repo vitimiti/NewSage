@@ -29,7 +29,6 @@ internal sealed class SageGame : IDisposable
 {
     private readonly GameOptions _options;
 
-    private Profiler? _profiler;
     private bool _disposed;
 
     public SageGame(string[] args, string configPath = "settings.json")
@@ -47,8 +46,6 @@ internal sealed class SageGame : IDisposable
         {
             return;
         }
-
-        _profiler?.Dispose();
 
         _disposed = true;
     }
@@ -79,13 +76,7 @@ internal sealed class SageGame : IDisposable
 
     private void Initialize()
     {
-        if (_options.EnableProfiling)
-        {
-            _profiler = Profiler.Start($"{nameof(SageGame)}.{nameof(Initialize)}");
-        }
-
+        using var profiler = Profiler.Start("Game initialization", _options.EnableProfiling);
         UnhandledExceptionHandler.Install(_options.DumpOptions);
-
-        _profiler?.Dispose();
     }
 }

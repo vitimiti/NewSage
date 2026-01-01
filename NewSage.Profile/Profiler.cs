@@ -22,23 +22,32 @@ using System.Diagnostics;
 
 namespace NewSage.Profile;
 
+[DebuggerDisplay("{What}(enabled: {Enabled}): {Elapsed.TotalMilliseconds}ms")]
 public sealed class Profiler : IDisposable
 {
-    private readonly Stopwatch _stopwatch;
+    private readonly Stopwatch? _stopwatch;
 
     private bool _disposed;
 
-    private Profiler(string what)
+    private Profiler(string what, bool enabled)
     {
+        Enabled = enabled;
         What = what;
+        if (!enabled)
+        {
+            return;
+        }
+
         _stopwatch = Stopwatch.StartNew();
     }
+
+    public bool Enabled { get; }
 
     public string What { get; }
 
     public TimeSpan Elapsed { get; private set; }
 
-    public static Profiler Start(string what) => new(what);
+    public static Profiler Start(string what, bool enabled) => new(what, enabled);
 
     public void Dispose()
     {
@@ -47,8 +56,8 @@ public sealed class Profiler : IDisposable
             return;
         }
 
-        _stopwatch.Stop();
-        Elapsed = _stopwatch.Elapsed;
+        _stopwatch?.Stop();
+        Elapsed = _stopwatch?.Elapsed ?? TimeSpan.Zero;
 
         _disposed = true;
     }
