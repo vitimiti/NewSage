@@ -116,6 +116,7 @@ public sealed class SageGame : IDisposable
                 try
                 {
                     img.Load(stream);
+                    Log.Debug("Splash screen image loaded from embedded resources.");
                     return img;
                 }
                 catch
@@ -152,6 +153,7 @@ public sealed class SageGame : IDisposable
             try
             {
                 img.Load(path);
+                Log.Debug($"Splash screen image loaded from '{path}'.");
                 return img;
             }
             catch (InvalidOperationException ex)
