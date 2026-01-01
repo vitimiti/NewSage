@@ -29,11 +29,10 @@ public static class UnhandledExceptionHandler
         "CA1031:Do not catch general exception types",
         Justification = "Do not throw in crashing pathways."
     )]
-    public static void Install(Action<DumpOptions>? dumpOptions = null) =>
+    public static void Install(DumpOptions? dumpOptions = null) =>
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
-            var options = new DumpOptions();
-            dumpOptions?.Invoke(options);
+            DumpOptions options = dumpOptions ?? new DumpOptions();
 
             try
             {

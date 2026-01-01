@@ -26,7 +26,7 @@ public class DumpOptions
 {
     public bool Enabled { get; set; }
 
-    public string DumpDirectory { get; set; } = "sage_dumps";
+    public string DumpDirectory { get; set; } = "dumps";
 
     public DumpType DumpType { get; set; } = DumpType.Normal;
 
