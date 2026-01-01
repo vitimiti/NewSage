@@ -330,7 +330,7 @@ public struct Matrix3X3 : IEquatable<Matrix3X3>
             (matrix[2][0] * vector.X) + (matrix[2][1] * vector.Y) + (matrix[2][2] * vector.Z)
         );
 
-    public static Vector3 RotateTransposeVector(Matrix3X3 matrix, Vector3 vector) =>
+    public static Vector3 TransposeRotateVector(Matrix3X3 matrix, Vector3 vector) =>
         new(
             (matrix[0][0] * vector.X) + (matrix[1][0] * vector.Y) + (matrix[2][0] * vector.Z),
             (matrix[0][1] * vector.X) + (matrix[1][1] * vector.Y) + (matrix[2][1] * vector.Z),
