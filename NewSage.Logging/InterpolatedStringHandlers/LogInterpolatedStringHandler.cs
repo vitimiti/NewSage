@@ -49,9 +49,16 @@ public readonly ref struct LogInterpolatedStringHandler
 
     public bool IsEnabled { get; }
 
-    public readonly void AppendLiteral(string value) => _builder?.Append(value);
+    public void AppendLiteral(string value) => _builder?.Append(value);
 
-    public readonly void AppendFormatted<T>(T value) => _builder?.Append(value);
+    public void AppendFormatted<T>(T value) => _builder?.Append(value);
 
-    public override readonly string ToString() => _builder?.ToString() ?? string.Empty;
+    public void AppendFormatted<T>(T value, string? format) => _builder?.AppendFormat(null, $"{{0:{format}}}", value);
+
+    public void AppendFormatted<T>(T value, int alignment) => _builder?.AppendFormat(null, $"{{0,{alignment}}}", value);
+
+    public void AppendFormatted<T>(T value, int alignment, string? format) =>
+        _builder?.AppendFormat(null, $"{{0,{alignment}:{format}}}", value);
+
+    public override string ToString() => _builder?.ToString() ?? string.Empty;
 }

@@ -36,5 +36,12 @@ public readonly ref struct InformationLogInterpolatedStringHandler
 
     public void AppendFormatted<T>(T value) => _inner.AppendFormatted(value);
 
+    public void AppendFormatted<T>(T value, string? format) => _inner.AppendFormatted(value, format);
+
+    public void AppendFormatted<T>(T value, int alignment) => _inner.AppendFormatted(value, alignment);
+
+    public void AppendFormatted<T>(T value, int alignment, string? format) =>
+        _inner.AppendFormatted(value, alignment, format);
+
     public override string ToString() => _inner.ToString();
 }
