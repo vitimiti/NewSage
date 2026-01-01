@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------
 
 using NewSage.Debug;
+using NewSage.Logging;
 
 namespace NewSage.Game;
 
@@ -27,6 +28,8 @@ internal sealed class GameOptions
     public bool EnableProfiling { get; set; }
 
     public DumpOptions DumpOptions { get; set; } = new();
+
+    public LogLevel LogLevel { get; set; } = LogLevel.Information;
 
     public string GameDirectory { get; set; } = Environment.CurrentDirectory;
 }

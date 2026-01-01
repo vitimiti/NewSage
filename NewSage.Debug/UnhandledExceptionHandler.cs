@@ -20,6 +20,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using NewSage.Debug.Internals;
+using NewSage.Logging;
 
 namespace NewSage.Debug;
 
@@ -38,10 +39,10 @@ public static class UnhandledExceptionHandler
             try
             {
                 var exception = (Exception)args.ExceptionObject;
-                Console.WriteLine(exception);
+                Log.Critical($"Unhandled exception.\n{exception}");
                 var dumpService = new MiniDumper(options);
                 dumpService.WriteDump("UnhandledException");
-                Internals.CrashDialog.ShowCrashDialog(exception, dumpService.DumpDirectoryPath, options);
+                CrashDialog.ShowCrashDialog(exception, dumpService.DumpDirectoryPath, options);
             }
             catch
             {

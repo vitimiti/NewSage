@@ -8,4 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="*" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NewSage.Logging\NewSage.Logging.csproj" />
+  </ItemGroup>
 </Project>

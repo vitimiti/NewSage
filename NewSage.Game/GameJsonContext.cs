@@ -21,6 +21,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Microsoft.Diagnostics.NETCore.Client;
+using NewSage.Logging;
 
 namespace NewSage.Game;
 
@@ -33,7 +34,7 @@ namespace NewSage.Game;
     WriteIndented = true,
     GenerationMode = JsonSourceGenerationMode.Default,
     PropertyNameCaseInsensitive = true,
-    Converters = [typeof(JsonStringEnumConverter<DumpType>)]
+    Converters = [typeof(JsonStringEnumConverter<DumpType>), typeof(JsonStringEnumConverter<LogLevel>)]
 )]
 [JsonSerializable(typeof(GameOptions))]
 internal sealed partial class GameJsonContext : JsonSerializerContext;

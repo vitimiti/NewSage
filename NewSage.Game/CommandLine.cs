@@ -20,6 +20,7 @@
 
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Configuration;
+using NewSage.Logging;
 
 namespace NewSage.Game;
 
@@ -29,6 +30,7 @@ internal static class CommandLine
     {
         { "--profile", "EnableProfiling" },
         { "--dump", "DumpOptions:Enabled" },
+        { "--log-level", "LogLevel" },
         { "--dump-dir", "DumpOptions:DumpDirectory" },
         { "--dump-type", "DumpOptions:DumpType" },
         { "--dump-max", "DumpOptions:MaxDumpFiles" },
@@ -51,6 +53,7 @@ internal static class CommandLine
 
         ProcessProfilingOptions(config, options);
         ProcessDumpOptions(config, options);
+        ProcessLoggingOptions(config, options);
         ProcessGameCopyOptions(config, options);
     }
 
@@ -89,6 +92,14 @@ internal static class CommandLine
         if (!string.IsNullOrEmpty(prefix))
         {
             options.DumpOptions.FilePrefix = prefix;
+        }
+    }
+
+    private static void ProcessLoggingOptions(IConfigurationRoot config, GameOptions options)
+    {
+        if (Enum.TryParse(config["LogLevel"], ignoreCase: true, out LogLevel logLevel))
+        {
+            options.LogLevel = logLevel;
         }
     }
 

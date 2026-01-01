@@ -22,6 +22,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json;
 using NewSage.Debug;
+using NewSage.Logging;
+using NewSage.Logging.DefaultSinks;
 using NewSage.Profile;
 using NewSage.Utilities;
 using NewSage.Video;
@@ -44,6 +46,8 @@ public sealed class SageGame : IDisposable
         _options = LoadOptions(configPath);
 
         CommandLine.ApplyUserRuntimeOptions(args, _options);
+        Log.MinimumLevel = _options.LogLevel;
+        Log.AddSink(new ConsoleLogSink());
     }
 
     public void Run() => Initialize();
@@ -75,7 +79,7 @@ public sealed class SageGame : IDisposable
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Failed to load settings from file '{path}'.\n{ex}");
+            Log.Error($"Failed load settings from file '{path}'.\n{ex}");
             return new GameOptions();
         }
     }
@@ -98,7 +102,7 @@ public sealed class SageGame : IDisposable
         _loadScreenBitmap?.Dispose();
         _loadScreenBitmap = null;
 
-        System.Diagnostics.Debug.WriteLine($"Game initialized after {profiler.Elapsed.TotalMicroseconds}us");
+        Log.Debug($"Game initialized after {profiler.Elapsed.TotalMicroseconds}\u00b5s");
     }
 
     private Image? LoadSplashScreen()
@@ -123,7 +127,7 @@ public sealed class SageGame : IDisposable
         }
         catch (InvalidOperationException ex)
         {
-            Console.Error.WriteLine($"Failed to load the splash screen image from embedded resources.\n{ex}");
+            Log.Error($"Failed to load the splash screen image from embedded resources.\n{ex}");
         }
 
         var paths = new[]
@@ -153,7 +157,7 @@ public sealed class SageGame : IDisposable
             catch (InvalidOperationException ex)
             {
                 img.Dispose();
-                Console.Error.WriteLine($"Failed to load splash screen image from '{path}'.\n{ex}");
+                Log.Error($"Failed to load splash screen image from '{path}'.\n{ex}");
             }
         }
 

@@ -21,6 +21,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Diagnostics.NETCore.Client;
+using NewSage.Logging;
 
 namespace NewSage.Debug.Internals;
 
@@ -50,7 +51,7 @@ internal sealed class MiniDumper
     {
         if (!_options.Enabled)
         {
-            System.Diagnostics.Debug.WriteLine($"Dumping disabled: {reason}");
+            Log.Debug($"Dumping '{reason}' is disabled.");
             return;
         }
 
@@ -58,7 +59,7 @@ internal sealed class MiniDumper
         {
             if (!Directory.Exists(DumpDirectoryPath) && !Directory.CreateDirectory(DumpDirectoryPath).Exists)
             {
-                Console.Error.WriteLine($"Failed to create dump directory: {DumpDirectoryPath}");
+                Log.Error($"Failed to create dump directory '{DumpDirectoryPath}'.");
                 return;
             }
 
@@ -72,11 +73,11 @@ internal sealed class MiniDumper
             var fullPath = Path.Combine(DumpDirectoryPath, fileName);
 
             client.WriteDump(_options.DumpType, fullPath);
-            System.Diagnostics.Debug.WriteLine($"Dump written to: {fullPath}");
+            Log.Debug($"Dump written to '{fullPath}'");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to write dump: {ex}");
+            Log.Error($"Failed to write dump.\n{ex}");
         }
     }
 
@@ -111,7 +112,7 @@ internal sealed class MiniDumper
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to clean old dumps: {ex}");
+            Log.Error($"Failed to clean old dumps.\n{ex}");
         }
     }
 }
