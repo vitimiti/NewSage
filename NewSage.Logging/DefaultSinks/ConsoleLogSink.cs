@@ -20,7 +20,7 @@
 
 namespace NewSage.Logging.DefaultSinks;
 
-public class ConsoleLogSink : ILogSink
+public sealed class ConsoleLogSink : ILogSink
 {
     public void Write(LogLevel level, string message)
     {

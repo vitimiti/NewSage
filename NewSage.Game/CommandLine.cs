@@ -31,12 +31,14 @@ internal static class CommandLine
         { "--profile", "EnableProfiling" },
         { "--dump", "DumpOptions:Enabled" },
         { "--log-level", "LogLevel" },
+        { "--log-to-file", "LogToFile" },
         { "--dump-dir", "DumpOptions:DumpDirectory" },
         { "--dump-type", "DumpOptions:DumpType" },
         { "--dump-max", "DumpOptions:MaxDumpFiles" },
         { "--dump-prefix", "DumpOptions:FilePrefix" },
         { "--working-dir", "WorkingDirectory" },
         { "--game-dir", "GameDirectory" },
+        { "--game-id", "GameId" },
     };
 
     public static void ApplyUserRuntimeOptions(string[] args, GameOptions options)
@@ -101,6 +103,11 @@ internal static class CommandLine
         {
             options.LogLevel = logLevel;
         }
+
+        if (bool.TryParse(config["LogToFile"], out var logToFile))
+        {
+            options.LogToFile = logToFile;
+        }
     }
 
     private static void ProcessGameCopyOptions(IConfigurationRoot config, GameOptions options)
@@ -109,6 +116,12 @@ internal static class CommandLine
         if (!string.IsNullOrEmpty(dir))
         {
             options.GameDirectory = dir;
+        }
+
+        var id = config["GameId"];
+        if (!string.IsNullOrEmpty(id))
+        {
+            options.GameId = id;
         }
     }
 }

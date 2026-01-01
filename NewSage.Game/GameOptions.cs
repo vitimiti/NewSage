@@ -31,5 +31,9 @@ internal sealed class GameOptions
 
     public LogLevel LogLevel { get; set; } = LogLevel.Information;
 
+    public bool LogToFile { get; set; }
+
     public string GameDirectory { get; set; } = Environment.CurrentDirectory;
+
+    public string GameId { get; set; } = "NewSage";
 }

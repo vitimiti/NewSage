@@ -36,6 +36,7 @@ public sealed class SageGame : IDisposable
 
     private readonly GameOptions _options;
 
+    private FileStreamSink? _fileStreamSink;
     private Image? _loadScreenBitmap;
 
     private bool _disposed;
@@ -48,6 +49,11 @@ public sealed class SageGame : IDisposable
         CommandLine.ApplyUserRuntimeOptions(args, _options);
         Log.MinimumLevel = _options.LogLevel;
         Log.AddSink(new ConsoleLogSink());
+        if (_options.LogToFile)
+        {
+            _fileStreamSink = new FileStreamSink(_options.GameId);
+            Log.AddSink(_fileStreamSink);
+        }
     }
 
     public void Run() => Initialize();
@@ -177,6 +183,9 @@ public sealed class SageGame : IDisposable
         {
             _loadScreenBitmap?.Dispose();
             _loadScreenBitmap = null;
+
+            _fileStreamSink?.Dispose();
+            _fileStreamSink = null;
         }
 
         _disposed = true;
