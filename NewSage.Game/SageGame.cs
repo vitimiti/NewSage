@@ -49,11 +49,13 @@ public sealed class SageGame : IDisposable
         CommandLine.ApplyUserRuntimeOptions(args, _options);
         Log.MinimumLevel = _options.LogLevel;
         Log.AddSink(new ConsoleLogSink());
-        if (_options.LogToFile)
+        if (!_options.LogToFile)
         {
-            _fileStreamSink = new FileStreamSink(_options.GameId);
-            Log.AddSink(_fileStreamSink);
+            return;
         }
+
+        _fileStreamSink = new FileStreamSink(_options.GameId);
+        Log.AddSink(_fileStreamSink);
     }
 
     public void Run() => Initialize();
