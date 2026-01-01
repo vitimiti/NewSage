@@ -128,11 +128,11 @@ public struct Quaternion : IEquatable<Quaternion>
         }
         else
         {
-            var theta = VegasMath.FastAcos(cosT);
-            var sinT = VegasMath.FastSin(theta);
+            var theta = float.Acos(cosT);
+            var sinT = float.Sin(theta);
             var oneOverSinT = 1F / sinT;
-            beta = VegasMath.FastSin(theta - (alpha * theta)) * oneOverSinT;
-            alpha = VegasMath.FastSin(alpha * theta) * oneOverSinT;
+            beta = float.Sin(theta - (alpha * theta)) * oneOverSinT;
+            alpha = float.Sin(alpha * theta) * oneOverSinT;
         }
 
         if (qFlip)
