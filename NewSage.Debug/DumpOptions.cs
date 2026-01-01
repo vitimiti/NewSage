@@ -22,7 +22,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 
 namespace NewSage.Debug;
 
-public class DumpOptions
+public sealed class DumpOptions
 {
     public bool Enabled { get; set; }
 
