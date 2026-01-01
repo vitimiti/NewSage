@@ -5,6 +5,7 @@
   <Project Path="NewSage.BaseTypes/NewSage.BaseTypes.csproj" />
   <Project Path="NewSage.Debug/NewSage.Debug.csproj" />
   <Project Path="NewSage.Game/NewSage.Game.csproj" />
+  <Project Path="NewSage.Logging/NewSage.Logging.csproj" />
   <Project Path="NewSage.Profile/NewSage.Profile.csproj" />
   <Project Path="NewSage.Utilities/NewSage.Utilities.csproj" />
   <Project Path="NewSage.Video/NewSage.Video.csproj" />
