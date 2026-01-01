@@ -32,28 +32,22 @@ namespace NewSage.WwVegas.WwMath;
 public struct Frustum
 {
     public Matrix3D CameraTransform;
+    public Plane Plane0;
+    public Plane Plane1;
+    public Plane Plane2;
+    public Plane Plane3;
+    public Plane Plane4;
+    public Plane Plane5;
+    public Vector3 Corner0;
+    public Vector3 Corner1;
+    public Vector3 Corner2;
+    public Vector3 Corner3;
+    public Vector3 Corner4;
+    public Vector3 Corner5;
+    public Vector3 Corner6;
+    public Vector3 Corner7;
     public Vector3 BoundMin;
     public Vector3 BoundMax;
-
-    private Plane _plane0;
-    private Plane _plane1;
-    private Plane _plane2;
-    private Plane _plane3;
-    private Plane _plane4;
-    private Plane _plane5;
-    private Vector3 _corner0;
-    private Vector3 _corner1;
-    private Vector3 _corner2;
-    private Vector3 _corner3;
-    private Vector3 _corner4;
-    private Vector3 _corner5;
-    private Vector3 _corner6;
-    private Vector3 _corner7;
-
-    public readonly IList<Plane> Planes => [_plane0, _plane1, _plane2, _plane3, _plane4, _plane5];
-
-    public readonly IList<Vector3> Corners =>
-        [_corner0, _corner1, _corner2, _corner3, _corner4, _corner5, _corner6, _corner7];
 
     public void Initialize(Matrix3D camera, Vector2 viewportMin, Vector2 viewportMax, (float Near, float Far) z)
     {
@@ -71,73 +65,111 @@ public struct Frustum
 
         if (Vector3.DotProduct(CameraTransform.ZVector, zv) < 0F)
         {
-            _corner1.Set(viewportMin.X, viewportMax.Y, 1);
-            _corner5 = _corner1;
-            _corner1 *= zNear;
-            _corner5 *= zFar;
+            Corner1.Set(viewportMin.X, viewportMax.Y, 1);
+            Corner5 = Corner1;
+            Corner1 *= zNear;
+            Corner5 *= zFar;
 
-            _corner0.Set(viewportMax.X, viewportMin.Y, 1);
-            _corner4 = _corner0;
-            _corner0 *= zNear;
-            _corner4 *= zFar;
+            Corner0.Set(viewportMax.X, viewportMin.Y, 1);
+            Corner4 = Corner0;
+            Corner0 *= zNear;
+            Corner4 *= zFar;
 
-            _corner3.Set(viewportMin.X, viewportMin.Y, 1);
-            _corner7 = _corner3;
-            _corner3 *= zNear;
-            _corner7 *= zFar;
+            Corner3.Set(viewportMin.X, viewportMin.Y, 1);
+            Corner7 = Corner3;
+            Corner3 *= zNear;
+            Corner7 *= zFar;
 
-            _corner2.Set(viewportMax.X, viewportMax.Y, 1);
-            _corner6 = _corner2;
-            _corner2 *= zNear;
-            _corner6 *= zFar;
+            Corner2.Set(viewportMax.X, viewportMax.Y, 1);
+            Corner6 = Corner2;
+            Corner2 *= zNear;
+            Corner6 *= zFar;
         }
         else
         {
-            _corner0.Set(viewportMin.X, viewportMax.Y, 1);
-            _corner4 = _corner0;
-            _corner0 *= zNear;
-            _corner4 *= zFar;
+            Corner0.Set(viewportMin.X, viewportMax.Y, 1);
+            Corner4 = Corner0;
+            Corner0 *= zNear;
+            Corner4 *= zFar;
 
-            _corner1.Set(viewportMax.X, viewportMin.Y, 1);
-            _corner5 = _corner1;
-            _corner1 *= zNear;
-            _corner5 *= zFar;
+            Corner1.Set(viewportMax.X, viewportMin.Y, 1);
+            Corner5 = Corner1;
+            Corner1 *= zNear;
+            Corner5 *= zFar;
 
-            _corner2.Set(viewportMin.X, viewportMin.Y, 1);
-            _corner6 = _corner2;
-            _corner2 *= zNear;
-            _corner6 *= zFar;
+            Corner2.Set(viewportMin.X, viewportMin.Y, 1);
+            Corner6 = Corner2;
+            Corner2 *= zNear;
+            Corner6 *= zFar;
 
-            _corner3.Set(viewportMax.X, viewportMax.Y, 1);
-            _corner7 = _corner3;
-            _corner3 *= zNear;
-            _corner7 *= zFar;
+            Corner3.Set(viewportMax.X, viewportMax.Y, 1);
+            Corner7 = Corner3;
+            Corner3 *= zNear;
+            Corner7 *= zFar;
         }
 
-        for (var i = 0; i < 8; i++)
-        {
-            Corners[i] = Matrix3D.TransformVector(CameraTransform, Corners[i]);
-        }
+        Corner0 = Matrix3D.TransformVector(CameraTransform, Corner0);
+        Corner1 = Matrix3D.TransformVector(CameraTransform, Corner1);
+        Corner2 = Matrix3D.TransformVector(CameraTransform, Corner2);
+        Corner3 = Matrix3D.TransformVector(CameraTransform, Corner3);
+        Corner4 = Matrix3D.TransformVector(CameraTransform, Corner4);
+        Corner5 = Matrix3D.TransformVector(CameraTransform, Corner5);
+        Corner6 = Matrix3D.TransformVector(CameraTransform, Corner6);
+        Corner7 = Matrix3D.TransformVector(CameraTransform, Corner7);
 
-        _plane0.Set(_corner0, _corner3, _corner1);
-        _plane1.Set(_corner0, _corner5, _corner4);
-        _plane2.Set(_corner0, _corner6, _corner2);
-        _plane3.Set(_corner2, _corner7, _corner3);
-        _plane4.Set(_corner1, _corner7, _corner5);
-        _plane5.Set(_corner4, _corner7, _corner6);
+        Plane0.Set(Corner0, Corner3, Corner1);
+        Plane1.Set(Corner0, Corner5, Corner4);
+        Plane2.Set(Corner0, Corner6, Corner2);
+        Plane3.Set(Corner2, Corner7, Corner3);
+        Plane4.Set(Corner1, Corner7, Corner5);
+        Plane5.Set(Corner4, Corner7, Corner6);
 
-        BoundMin = BoundMax = _corner0;
+        BoundMin = BoundMax = Corner0;
 
         for (var i = 1; i < 8; i++)
         {
-            BoundMin.X = float.Min(BoundMin.X, Corners[i].X);
-            BoundMax.X = float.Max(BoundMax.X, Corners[i].X);
+            BoundMin.X = float.Min(BoundMin.X, GetCornerAt(i).X);
+            BoundMax.X = float.Max(BoundMax.X, GetCornerAt(i).X);
 
-            BoundMin.Y = float.Min(BoundMin.Y, Corners[i].Y);
-            BoundMax.Y = float.Max(BoundMax.Y, Corners[i].Y);
+            BoundMin.Y = float.Min(BoundMin.Y, GetCornerAt(i).Y);
+            BoundMax.Y = float.Max(BoundMax.Y, GetCornerAt(i).Y);
 
-            BoundMin.Z = float.Min(BoundMin.Z, Corners[i].Z);
-            BoundMax.Z = float.Max(BoundMax.Z, Corners[i].Z);
+            BoundMin.Z = float.Min(BoundMin.Z, GetCornerAt(i).Z);
+            BoundMax.Z = float.Max(BoundMax.Z, GetCornerAt(i).Z);
         }
     }
+
+    internal readonly Plane GetPlaneAt(int index) =>
+        index switch
+        {
+            0 => Plane0,
+            1 => Plane1,
+            2 => Plane2,
+            3 => Plane3,
+            4 => Plane4,
+            5 => Plane5,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(index),
+                index,
+                "Index must be between 0 and 5 inclusive."
+            ),
+        };
+
+    internal readonly Vector3 GetCornerAt(int index) =>
+        index switch
+        {
+            0 => Corner0,
+            1 => Corner1,
+            2 => Corner2,
+            3 => Corner3,
+            4 => Corner4,
+            5 => Corner5,
+            6 => Corner6,
+            7 => Corner7,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(index),
+                index,
+                "Index must be between 0 and 7 inclusive."
+            ),
+        };
 }
