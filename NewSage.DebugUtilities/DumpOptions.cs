@@ -20,7 +20,7 @@
 
 using Microsoft.Diagnostics.NETCore.Client;
 
-namespace NewSage.Debug;
+namespace NewSage.DebugUtilities;
 
 public sealed class DumpOptions
 {

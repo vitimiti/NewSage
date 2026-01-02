@@ -20,7 +20,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using NewSage.Debug;
+using NewSage.DebugUtilities;
 using NewSage.Game.Scenes;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;

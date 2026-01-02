@@ -23,7 +23,7 @@ using System.Globalization;
 using Microsoft.Diagnostics.NETCore.Client;
 using NewSage.Logging;
 
-namespace NewSage.Debug.Internals;
+namespace NewSage.DebugUtilities.Internals;
 
 internal sealed class MiniDumper
 {

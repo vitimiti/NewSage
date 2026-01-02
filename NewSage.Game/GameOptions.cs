@@ -18,7 +18,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Debug;
+using NewSage.DebugUtilities;
 using NewSage.Logging;
 
 namespace NewSage.Game;

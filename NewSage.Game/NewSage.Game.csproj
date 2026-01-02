@@ -6,7 +6,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NewSage.Debug\NewSage.Debug.csproj" />
+    <ProjectReference Include="..\NewSage.DebugUtilities\NewSage.DebugUtilities.csproj" />
     <ProjectReference Include="..\NewSage.Interop.NativeSdl\NewSage.Interop.NativeSdl.csproj" />
     <ProjectReference Include="..\NewSage.Profile\NewSage.Profile.csproj" />
     <ProjectReference Include="..\NewSage.Utilities\NewSage.Utilities.csproj" />

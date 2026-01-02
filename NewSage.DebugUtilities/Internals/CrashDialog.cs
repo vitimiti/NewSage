@@ -21,7 +21,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace NewSage.Debug.Internals;
+namespace NewSage.DebugUtilities.Internals;
 
 internal static partial class CrashDialog
 {

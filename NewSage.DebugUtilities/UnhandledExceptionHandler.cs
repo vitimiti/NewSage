@@ -19,10 +19,10 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using NewSage.Debug.Internals;
+using NewSage.DebugUtilities.Internals;
 using NewSage.Logging;
 
-namespace NewSage.Debug;
+namespace NewSage.DebugUtilities;
 
 public static class UnhandledExceptionHandler
 {
