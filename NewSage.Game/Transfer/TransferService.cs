@@ -32,6 +32,10 @@ using NewSage.Utilities.GameTypes;
 
 namespace NewSage.Game.Transfer;
 
+// TODO: Implement:
+// TODO: 	virtual void xferUpgradeMask( UpgradeMaskType *upgradeMaskData );
+// TODO: 	virtual void xferMatrix3D( Matrix3D* mtx );
+// TODO: 	virtual void xferMapName( AsciiString *mapNameData );
 internal abstract class TransferService
 {
     public TransferOptions Options { get; set; } = TransferOptions.None;
@@ -421,6 +425,8 @@ internal abstract class TransferService
                 throw new TransferServiceUnknownModeException($"Unknown transfer mode: {Mode}");
         }
     }
+
+    public virtual void TransferUserData(Span<byte> data) => TransferCore(data);
 
     protected abstract void TransferCore(Span<byte> data);
 }
