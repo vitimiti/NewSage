@@ -1,7 +1,7 @@
 <Project>
-  <!-- Runs for every project in the repo -->
-  <Target Name="InjectGitInfo" BeforeTargets="GetAssemblyAttributes">
-    <!-- Git describe (tag/hash + "-dirty" when dirty) -->
+  <!-- 1. Fetch Git Info: Only runs if GitVersion hasn't been set yet -->
+  <Target Name="FetchGitInfo" Condition="'$(GitVersion)' == ''">
+    <!-- Git describe -->
     <Exec
       Command="git describe --tags --always --dirty"
       ConsoleToMsBuild="true"
@@ -19,7 +19,7 @@
     >
       <Output TaskParameter="ConsoleOutput" PropertyName="GitRevision" />
     </Exec>
-    <!-- Commit time: unix seconds since epoch (UTC) -->
+    <!-- Commit time -->
     <Exec
       Command="git log -1 --format=%ct"
       ConsoleToMsBuild="true"
@@ -46,7 +46,7 @@
     >
       <Output TaskParameter="ConsoleOutput" PropertyName="GitShortSha" />
     </Exec>
-    <!-- Tag only if HEAD is exactly on a tag -->
+    <!-- Tag only if exact match -->
     <Exec
       Command="git describe --tags --exact-match"
       ConsoleToMsBuild="true"
@@ -55,12 +55,12 @@
     >
       <Output TaskParameter="ConsoleOutput" PropertyName="GitTag" />
     </Exec>
-    <!-- Dirty working tree? -->
+    <!-- Dirty check -->
     <Exec Command="git status --porcelain" ConsoleToMsBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitStatusPorcelain" />
     </Exec>
     <PropertyGroup>
-      <!-- Trim outputs (git commands include newlines) -->
+      <!-- Trim outputs -->
       <GitVersion>$([System.String]::Copy('$(GitVersion)').Trim())</GitVersion>
       <GitRevision>$([System.String]::Copy('$(GitRevision)').Trim())</GitRevision>
       <GitCommitUnixTime>$([System.String]::Copy('$(GitCommitUnixTime)').Trim())</GitCommitUnixTime>
@@ -71,14 +71,16 @@
         >true</GitUncommittedChanges
       >
       <GitUncommittedChanges Condition="'$(GitUncommittedChanges)' == ''">false</GitUncommittedChanges>
-      <!-- Build environment -->
+      <!-- Build environment (Static for the whole build) -->
       <BuildUser>$([System.Environment]::UserName)</BuildUser>
       <BuildMachine>$([System.Environment]::MachineName)</BuildMachine>
-      <!-- Keep both split and combined -->
       <BuildDate>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd"))</BuildDate>
       <BuildTime>$([System.DateTime]::UtcNow.ToString("HH:mm:ss"))</BuildTime>
       <BuildDateTimeUtc>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss 'UTC'"))</BuildDateTimeUtc>
     </PropertyGroup>
+  </Target>
+  <!-- 2. Inject Info: Runs for every project, but depends on the Fetch target -->
+  <Target Name="InjectGitInfo" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="FetchGitInfo">
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
         <_Parameter1>BuildDate</_Parameter1>
