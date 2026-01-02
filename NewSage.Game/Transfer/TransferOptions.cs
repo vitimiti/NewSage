@@ -25,7 +25,7 @@ namespace NewSage.Game.Transfer;
 
 [DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct TransferOptions : IEquatable<TransferOptions>
+internal readonly struct TransferOptions : IEquatable<TransferOptions>
 {
     private readonly uint _value;
 

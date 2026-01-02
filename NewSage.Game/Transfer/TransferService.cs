@@ -55,7 +55,7 @@ internal abstract class TransferService
 
     public abstract void Skip(int dataSize);
 
-    public abstract void TransferSnapshot(ISnapshot snapshot);
+    public abstract void TransferSnapshot(ref ISnapshot? snapshot);
 
     public virtual void TransferVersion(ref byte versionData, byte currentVersion)
     {
