@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct Coord3D
+public struct Coord3D : IEquatable<Coord3D>
 {
     public int X;
     public int Y;
@@ -38,4 +33,14 @@ public struct Coord3D
     public static Coord3D Zero => default;
 
     public readonly int Length => (int)float.Sqrt((X * X) + (Y * Y) + (Z * Z));
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Coord3D other && Equals(other);
+
+    public readonly bool Equals(Coord3D other) => X == other.X && Y == other.Y && Z == other.Z;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
+
+    public static bool operator ==(Coord3D left, Coord3D right) => left.Equals(right);
+
+    public static bool operator !=(Coord3D left, Coord3D right) => !left.Equals(right);
 }

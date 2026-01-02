@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct SingleRange
+public struct SingleRange : IEquatable<SingleRange>
 {
     public float Lo;
     public float Hi;
@@ -39,4 +34,15 @@ public struct SingleRange
         Lo = float.Min(Lo, other.Lo);
         Hi = float.Max(Hi, other.Hi);
     }
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is SingleRange other && Equals(other);
+
+    public readonly bool Equals(SingleRange other) =>
+        Math.Abs(Lo - other.Lo) < float.Epsilon && Math.Abs(Hi - other.Hi) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(Lo, Hi);
+
+    public static bool operator ==(SingleRange left, SingleRange right) => left.Equals(right);
+
+    public static bool operator !=(SingleRange left, SingleRange right) => !left.Equals(right);
 }

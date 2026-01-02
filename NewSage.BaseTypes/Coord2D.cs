@@ -24,15 +24,20 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct Coord2D
+public struct Coord2D : IEquatable<Coord2D>
 {
     public int X;
     public int Y;
 
     public readonly int Length => (int)float.Sqrt((X * X) + (Y * Y));
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Coord2D other && Equals(other);
+
+    public readonly bool Equals(Coord2D other) => X == other.X && Y == other.Y;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+
+    public static bool operator ==(Coord2D left, Coord2D right) => left.Equals(right);
+
+    public static bool operator !=(Coord2D left, Coord2D right) => !left.Equals(right);
 }

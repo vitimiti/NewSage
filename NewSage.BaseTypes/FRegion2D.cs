@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct FRegion2D
+public struct FRegion2D : IEquatable<FRegion2D>
 {
     public FCoord2D Lo;
     public FCoord2D Hi;
@@ -37,4 +32,14 @@ public struct FRegion2D
     public readonly float Width => Hi.X - Lo.X;
 
     public readonly float Height => Hi.Y - Lo.Y;
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is FRegion2D other && Equals(other);
+
+    public readonly bool Equals(FRegion2D other) => Lo == other.Lo && Hi == other.Hi;
+
+    public override readonly int GetHashCode() => HashCode.Combine(Lo, Hi);
+
+    public static bool operator ==(FRegion2D left, FRegion2D right) => left.Equals(right);
+
+    public static bool operator !=(FRegion2D left, FRegion2D right) => !left.Equals(right);
 }

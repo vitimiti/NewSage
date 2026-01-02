@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct FRgbColor
+public struct FRgbColor : IEquatable<FRgbColor>
 {
     public float R;
     public float G;
@@ -48,4 +43,17 @@ public struct FRgbColor
     public static explicit operator FRgbColor(int color) => FromInt32(color);
 
     public static explicit operator int(FRgbColor color) => color.ToInt32();
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is FRgbColor other && Equals(other);
+
+    public readonly bool Equals(FRgbColor other) =>
+        Math.Abs(R - other.R) < float.Epsilon
+        && Math.Abs(G - other.G) < float.Epsilon
+        && Math.Abs(B - other.B) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(R, G, B);
+
+    public static bool operator ==(FRgbColor left, FRgbColor right) => left.Equals(right);
+
+    public static bool operator !=(FRgbColor left, FRgbColor right) => !left.Equals(right);
 }

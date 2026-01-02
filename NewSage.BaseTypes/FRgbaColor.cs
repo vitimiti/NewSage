@@ -24,15 +24,24 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct FRgbaColor
+public struct FRgbaColor : IEquatable<FRgbaColor>
 {
     public float R;
     public float G;
     public float B;
     public float A;
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is FRgbaColor other && Equals(other);
+
+    public readonly bool Equals(FRgbaColor other) =>
+        Math.Abs(R - other.R) < float.Epsilon
+        && Math.Abs(G - other.G) < float.Epsilon
+        && Math.Abs(B - other.B) < float.Epsilon
+        && Math.Abs(A - other.A) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(R, G, B, A);
+
+    public static bool operator ==(FRgbaColor left, FRgbaColor right) => left.Equals(right);
+
+    public static bool operator !=(FRgbaColor left, FRgbaColor right) => !left.Equals(right);
 }

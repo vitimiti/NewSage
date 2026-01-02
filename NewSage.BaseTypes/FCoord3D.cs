@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct FCoord3D
+public struct FCoord3D : IEquatable<FCoord3D>
 {
     public float X;
     public float Y;
@@ -90,6 +85,15 @@ public struct FCoord3D
             Z = Z * scalar,
         };
 
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is FCoord3D other && Equals(other);
+
+    public readonly bool Equals(FCoord3D other) =>
+        Math.Abs(X - other.X) < float.Epsilon
+        && Math.Abs(Y - other.Y) < float.Epsilon
+        && Math.Abs(Z - other.Z) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
+
     public static FCoord3D operator +(FCoord3D x, FCoord3D y) => x.Add(y);
 
     public static FCoord3D operator -(FCoord3D x, FCoord3D y) => x.Subtract(y);
@@ -97,4 +101,8 @@ public struct FCoord3D
     public static FCoord3D operator *(FCoord3D x, FCoord3D y) => x.Multiply(y);
 
     public static FCoord3D operator *(FCoord3D coord3D, float scalar) => coord3D.Multiply(scalar);
+
+    public static bool operator ==(FCoord3D left, FCoord3D right) => left.Equals(right);
+
+    public static bool operator !=(FCoord3D left, FCoord3D right) => !left.Equals(right);
 }

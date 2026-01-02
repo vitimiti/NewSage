@@ -24,12 +24,7 @@ using System.Runtime.InteropServices;
 namespace NewSage.BaseTypes;
 
 [StructLayout(LayoutKind.Sequential)]
-[SuppressMessage(
-    "Performance",
-    "CA1815:Override equals and operator equals on value types",
-    Justification = "Not used in these types."
-)]
-public struct FCoord2D
+public struct FCoord2D : IEquatable<FCoord2D>
 {
     public float X;
     public float Y;
@@ -54,4 +49,15 @@ public struct FCoord2D
         var clamped = float.Clamp(X / length, -1F, 1F);
         return Y < 0F ? -float.Acos(clamped) : float.Acos(clamped);
     }
+
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is FCoord2D other && Equals(other);
+
+    public readonly bool Equals(FCoord2D other) =>
+        Math.Abs(X - other.X) < float.Epsilon && Math.Abs(Y - other.Y) < float.Epsilon;
+
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+
+    public static bool operator ==(FCoord2D left, FCoord2D right) => left.Equals(right);
+
+    public static bool operator !=(FCoord2D left, FCoord2D right) => !left.Equals(right);
 }
