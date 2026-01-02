@@ -23,6 +23,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using NewSage.Game.NameKeys;
 using NewSage.Game.Subsystems;
+using NewSage.Game.Transfer;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Profile;
@@ -196,6 +197,16 @@ internal sealed class SplashScene(GameOptions options) : IScene
         Log.Information("Initializing the name key generator...");
         NameKeyGenerator.TheNameKeyGenerator = new NameKeyGenerator(options);
         NameKeyGenerator.TheNameKeyGenerator.Initialize();
+
+        Log.Information("Opening the light CRC transfer service...");
+        var transferCrc = new TransferCrcService();
+        transferCrc.Open("lightCRC");
+
+        transferCrc.Close();
+        Log.Debug($"Light CRC result: 0x{transferCrc.Crc:X8}");
+
+        Log.Information("Post-processing all subsystems...");
+        SubsystemList.TheSubsystemList.PostProcessLoadAll();
 
         // TODO: Change this for the next scene conversion.
         Log.Information("Game initialization completed.");
