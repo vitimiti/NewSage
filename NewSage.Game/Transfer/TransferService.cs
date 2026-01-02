@@ -141,9 +141,9 @@ internal abstract class TransferService
 
     public virtual void TransferAsciiString(ref string stringData)
     {
-        var bytes = Encoding.ASCII.GetBytes(stringData);
+        var bytes = LegacyEncodings.Ansi.GetBytes(stringData);
         TransferCore(bytes);
-        stringData = Encoding.ASCII.GetString(bytes);
+        stringData = LegacyEncodings.Ansi.GetString(bytes);
     }
 
     public virtual void TransferUnicodeString(ref string stringData)
