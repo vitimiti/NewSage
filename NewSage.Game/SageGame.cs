@@ -25,7 +25,6 @@ using NewSage.Game.Scenes;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Logging.DefaultSinks;
-using NewSage.Profile;
 
 namespace NewSage.Game;
 
