@@ -30,10 +30,7 @@ internal static class CommandLine
 {
     private static readonly Dictionary<string, string> GameOptionsSwitchMappings = new()
     {
-        { "--profile", "EnableProfiling" },
-        { "--dump", "DumpOptions:Enabled" },
         { "--log-level", "LogLevel" },
-        { "--log-to-file", "LogToFile" },
         { "--dump-dir", "DumpOptions:DumpDirectory" },
         { "--dump-type", "DumpOptions:DumpType" },
         { "--dump-max", "DumpOptions:MaxDumpFiles" },
@@ -56,7 +53,7 @@ internal static class CommandLine
 
         IConfigurationRoot config = builder.Build();
 
-        ProcessProfilingOptions(config, options);
+        ProcessDirectOptions(args, options);
         ProcessDumpOptions(config, options);
         ProcessLoggingOptions(config, options);
         ProcessGameCopyOptions(config, options);
@@ -67,21 +64,26 @@ internal static class CommandLine
         Debug.Assert(GlobalData.TheWritableGlobalData is not null, "The global data is not initialized.");
     }
 
-    private static void ProcessProfilingOptions(IConfigurationRoot config, GameOptions options)
+    private static void ProcessDirectOptions(string[] args, GameOptions options)
     {
-        if (bool.TryParse(config["EnableProfiling"], out var profile))
+        if (args.Contains("--profile"))
         {
-            options.EnableProfiling = profile;
+            options.EnableProfiling = true;
+        }
+
+        if (args.Contains("--dump"))
+        {
+            options.DumpOptions.Enabled = true;
+        }
+
+        if (args.Contains("--log-to-file"))
+        {
+            options.LogToFile = true;
         }
     }
 
     private static void ProcessDumpOptions(IConfigurationRoot config, GameOptions options)
     {
-        if (bool.TryParse(config["DumpOptions:Enabled"], out var dump))
-        {
-            options.DumpOptions.Enabled = dump;
-        }
-
         var dir = config["DumpOptions:DumpDirectory"];
         if (!string.IsNullOrEmpty(dir))
         {
@@ -110,11 +112,6 @@ internal static class CommandLine
         if (Enum.TryParse(config["LogLevel"], ignoreCase: true, out LogLevel logLevel))
         {
             options.LogLevel = logLevel;
-        }
-
-        if (bool.TryParse(config["LogToFile"], out var logToFile))
-        {
-            options.LogToFile = logToFile;
         }
     }
 
