@@ -52,8 +52,6 @@ public sealed class SageGame : IDisposable
 
         _fileStreamSink = new FileStreamSink(_options.GameId);
         Log.AddSink(_fileStreamSink);
-
-        GlobalData.TheWritableGlobalData = new GlobalData(_options);
     }
 
     public void Run()
@@ -117,6 +115,8 @@ public sealed class SageGame : IDisposable
         );
 
         UnhandledExceptionHandler.Install(_options.DumpOptions);
+
+        GlobalData.TheWritableGlobalData = new GlobalData(_options);
 
         InitializeSdl();
         _scene = new SplashScene(_options);
