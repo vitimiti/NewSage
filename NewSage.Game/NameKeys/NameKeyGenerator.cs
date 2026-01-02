@@ -24,15 +24,15 @@ using NewSage.Profile;
 
 namespace NewSage.Game.NameKeys;
 
-internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(options), IDisposable
+internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(options)
 {
     private const int SocketCount = 6_473;
 
-    private readonly NameKeys.Bucket?[] _sockets = new NameKeys.Bucket?[SocketCount];
-
-    private bool _disposed;
+    private readonly Bucket?[] _sockets = new NameKeys.Bucket?[SocketCount];
+    private readonly GameOptions _options = options;
 
     private NameKeyType _nextId = NameKeyType.Invalid;
+    private bool _disposed;
 
     public static NameKeyGenerator? TheNameKeyGenerator { get; set; }
 
@@ -40,7 +40,7 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
 
     public override void Initialize()
     {
-        using var profiler = Profiler.Start($"{nameof(NameKeyGenerator)} Initialization", options.EnableProfiling);
+        using var profiler = Profiler.Start($"{nameof(NameKeyGenerator)} Initialization", _options.EnableProfiling);
         Debug.Assert(_nextId == NameKeyType.Invalid, $"{nameof(NameKeyGenerator)} was already initialized.");
         Reset();
     }
@@ -100,12 +100,20 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
         return string.Empty;
     }
 
-    ~NameKeyGenerator() => Dispose(disposing: false);
-
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            FreeSockets();
+        }
+
+        _disposed = true;
+        base.Dispose(disposing);
     }
 
     private static uint CalculateHashForString(string value)
@@ -183,20 +191,5 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
         }
 #endif
         return result;
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            FreeSockets();
-        }
-
-        _disposed = true;
     }
 }
