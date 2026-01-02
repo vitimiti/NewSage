@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 
 namespace NewSage.Game.Utilities;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct NameKeyType : IEquatable<NameKeyType>
 {
@@ -40,8 +40,6 @@ public readonly struct NameKeyType : IEquatable<NameKeyType>
 
     public bool IsValid => _value != 0 && _value <= Maximum;
 
-    private string DebuggerDisplay => IsValid ? $"{_value} (0x{_value:X8})" : $"INVALID (0x{_value:X8})";
-
     public static NameKeyType FromUInt32(uint value)
     {
         Debug.Assert(value is <= MaximumValue or 0x7FFF_FFFF, "NameKey exceeds 24-bit limit!");
@@ -56,7 +54,7 @@ public readonly struct NameKeyType : IEquatable<NameKeyType>
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => IsValid ? $"{_value}" : "INVALID";
+    public override string ToString() => IsValid ? $"0x{_value:X8} => ({_value})" : "INVALID";
 
     public static bool operator ==(NameKeyType left, NameKeyType right) => left._value == right._value;
 

@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 
 namespace NewSage.Game.Transfer;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct TransferOptions : IEquatable<TransferOptions>
 {
@@ -36,8 +36,6 @@ public readonly struct TransferOptions : IEquatable<TransferOptions>
     public static TransferOptions NoPostProcessing => new(0x0000_0001);
 
     public static TransferOptions All => new(0xFFFF_FFFF);
-
-    private string DebuggerDisplay => $"{_value} (0x{_value:X8})";
 
     public static TransferOptions FromUInt32(uint value) => new(value);
 
@@ -56,6 +54,8 @@ public readonly struct TransferOptions : IEquatable<TransferOptions>
     public override bool Equals(object? obj) => obj is TransferOptions other && Equals(other);
 
     public override int GetHashCode() => _value.GetHashCode();
+
+    public override string ToString() => $"0x{_value:X8} => ({_value})";
 
     public static TransferOptions operator |(TransferOptions left, TransferOptions right) => left.BitwiseOr(right);
 
