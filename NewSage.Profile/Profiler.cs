@@ -26,14 +26,19 @@ namespace NewSage.Profile;
 [DebuggerDisplay("{What}(enabled: {Enabled}): {Elapsed.TotalMilliseconds}ms")]
 public sealed class Profiler : IDisposable
 {
+    private const double MinimumMillisecondsThreshold = .2;
+
     private readonly Stopwatch? _stopwatch;
+    private readonly LogLevel _level;
 
     private bool _disposed;
 
-    private Profiler(string what, bool enabled)
+    private Profiler(string what, bool enabled, LogLevel level)
     {
         Enabled = enabled;
         What = what;
+
+        _level = level;
         if (!enabled)
         {
             return;
@@ -48,7 +53,8 @@ public sealed class Profiler : IDisposable
 
     public TimeSpan Elapsed { get; private set; }
 
-    public static Profiler Start(string what, bool enabled) => new(what, enabled);
+    public static Profiler Start(string what, bool enabled, LogLevel level = LogLevel.Debug) =>
+        new(what, enabled, level);
 
     public void Dispose()
     {
@@ -59,9 +65,13 @@ public sealed class Profiler : IDisposable
 
         _stopwatch?.Stop();
         Elapsed = _stopwatch?.Elapsed ?? TimeSpan.Zero;
-        if (Enabled)
+
+        // Avoid flooding!
+        // Even trace may flood if the profiling is enabled during gameplay
+        // and the log level is "Trace"
+        if (Enabled && Elapsed.TotalMilliseconds > MinimumMillisecondsThreshold)
         {
-            Log.Information($"[Profiler] {What}: {Elapsed.TotalMilliseconds}ms");
+            Log.Write(_level, $"[Profiler] {What}: {Elapsed.TotalMilliseconds:F4}ms");
         }
 
         _disposed = true;

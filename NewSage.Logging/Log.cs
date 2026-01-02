@@ -93,7 +93,7 @@ public static class Log
         }
     }
 
-    private static void Write(LogLevel level, string message)
+    public static void Write(LogLevel level, string message)
     {
         if (level < MinimumLevel)
         {
