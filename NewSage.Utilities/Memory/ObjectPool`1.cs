@@ -21,7 +21,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
-namespace NewSage.Utilities;
+namespace NewSage.Utilities.Memory;
 
 public sealed class ObjectPool<T>(Func<T> factory, int initialSize, int overflowSize)
     where T : class, IPoolable

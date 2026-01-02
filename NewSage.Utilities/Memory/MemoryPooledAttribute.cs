@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="IPoolable.cs" company="NewSage">
+// <copyright file="MemoryPooledAttribute.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,9 +18,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NewSage.Utilities;
+namespace NewSage.Utilities.Memory;
 
-public interface IPoolable
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public sealed class MemoryPooledAttribute(string poolName, int initialSize = 1024, int overflowSize = 1024) : Attribute
 {
-    void Reset();
+    public string PoolName { get; } = poolName;
+
+    public int InitialSize { get; } = initialSize;
+
+    public int OverflowSize { get; } = overflowSize;
 }

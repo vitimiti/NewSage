@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------
 
 using NewSage.Utilities;
+using NewSage.Utilities.Memory;
 
 namespace NewSage.Game.Utilities;
 
