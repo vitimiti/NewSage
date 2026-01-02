@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------
 
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -243,6 +244,93 @@ internal abstract class TransferService
 
     public virtual void TransferDrawableId(ref DrawableId drawableId) =>
         TransferInt32(ref Unsafe.As<DrawableId, int>(ref drawableId));
+
+    public virtual void TransferObjectIdList([NotNull] ref IList<ObjectId> objectIdList)
+    {
+        const byte currentVersion = 1;
+        var version = currentVersion;
+        TransferVersion(ref version, currentVersion);
+
+        var listCount = (ushort)objectIdList.Count;
+        TransferUInt16(ref listCount);
+
+        ObjectId objectId = ObjectId.Invalid;
+        switch (Mode)
+        {
+            case TransferMode.Save or TransferMode.Crc:
+            {
+                foreach (ObjectId id in objectIdList)
+                {
+                    objectId = id;
+                    TransferObjectId(ref objectId);
+                }
+
+                break;
+            }
+
+            case TransferMode.Load when objectIdList.Count != 0:
+                throw new TransferServiceListNotEmptyException("The object list should be empty before loading.");
+            case TransferMode.Load:
+            {
+                for (var i = 0; i < listCount; i++)
+                {
+                    TransferObjectId(ref objectId);
+                    objectIdList.Add(objectId);
+                }
+
+                break;
+            }
+
+            case TransferMode.Invalid:
+            default:
+                throw new TransferServiceUnknownModeException($"Unknown transfer mode: {Mode}");
+        }
+    }
+
+    public virtual void TransferObjectIdLinkedList([NotNull] ref LinkedList<ObjectId> objectIdList)
+    {
+        const byte currentVersion = 1;
+        var version = currentVersion;
+        TransferVersion(ref version, currentVersion);
+
+        var listCount = (ushort)objectIdList.Count;
+        TransferUInt16(ref listCount);
+
+        ObjectId objectId = ObjectId.Invalid;
+        switch (Mode)
+        {
+            case TransferMode.Save or TransferMode.Crc:
+            {
+                foreach (ObjectId id in objectIdList)
+                {
+                    objectId = id;
+                    TransferObjectId(ref objectId);
+                }
+
+                break;
+            }
+
+            case TransferMode.Load when objectIdList.Count != 0:
+                throw new TransferServiceListNotEmptyException(
+                    "The object linked list should be empty before loading."
+                );
+
+            case TransferMode.Load:
+            {
+                for (var i = 0; i < listCount; i++)
+                {
+                    TransferObjectId(ref objectId);
+                    _ = objectIdList.AddLast(objectId);
+                }
+
+                break;
+            }
+
+            case TransferMode.Invalid:
+            default:
+                throw new TransferServiceUnknownModeException($"Unknown transfer mode: {Mode}");
+        }
+    }
 
     protected abstract void TransferCore(Span<byte> data);
 }
