@@ -61,7 +61,7 @@ public sealed class Profiler : IDisposable
         Elapsed = _stopwatch?.Elapsed ?? TimeSpan.Zero;
         if (Enabled)
         {
-            Log.Debug($"[Profiler] {What}: {Elapsed.TotalMilliseconds}ms");
+            Log.Information($"[Profiler] {What}: {Elapsed.TotalMilliseconds}ms");
         }
 
         _disposed = true;
