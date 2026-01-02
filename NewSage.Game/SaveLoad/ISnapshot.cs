@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="TransferService.cs" company="NewSage">
+// <copyright file="ISnapshot.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,29 +18,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Game.SaveLoad;
+using NewSage.Game.Transfer;
 
-namespace NewSage.Game.Transfer;
+namespace NewSage.Game.SaveLoad;
 
-internal abstract class TransferService
+internal interface ISnapshot
 {
-    public TransferOptions Options { get; set; } = TransferOptions.None;
+    void Crc(TransferService transfer);
 
-    public TransferMode Mode { get; protected set; } = TransferMode.Invalid;
+    void Transfer(TransferService transfer);
 
-    public string Identifier { get; protected set; } = string.Empty;
-
-    public abstract void Open(string identifier);
-
-    public abstract void Close();
-
-    public abstract int BeginBlock();
-
-    public abstract void EndBlock();
-
-    public abstract void Skip(int dataSize);
-
-    public abstract void TransferSnapshot(ISnapshot snapshot);
-
-    protected abstract void TransferCore(Span<byte> data);
+    void LoadPostProcess();
 }
