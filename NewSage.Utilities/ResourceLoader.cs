@@ -18,6 +18,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace NewSage.Utilities;
@@ -30,10 +31,8 @@ public static class ResourceLoader
         return GetEmbeddedStream(assembly, resourceName);
     }
 
-    public static Stream? GetEmbeddedStream(Assembly assembly, string resourceName)
+    public static Stream? GetEmbeddedStream([NotNull] Assembly assembly, string resourceName)
     {
-        ArgumentNullException.ThrowIfNull(assembly);
-
         var manifestName = assembly
             .GetManifestResourceNames()
             .FirstOrDefault(n => n.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));

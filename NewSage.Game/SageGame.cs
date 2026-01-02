@@ -38,9 +38,8 @@ public sealed class SageGame : IDisposable
     private bool _userRequestedQuit;
     private bool _disposed;
 
-    public SageGame(string[] args, string configPath = "settings.json")
+    public SageGame([NotNull] string[] args, string configPath = "settings.json")
     {
-        ArgumentNullException.ThrowIfNull(args);
         _options = LoadOptions(configPath);
 
         CommandLine.ApplyUserRuntimeOptions(args, _options);

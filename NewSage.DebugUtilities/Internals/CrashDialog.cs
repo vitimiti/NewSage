@@ -18,6 +18,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -25,11 +26,8 @@ namespace NewSage.DebugUtilities.Internals;
 
 internal static partial class CrashDialog
 {
-    public static void ShowCrashDialog(Exception ex, string dumpPath, DumpOptions dumpOptions)
+    public static void ShowCrashDialog([NotNull] Exception ex, string dumpPath, [NotNull] DumpOptions dumpOptions)
     {
-        ArgumentNullException.ThrowIfNull(ex);
-        ArgumentNullException.ThrowIfNull(dumpOptions);
-
         const string title = "NewSage Engine Crash";
         var message = dumpOptions.Enabled
             ? $"""
