@@ -269,7 +269,10 @@ internal abstract class TransferService
             }
 
             case TransferMode.Load when objectIdList.Count != 0:
-                throw new TransferServiceListNotEmptyException("The object list should be empty before loading.");
+                throw new TransferServiceListNotEmptyException(
+                    $"The {nameof(ObjectId)} list should be empty before loading."
+                );
+
             case TransferMode.Load:
             {
                 for (var i = 0; i < listCount; i++)
@@ -312,7 +315,7 @@ internal abstract class TransferService
 
             case TransferMode.Load when objectIdList.Count != 0:
                 throw new TransferServiceListNotEmptyException(
-                    "The object linked list should be empty before loading."
+                    $"The {nameof(ObjectId)} linked list should be empty before loading."
                 );
 
             case TransferMode.Load:
@@ -321,6 +324,51 @@ internal abstract class TransferService
                 {
                     TransferObjectId(ref objectId);
                     _ = objectIdList.AddLast(objectId);
+                }
+
+                break;
+            }
+
+            case TransferMode.Invalid:
+            default:
+                throw new TransferServiceUnknownModeException($"Unknown transfer mode: {Mode}");
+        }
+    }
+
+    public virtual void TransferInt32LinkedList([NotNull] ref LinkedList<int> intList)
+    {
+        const byte currentVersion = 1;
+        var version = currentVersion;
+        TransferVersion(ref version, currentVersion);
+
+        var listCount = (ushort)intList.Count;
+        TransferUInt16(ref listCount);
+
+        var intData = 0;
+        switch (Mode)
+        {
+            case TransferMode.Save or TransferMode.Crc:
+            {
+                foreach (var value in intList)
+                {
+                    intData = value;
+                    TransferInt32(ref intData);
+                }
+
+                break;
+            }
+
+            case TransferMode.Load when intList.Count != 0:
+                throw new TransferServiceListNotEmptyException(
+                    $"The {nameof(Int32)} linked list should be empty before loading."
+                );
+
+            case TransferMode.Load:
+            {
+                for (var i = 0; i < listCount; i++)
+                {
+                    TransferInt32(ref intData);
+                    _ = intList.AddLast(intData);
                 }
 
                 break;
