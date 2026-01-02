@@ -18,9 +18,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using NewSage.Game.Ini;
 using NewSage.Game.NameKeys;
 using NewSage.Game.Subsystems;
 using NewSage.Game.Transfer;
@@ -203,6 +205,8 @@ internal sealed class SplashScene(GameOptions options) : IScene
     private void BackgroundInitialize()
     {
         using var profiler = Profiler.Start("Game Initialization", options.EnableProfiling);
+        using var ini = new IniParser();
+
         VersionInformation.LogVersionHeader();
 
         Log.Information("Initializing the subsystems list...");
@@ -222,6 +226,25 @@ internal sealed class SplashScene(GameOptions options) : IScene
             () => new ArchiveFileSystem(options),
             null
         );
+
+        Debug.Assert(GlobalData.TheWritableGlobalData is not null, "Global data is not initialized.");
+        GlobalData.TheWritableGlobalData = InitializeSubsystem(
+            "TheWritableGlobalData",
+            () => GlobalData.TheWritableGlobalData,
+            transferCrc,
+            Path.Combine(options.GameDirectory, "Data", "INI", "Default", "GameData"),
+            Path.Combine(options.GameDirectory, "Data", "INI", "GameData")
+        );
+
+        GlobalData.TheWritableGlobalData.ParseCustomDefinition();
+
+#if DEBUG
+        ini.LoadFileDirectory(
+            Path.Combine(options.GameDirectory, "Data", "INI", "GameDataDebug"),
+            IniLoadType.Overwrite,
+            null
+        );
+#endif
 
         transferCrc.Close();
         Log.Debug($"Light CRC result: 0x{transferCrc.Crc:X8}");

@@ -22,6 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using NewSage.DebugUtilities;
 using NewSage.Game.Scenes;
+using NewSage.Game.Subsystems;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Logging.DefaultSinks;
@@ -51,6 +52,8 @@ public sealed class SageGame : IDisposable
 
         _fileStreamSink = new FileStreamSink(_options.GameId);
         Log.AddSink(_fileStreamSink);
+
+        GlobalData.TheWritableGlobalData = new GlobalData(_options);
     }
 
     public void Run()
