@@ -20,6 +20,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using NewSage.Game.Subsystems;
 
 namespace NewSage.Game.NameKeys;
 

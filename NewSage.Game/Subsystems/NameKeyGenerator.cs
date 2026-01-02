@@ -19,10 +19,10 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics;
-using NewSage.Game.Subsystems;
+using NewSage.Game.NameKeys;
 using NewSage.Profile;
 
-namespace NewSage.Game.NameKeys;
+namespace NewSage.Game.Subsystems;
 
 internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(options)
 {
