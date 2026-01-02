@@ -26,6 +26,7 @@ using NewSage.BaseTypes;
 using NewSage.Game.Exceptions.TransferServiceExceptions;
 using NewSage.Game.SaveLoad;
 using NewSage.Utilities;
+using NewSage.Utilities.GameTypes;
 
 namespace NewSage.Game.Transfer;
 
@@ -236,6 +237,9 @@ internal abstract class TransferService
             A = unchecked((byte)channels[3]),
         };
     }
+
+    public virtual void TransferObjectId(ref ObjectId objectId) =>
+        TransferInt32(ref Unsafe.As<ObjectId, int>(ref objectId));
 
     protected abstract void TransferCore(Span<byte> data);
 }
