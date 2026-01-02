@@ -21,6 +21,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using NewSage.Game.Subsystems;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Profile;
@@ -187,6 +188,8 @@ internal sealed class SplashScene(GameOptions options) : IScene
     {
         using var profiler = Profiler.Start("Game Initialization", options.EnableProfiling);
         VersionInformation.LogVersionHeader();
+
+        SubsystemList.TheSubsystemList = new SubsystemList(options);
 
         Log.Information("Game initialization completed.");
     }
