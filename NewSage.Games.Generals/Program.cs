@@ -21,4 +21,5 @@
 using NewSage.Game;
 
 using var game = new SageGame(args);
+
 game.Run();

@@ -20,7 +20,6 @@
 
 using System.Collections.Concurrent;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using NewSage.Logging.InterpolatedStringHandlers;
 
 namespace NewSage.Logging;
