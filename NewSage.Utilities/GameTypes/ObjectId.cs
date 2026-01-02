@@ -30,6 +30,10 @@ public readonly struct ObjectId : IEquatable<ObjectId>
 {
     private readonly int _value;
 
+    public static ObjectId Invalid => new(0);
+
+    public bool IsInvalid => _value == 0;
+
     private ObjectId(int value) => _value = value;
 
     public static ObjectId FromInt32(int value) => new(value);
@@ -42,7 +46,7 @@ public readonly struct ObjectId : IEquatable<ObjectId>
 
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => $"Id({_value})";
+    public override string ToString() => IsInvalid ? "INVALID" : $"{_value}";
 
     public static bool operator ==(ObjectId left, ObjectId right) => left.Equals(right);
 
