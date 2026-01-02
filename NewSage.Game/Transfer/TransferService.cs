@@ -204,5 +204,38 @@ internal abstract class TransferService
     public virtual void TransferColor(ref GameColor colorData) =>
         TransferInt32(ref Unsafe.As<GameColor, int>(ref colorData));
 
+    public virtual void TransferFRgbColor(ref FRgbColor colorData)
+    {
+        TransferSingle(ref colorData.R);
+        TransferSingle(ref colorData.G);
+        TransferSingle(ref colorData.B);
+    }
+
+    public virtual void TransferFRgbaColor(ref FRgbaColor colorData)
+    {
+        TransferSingle(ref colorData.R);
+        TransferSingle(ref colorData.G);
+        TransferSingle(ref colorData.B);
+        TransferSingle(ref colorData.A);
+    }
+
+    public virtual void TransferRgbaColor(ref RgbaColor colorData)
+    {
+        // The original engine uses 32-bit unsigned integers to store the color data!
+        Span<uint> channels = [colorData.R, colorData.G, colorData.B, colorData.A];
+        for (var i = 0; i < channels.Length; i++)
+        {
+            TransferUInt32(ref channels[i]);
+        }
+
+        colorData = new RgbaColor
+        {
+            R = unchecked((byte)channels[0]),
+            G = unchecked((byte)channels[1]),
+            B = unchecked((byte)channels[2]),
+            A = unchecked((byte)channels[3]),
+        };
+    }
+
     protected abstract void TransferCore(Span<byte> data);
 }
