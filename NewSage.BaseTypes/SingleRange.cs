@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="FRange.cs" company="NewSage">
+// <copyright file="SingleRange.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -29,12 +29,12 @@ namespace NewSage.BaseTypes;
     "CA1815:Override equals and operator equals on value types",
     Justification = "Not used in these types."
 )]
-public struct FRange
+public struct SingleRange
 {
     public float Lo;
     public float Hi;
 
-    public void Combine(FRange other)
+    public void Combine(SingleRange other)
     {
         Lo = float.Min(Lo, other.Lo);
         Hi = float.Max(Hi, other.Hi);
