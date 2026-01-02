@@ -61,7 +61,18 @@ internal static class CommandLine
 
     public static void ApplyUserGlobalData(string[] args)
     {
+        if (args.Length == 0)
+        {
+            return;
+        }
+
         Debug.Assert(GlobalData.TheWritableGlobalData is not null, "The global data is not initialized.");
+
+        UserGlobalDataOptionsParser.ParseDirectOptions(args, GlobalData.TheWritableGlobalData);
+
+#if DEBUG
+        UserGlobalDataOptionsParser.ParseDebugDirectOptions(args, GlobalData.TheWritableGlobalData);
+#endif
     }
 
     private static class UserGameOptionsParser
@@ -137,5 +148,61 @@ internal static class CommandLine
                 options.GameTitle = title;
             }
         }
+    }
+
+    private static class UserGlobalDataOptionsParser
+    {
+        public static void ParseDirectOptions(string[] args, GlobalData globalData)
+        {
+            if (args.Contains("--win"))
+            {
+                globalData.Windowed = true;
+            }
+
+            if (args.Contains("--no-music"))
+            {
+                globalData.MusicOn = false;
+            }
+
+            if (args.Contains("--no-video"))
+            {
+                globalData.VideoOn = false;
+            }
+
+            if (args.Contains("--use-wave-editor"))
+            {
+                globalData.UsingWaterTrackEditor = true;
+            }
+
+            if (args.Contains("--full-viewport"))
+            {
+                globalData.ViewportHeightScale = 1F;
+            }
+
+            if (args.Contains("--use-csf"))
+            {
+                globalData.UseStringFile = true;
+            }
+        }
+
+#if DEBUG
+        public static void ParseDebugDirectOptions(string[] args, GlobalData globalData)
+        {
+            if (args.Contains("--no-input-disable"))
+            {
+                globalData.DisableScriptedInputDisabling = true;
+            }
+
+            if (args.Contains("--no-fade"))
+            {
+                globalData.DisableCameraFade = true;
+            }
+
+            if (args.Contains("--no-mil-cap"))
+            {
+                globalData.DisableMilitaryCaption = true;
+            }
+        }
+#endif
     }
 }

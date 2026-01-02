@@ -34,17 +34,42 @@ internal class GlobalData : SubsystemBase, ICloneable
         : base(options)
     {
         _options = options;
-        if (TheOriginal is null)
-        {
-            TheOriginal = this;
-        }
+        TheOriginal ??= this;
     }
 
     public static GlobalData? TheWritableGlobalData { get; set; }
 
     public static GlobalData? TheGlobalData => TheWritableGlobalData;
 
+#if DEBUG
+    public bool DisableCameraFade { get; set; }
+
+    public bool DisableMilitaryCaption { get; set; }
+
+    public bool DisableScriptedInputDisabling { get; set; }
+
+    public bool EnableDebugCrc { get; set; }
+
+    public bool KeepCrcSaves { get; set; }
+#endif
+
+    public bool MusicOn { get; set; } = true;
+
+#if DEBUG
+    public int TheFirstCrcFrameToLog { get; set; } = -1;
+
+    public uint TheLastCrcFrameToLog { get; set; } = 0xFFFF_FFFF;
+
+    public bool UseStringFile { get; set; } = true;
+#endif
+
+    public bool UsingWaterTrackEditor { get; set; }
+
+    public bool VideoOn { get; set; } = true;
+
     public float ViewportHeightScale { get; set; } = .8F;
+
+    public bool Windowed { get; set; }
 
     private static GlobalData? TheOriginal { get; set; }
 
