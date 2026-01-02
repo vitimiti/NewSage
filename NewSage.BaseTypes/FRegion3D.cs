@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct FRegion3D : IEquatable<FRegion3D>
 {
@@ -47,6 +49,8 @@ public struct FRegion3D : IEquatable<FRegion3D>
     public readonly bool Equals(FRegion3D other) => Lo == other.Lo && Hi == other.Hi;
 
     public override readonly int GetHashCode() => HashCode.Combine(Lo, Hi);
+
+    public override readonly string ToString() => $"({Lo}, {Hi})";
 
     public static bool operator ==(FRegion3D left, FRegion3D right) => left.Equals(right);
 

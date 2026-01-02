@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct RgbaColor : IEquatable<RgbaColor>
 {
@@ -36,6 +38,8 @@ public struct RgbaColor : IEquatable<RgbaColor>
     public readonly bool Equals(RgbaColor other) => R == other.R && G == other.G && B == other.B && A == other.A;
 
     public override readonly int GetHashCode() => HashCode.Combine(R, G, B, A);
+
+    public override readonly string ToString() => $"({R}, {G}, {B}, {A})";
 
     public static bool operator ==(RgbaColor left, RgbaColor right) => left.Equals(right);
 

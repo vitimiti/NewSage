@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct FCoord3D : IEquatable<FCoord3D>
 {
@@ -93,6 +95,8 @@ public struct FCoord3D : IEquatable<FCoord3D>
         && Math.Abs(Z - other.Z) < float.Epsilon;
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
+
+    public override readonly string ToString() => $"({X:F2}, {Y:F2}, {Z:F2})";
 
     public static FCoord3D operator +(FCoord3D x, FCoord3D y) => x.Add(y);
 

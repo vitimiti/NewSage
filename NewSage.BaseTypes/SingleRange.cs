@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct SingleRange : IEquatable<SingleRange>
 {
@@ -41,6 +43,8 @@ public struct SingleRange : IEquatable<SingleRange>
         Math.Abs(Lo - other.Lo) < float.Epsilon && Math.Abs(Hi - other.Hi) < float.Epsilon;
 
     public override readonly int GetHashCode() => HashCode.Combine(Lo, Hi);
+
+    public override readonly string ToString() => $"({Lo:F2}, {Hi:F2})";
 
     public static bool operator ==(SingleRange left, SingleRange right) => left.Equals(right);
 

@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct FCoord2D : IEquatable<FCoord2D>
 {
@@ -56,6 +58,8 @@ public struct FCoord2D : IEquatable<FCoord2D>
         Math.Abs(X - other.X) < float.Epsilon && Math.Abs(Y - other.Y) < float.Epsilon;
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y);
+
+    public override readonly string ToString() => $"({X:F2}, {Y:F2})";
 
     public static bool operator ==(FCoord2D left, FCoord2D right) => left.Equals(right);
 

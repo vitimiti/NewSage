@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct Coord3D : IEquatable<Coord3D>
 {
@@ -39,6 +41,8 @@ public struct Coord3D : IEquatable<Coord3D>
     public readonly bool Equals(Coord3D other) => X == other.X && Y == other.Y && Z == other.Z;
 
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
+
+    public override readonly string ToString() => $"({X}, {Y}, {Z})";
 
     public static bool operator ==(Coord3D left, Coord3D right) => left.Equals(right);
 

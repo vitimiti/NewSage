@@ -18,11 +18,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace NewSage.BaseTypes;
 
+[DebuggerDisplay("{ToString(),nq}")]
 [StructLayout(LayoutKind.Sequential)]
 public struct FRgbColor : IEquatable<FRgbColor>
 {
@@ -52,6 +54,8 @@ public struct FRgbColor : IEquatable<FRgbColor>
         && Math.Abs(B - other.B) < float.Epsilon;
 
     public override readonly int GetHashCode() => HashCode.Combine(R, G, B);
+
+    public override readonly string ToString() => $"0x{ToInt32():X8} => ({R:F2}, {G:F2}, {B:F2})";
 
     public static bool operator ==(FRgbColor left, FRgbColor right) => left.Equals(right);
 
