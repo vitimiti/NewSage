@@ -53,10 +53,10 @@ internal static class CommandLine
 
         IConfigurationRoot config = builder.Build();
 
-        ProcessDirectOptions(args, options);
-        ProcessDumpOptions(config, options);
-        ProcessLoggingOptions(config, options);
-        ProcessGameCopyOptions(config, options);
+        UserGameOptionsParser.ParseDirectOptions(args, options);
+        UserGameOptionsParser.ParseDumpOptions(config, options);
+        UserGameOptionsParser.ParseLoggingOptions(config, options);
+        UserGameOptionsParser.ParseGameDataOptions(config, options);
     }
 
     public static void ApplyUserGlobalData(string[] args)
@@ -64,75 +64,78 @@ internal static class CommandLine
         Debug.Assert(GlobalData.TheWritableGlobalData is not null, "The global data is not initialized.");
     }
 
-    private static void ProcessDirectOptions(string[] args, GameOptions options)
+    private static class UserGameOptionsParser
     {
-        if (args.Contains("--profile"))
+        public static void ParseDirectOptions(string[] args, GameOptions options)
         {
-            options.EnableProfiling = true;
+            if (args.Contains("--profile"))
+            {
+                options.EnableProfiling = true;
+            }
+
+            if (args.Contains("--dump"))
+            {
+                options.DumpOptions.Enabled = true;
+            }
+
+            if (args.Contains("--log-to-file"))
+            {
+                options.LogToFile = true;
+            }
         }
 
-        if (args.Contains("--dump"))
+        public static void ParseDumpOptions(IConfigurationRoot config, GameOptions options)
         {
-            options.DumpOptions.Enabled = true;
+            var dir = config["DumpOptions:DumpDirectory"];
+            if (!string.IsNullOrEmpty(dir))
+            {
+                options.DumpOptions.DumpDirectory = dir;
+            }
+
+            if (Enum.TryParse(config["DumpOptions:DumpType"], ignoreCase: true, out DumpType dumpType))
+            {
+                options.DumpOptions.DumpType = dumpType;
+            }
+
+            if (uint.TryParse(config["DumpOptions:MaxDumpFiles"], out var maxFiles))
+            {
+                options.DumpOptions.MaxDumpFiles = maxFiles;
+            }
+
+            var prefix = config["DumpOptions:FilePrefix"];
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                options.DumpOptions.FilePrefix = prefix;
+            }
         }
 
-        if (args.Contains("--log-to-file"))
+        public static void ParseLoggingOptions(IConfigurationRoot config, GameOptions options)
         {
-            options.LogToFile = true;
-        }
-    }
-
-    private static void ProcessDumpOptions(IConfigurationRoot config, GameOptions options)
-    {
-        var dir = config["DumpOptions:DumpDirectory"];
-        if (!string.IsNullOrEmpty(dir))
-        {
-            options.DumpOptions.DumpDirectory = dir;
+            if (Enum.TryParse(config["LogLevel"], ignoreCase: true, out LogLevel logLevel))
+            {
+                options.LogLevel = logLevel;
+            }
         }
 
-        if (Enum.TryParse(config["DumpOptions:DumpType"], ignoreCase: true, out DumpType dumpType))
+        public static void ParseGameDataOptions(IConfigurationRoot config, GameOptions options)
         {
-            options.DumpOptions.DumpType = dumpType;
-        }
+            var dir = config["GameDirectory"];
+            if (!string.IsNullOrEmpty(dir))
+            {
+                options.GameDirectory = dir;
+            }
 
-        if (uint.TryParse(config["DumpOptions:MaxDumpFiles"], out var maxFiles))
-        {
-            options.DumpOptions.MaxDumpFiles = maxFiles;
-        }
+            var id = config["GameId"];
+            if (!string.IsNullOrEmpty(id))
+            {
+                options.GameId = id;
+            }
 
-        var prefix = config["DumpOptions:FilePrefix"];
-        if (!string.IsNullOrEmpty(prefix))
-        {
-            options.DumpOptions.FilePrefix = prefix;
-        }
-    }
-
-    private static void ProcessLoggingOptions(IConfigurationRoot config, GameOptions options)
-    {
-        if (Enum.TryParse(config["LogLevel"], ignoreCase: true, out LogLevel logLevel))
-        {
-            options.LogLevel = logLevel;
-        }
-    }
-
-    private static void ProcessGameCopyOptions(IConfigurationRoot config, GameOptions options)
-    {
-        var dir = config["GameDirectory"];
-        if (!string.IsNullOrEmpty(dir))
-        {
-            options.GameDirectory = dir;
-        }
-
-        var id = config["GameId"];
-        if (!string.IsNullOrEmpty(id))
-        {
-            options.GameId = id;
-        }
-
-        var title = config["GameTitle"];
-        if (!string.IsNullOrEmpty(title))
-        {
-            options.GameTitle = title;
+            var title = config["GameTitle"];
+            if (!string.IsNullOrEmpty(title))
+            {
+                options.GameTitle = title;
+            }
         }
     }
 }
