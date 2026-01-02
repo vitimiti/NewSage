@@ -241,5 +241,8 @@ internal abstract class TransferService
     public virtual void TransferObjectId(ref ObjectId objectId) =>
         TransferInt32(ref Unsafe.As<ObjectId, int>(ref objectId));
 
+    public virtual void TransferDrawableId(ref DrawableId drawableId) =>
+        TransferInt32(ref Unsafe.As<DrawableId, int>(ref drawableId));
+
     protected abstract void TransferCore(Span<byte> data);
 }
