@@ -2,6 +2,9 @@
   <Folder Name="/Games/">
     <Project Path="NewSage.Games.Generals/NewSage.Games.Generals.csproj" />
   </Folder>
+  <Folder Name="/Generators/">
+    <Project Path="NewSage.Generators.GameMemory/NewSage.Generators.GameMemory.csproj" />
+  </Folder>
   <Folder Name="/Interop/">
     <Project Path="NewSage.Interop.NativeSdl/NewSage.Interop.NativeSdl.csproj" />
   </Folder>
