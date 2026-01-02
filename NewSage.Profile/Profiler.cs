@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics;
+using NewSage.Logging;
 
 namespace NewSage.Profile;
 
@@ -58,6 +59,10 @@ public sealed class Profiler : IDisposable
 
         _stopwatch?.Stop();
         Elapsed = _stopwatch?.Elapsed ?? TimeSpan.Zero;
+        if (Enabled)
+        {
+            Log.Debug($"[Profiler] {What}: {Elapsed.TotalMilliseconds}ms");
+        }
 
         _disposed = true;
     }

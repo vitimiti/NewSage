@@ -23,6 +23,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
+using NewSage.Profile;
 using NewSage.Utilities;
 
 namespace NewSage.Game.Scenes;
@@ -184,10 +185,10 @@ internal sealed class SplashScene(GameOptions options) : IScene
 
     private void BackgroundInitialize()
     {
+        using var profiler = Profiler.Start("Game Initialization", options.EnableProfiling);
         VersionInformation.LogVersionHeader();
 
-        Thread.Sleep(1000);
-        Log.Information("Fake work finalized, splash screen finished all background work.");
+        Log.Information("Game initialization completed.");
     }
 
     private void Dispose(bool disposing)

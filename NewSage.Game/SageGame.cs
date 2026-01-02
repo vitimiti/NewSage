@@ -107,7 +107,6 @@ public sealed class SageGame : IDisposable
 
     private void Initialize()
     {
-        using var profiler = Profiler.Start("Game initialization", _options.EnableProfiling);
         _options.DumpOptions.DumpDirectory = Path.Combine(
             OperatingSystem.IsWindows()
                 ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
@@ -121,11 +120,6 @@ public sealed class SageGame : IDisposable
         InitializeSdl();
         _scene = new SplashScene(_options);
         _scene.Initialize();
-
-        if (profiler.Enabled)
-        {
-            Log.Debug($"{profiler.What}: {profiler.Elapsed.TotalMicroseconds}\u00b5s");
-        }
     }
 
     private void Update()
