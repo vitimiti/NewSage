@@ -18,6 +18,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using NewSage.Game.Ini;
+using NewSage.Game.Transfer;
+
 namespace NewSage.Game.Subsystems;
 
 internal sealed class SubsystemList : IDisposable
@@ -28,12 +31,28 @@ internal sealed class SubsystemList : IDisposable
 
     public static SubsystemList? TheSubsystemList { get; set; }
 
-    public void InitializeSubsystem(SubsystemBase subsystem, string name)
+    public void InitializeSubsystem(
+        SubsystemBase subsystem,
+        string? path1,
+        string? path2,
+        TransferService? transfer,
+        string name
+    )
     {
         subsystem.Name = name;
         subsystem.Initialize();
 
-        // TODO: Add INI loading
+        using var ini = new IniParser();
+        if (path1 is not null)
+        {
+            _ = ini.LoadFileDirectory(path1, IniLoadType.Overwrite, transfer);
+        }
+
+        if (path2 is not null)
+        {
+            _ = ini.LoadFileDirectory(path2, IniLoadType.Overwrite, transfer);
+        }
+
         _subsystems.Add(subsystem);
     }
 
