@@ -21,7 +21,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace NewSage.Game.Utilities;
+namespace NewSage.Game.NameKeys;
 
 internal sealed class StaticNameKey(string name)
 {

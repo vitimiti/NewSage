@@ -19,18 +19,16 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using NewSage.Game.Subsystems;
 using NewSage.Profile;
 
-namespace NewSage.Game.Utilities;
+namespace NewSage.Game.NameKeys;
 
 internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(options), IDisposable
 {
     private const int SocketCount = 6_473;
 
-    private readonly Bucket?[] _sockets = new Bucket?[SocketCount];
+    private readonly NameKeys.Bucket?[] _sockets = new NameKeys.Bucket?[SocketCount];
 
     private bool _disposed;
 
@@ -58,7 +56,7 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
     public NameKeyType NameToKey(string name)
     {
         var hash = CalculateHashForString(name) % SocketCount;
-        Bucket? bucket;
+        NameKeys.Bucket? bucket;
         for (bucket = _sockets[hash]; bucket is not null; bucket = bucket.NextInSocket)
         {
             if (name.Equals(bucket.Name, StringComparison.Ordinal))
@@ -74,7 +72,7 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
     {
         var hash = CalculateHashForLowerCaseString(name) % SocketCount;
 
-        Bucket? bucket;
+        NameKeys.Bucket? bucket;
         for (bucket = _sockets[hash]; bucket is not null; bucket = bucket.NextInSocket)
         {
             if (name.Equals(bucket.Name, StringComparison.OrdinalIgnoreCase))
@@ -90,7 +88,7 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
     {
         for (var i = 0; i < SocketCount; i++)
         {
-            for (Bucket? bucket = _sockets[i]; bucket is not null; bucket = bucket.NextInSocket)
+            for (NameKeys.Bucket? bucket = _sockets[i]; bucket is not null; bucket = bucket.NextInSocket)
             {
                 if (key == bucket.Key)
                 {
@@ -139,8 +137,8 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
     {
         for (var i = 0; i < SocketCount; i++)
         {
-            Bucket? next;
-            for (Bucket? bucket = _sockets[i]; bucket is not null; bucket = next)
+            NameKeys.Bucket? next;
+            for (NameKeys.Bucket? bucket = _sockets[i]; bucket is not null; bucket = next)
             {
                 next = bucket.NextInSocket;
                 bucket.Delete();
@@ -152,7 +150,7 @@ internal sealed class NameKeyGenerator(GameOptions options) : SubsystemBase(opti
 
     private NameKeyType NameToKeyCore(string name, uint hash)
     {
-        var bucket = Bucket.New();
+        var bucket = NameKeys.Bucket.New();
         bucket.Key = _nextId++;
         bucket.Name = name;
         bucket.NextInSocket = _sockets[hash];

@@ -18,10 +18,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Utilities;
 using NewSage.Utilities.Memory;
 
-namespace NewSage.Game.Utilities;
+namespace NewSage.Game.NameKeys;
 
 [MemoryPooled("NameKeyBucketPool", initialSize: 9_000, overflowSize: 1_024)]
 internal sealed partial class Bucket : IPoolable

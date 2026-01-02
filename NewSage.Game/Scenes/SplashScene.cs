@@ -21,8 +21,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using NewSage.Game.NameKeys;
 using NewSage.Game.Subsystems;
-using NewSage.Game.Utilities;
 using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Profile;
