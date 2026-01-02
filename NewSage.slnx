@@ -9,6 +9,7 @@
   <Folder Name="/Interop/">
     <Project Path="NewSage.Interop.NativeSdl/NewSage.Interop.NativeSdl.csproj" />
   </Folder>
+  <Project Path="NewSage.ArchiveFiles/NewSage.ArchiveFiles.csproj" />
   <Project Path="NewSage.BaseTypes/NewSage.BaseTypes.csproj" />
   <Project Path="NewSage.DebugUtilities\NewSage.DebugUtilities.csproj" />
   <Project Path="NewSage.Game/NewSage.Game.csproj" />
