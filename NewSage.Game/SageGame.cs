@@ -42,7 +42,7 @@ public sealed class SageGame : IDisposable
     {
         _options = LoadOptions(configPath);
 
-        CommandLine.ApplyUserRuntimeOptions(args, _options);
+        CommandLine.ApplyUserGameOptions(args, _options);
         Log.MinimumLevel = _options.LogLevel;
         Log.AddSink(new ConsoleLogSink());
         if (!_options.LogToFile)

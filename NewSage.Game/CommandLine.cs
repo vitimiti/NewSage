@@ -18,15 +18,17 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Configuration;
+using NewSage.Game.Subsystems;
 using NewSage.Logging;
 
 namespace NewSage.Game;
 
 internal static class CommandLine
 {
-    private static readonly Dictionary<string, string> SwitchMappings = new()
+    private static readonly Dictionary<string, string> GameOptionsSwitchMappings = new()
     {
         { "--profile", "EnableProfiling" },
         { "--dump", "DumpOptions:Enabled" },
@@ -42,7 +44,7 @@ internal static class CommandLine
         { "--game-title", "GameTitle" },
     };
 
-    public static void ApplyUserRuntimeOptions(string[] args, GameOptions options)
+    public static void ApplyUserGameOptions(string[] args, GameOptions options)
     {
         if (args.Length == 0)
         {
@@ -50,7 +52,7 @@ internal static class CommandLine
         }
 
         var builder = new ConfigurationBuilder();
-        _ = builder.AddCommandLine(args, SwitchMappings);
+        _ = builder.AddCommandLine(args, GameOptionsSwitchMappings);
 
         IConfigurationRoot config = builder.Build();
 
@@ -58,6 +60,11 @@ internal static class CommandLine
         ProcessDumpOptions(config, options);
         ProcessLoggingOptions(config, options);
         ProcessGameCopyOptions(config, options);
+    }
+
+    public static void ApplyUserGlobalData(string[] args)
+    {
+        Debug.Assert(GlobalData.TheWritableGlobalData is not null, "The global data is not initialized.");
     }
 
     private static void ProcessProfilingOptions(IConfigurationRoot config, GameOptions options)
