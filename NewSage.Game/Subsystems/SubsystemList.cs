@@ -20,7 +20,7 @@
 
 namespace NewSage.Game.Subsystems;
 
-internal sealed class SubsystemList(GameOptions options) : IDisposable
+internal sealed class SubsystemList : IDisposable
 {
     private readonly List<SubsystemBase> _subsystems = [];
 

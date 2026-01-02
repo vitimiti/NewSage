@@ -189,7 +189,7 @@ internal sealed class SplashScene(GameOptions options) : IScene
         using var profiler = Profiler.Start("Game Initialization", options.EnableProfiling);
         VersionInformation.LogVersionHeader();
 
-        SubsystemList.TheSubsystemList = new SubsystemList(options);
+        SubsystemList.TheSubsystemList = new SubsystemList();
 
         Log.Information("Game initialization completed.");
     }
