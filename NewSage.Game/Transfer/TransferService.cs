@@ -32,10 +32,11 @@ using NewSage.Utilities.GameTypes;
 
 namespace NewSage.Game.Transfer;
 
-// TODO: Implement:
-// TODO: 	virtual void xferUpgradeMask( UpgradeMaskType *upgradeMaskData );
-// TODO: 	virtual void xferMatrix3D( Matrix3D* mtx );
-// TODO: 	virtual void xferMapName( AsciiString *mapNameData );
+// TODO: Implement: `virtual void xferScienceType( ScienceType *science );`
+// TODO: Implement: `virtual void xferScienceVec( ScienceVec *scienceVec );`
+// TODO: Implement: `virtual void xferUpgradeMask( UpgradeMaskType *upgradeMaskData );`
+// TODO: Implement: `virtual void xferMatrix3D( Matrix3D* mtx );`
+// TODO: Implement: `virtual void xferMapName( AsciiString *mapNameData );`
 internal abstract class TransferService
 {
     public TransferOptions Options { get; set; } = TransferOptions.None;
