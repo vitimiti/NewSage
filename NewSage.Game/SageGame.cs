@@ -108,6 +108,14 @@ public sealed class SageGame : IDisposable
     private void Initialize()
     {
         using var profiler = Profiler.Start("Game initialization", _options.EnableProfiling);
+        _options.DumpOptions.DumpDirectory = Path.Combine(
+            OperatingSystem.IsWindows()
+                ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            _options.GameId,
+            _options.DumpOptions.DumpDirectory
+        );
+
         UnhandledExceptionHandler.Install(_options.DumpOptions);
 
         InitializeSdl();
