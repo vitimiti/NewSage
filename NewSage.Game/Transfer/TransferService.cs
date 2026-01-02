@@ -25,6 +25,7 @@ using System.Text;
 using NewSage.BaseTypes;
 using NewSage.Game.Exceptions.TransferServiceExceptions;
 using NewSage.Game.SaveLoad;
+using NewSage.Utilities;
 
 namespace NewSage.Game.Transfer;
 
@@ -132,131 +133,76 @@ internal abstract class TransferService
 
     public virtual void TransferAsciiString(ref string stringData)
     {
-        Span<byte> stringSpan = Encoding.ASCII.GetBytes(stringData);
-        TransferCore(stringSpan);
-        stringData = Encoding.ASCII.GetString(stringSpan);
+        var bytes = Encoding.ASCII.GetBytes(stringData);
+        TransferCore(bytes);
+        stringData = Encoding.ASCII.GetString(bytes);
     }
 
     public virtual void TransferUnicodeString(ref string stringData)
     {
-        Span<byte> stringSpan = Encoding.Unicode.GetBytes(stringData);
-        TransferCore(stringSpan);
-        stringData = Encoding.Unicode.GetString(stringSpan);
+        var bytes = Encoding.Unicode.GetBytes(stringData);
+        TransferCore(bytes);
+        stringData = Encoding.Unicode.GetString(bytes);
     }
 
     public virtual void TransferFCoord3D(ref FCoord3D coordData)
     {
-        var x = coordData.X;
-        var y = coordData.Y;
-        var z = coordData.Z;
-
-        TransferSingle(ref x);
-        TransferSingle(ref y);
-        TransferSingle(ref z);
-
-        coordData.X = x;
-        coordData.Y = y;
-        coordData.Z = z;
+        TransferSingle(ref coordData.X);
+        TransferSingle(ref coordData.Y);
+        TransferSingle(ref coordData.Z);
     }
 
     public virtual void TransferCoord3D(ref Coord3D coordData)
     {
-        var x = coordData.X;
-        var y = coordData.Y;
-        var z = coordData.Z;
-
-        TransferInt32(ref x);
-        TransferInt32(ref y);
-        TransferInt32(ref z);
-
-        coordData.X = x;
-        coordData.Y = y;
-        coordData.Z = z;
+        TransferInt32(ref coordData.X);
+        TransferInt32(ref coordData.Y);
+        TransferInt32(ref coordData.Z);
     }
 
     public virtual void TransferFRegion3D(ref FRegion3D regionData)
     {
-        FCoord3D lo = regionData.Lo;
-        FCoord3D hi = regionData.Hi;
-
-        TransferFCoord3D(ref lo);
-        TransferFCoord3D(ref hi);
-
-        regionData.Lo = lo;
-        regionData.Hi = hi;
+        TransferFCoord3D(ref regionData.Lo);
+        TransferFCoord3D(ref regionData.Hi);
     }
 
     public virtual void TransferRegion3D(ref Region3D regionData)
     {
-        Coord3D lo = regionData.Lo;
-        Coord3D hi = regionData.Hi;
-
-        TransferCoord3D(ref lo);
-        TransferCoord3D(ref hi);
-
-        regionData.Lo = lo;
-        regionData.Hi = hi;
+        TransferCoord3D(ref regionData.Lo);
+        TransferCoord3D(ref regionData.Hi);
     }
 
     public virtual void TransferFCoord2D(ref FCoord2D coordData)
     {
-        var x = coordData.X;
-        var y = coordData.Y;
-
-        TransferSingle(ref x);
-        TransferSingle(ref y);
-
-        coordData.X = x;
-        coordData.Y = y;
+        TransferSingle(ref coordData.X);
+        TransferSingle(ref coordData.Y);
     }
 
     public virtual void TransferCoord2D(ref Coord2D coordData)
     {
-        var x = coordData.X;
-        var y = coordData.Y;
-
-        TransferInt32(ref x);
-        TransferInt32(ref y);
-
-        coordData.X = x;
-        coordData.Y = y;
+        TransferInt32(ref coordData.X);
+        TransferInt32(ref coordData.Y);
     }
 
     public virtual void TransferFRegion2D(ref FRegion2D regionData)
     {
-        FCoord2D lo = regionData.Lo;
-        FCoord2D hi = regionData.Hi;
-
-        TransferFCoord2D(ref lo);
-        TransferFCoord2D(ref hi);
-
-        regionData.Lo = lo;
-        regionData.Hi = hi;
+        TransferFCoord2D(ref regionData.Lo);
+        TransferFCoord2D(ref regionData.Hi);
     }
 
     public virtual void TransferRegion2D(ref Region2D regionData)
     {
-        Coord2D lo = regionData.Lo;
-        Coord2D hi = regionData.Hi;
-
-        TransferCoord2D(ref lo);
-        TransferCoord2D(ref hi);
-
-        regionData.Lo = lo;
-        regionData.Hi = hi;
+        TransferCoord2D(ref regionData.Lo);
+        TransferCoord2D(ref regionData.Hi);
     }
 
     public virtual void TransferFRange(ref SingleRange rangeData)
     {
-        var lo = rangeData.Lo;
-        var hi = rangeData.Hi;
-
-        TransferSingle(ref lo);
-        TransferSingle(ref hi);
-
-        rangeData.Lo = lo;
-        rangeData.Hi = hi;
+        TransferSingle(ref rangeData.Lo);
+        TransferSingle(ref rangeData.Hi);
     }
+
+    public virtual void TransferColor(ref GameColor colorData) =>
+        TransferInt32(ref Unsafe.As<GameColor, int>(ref colorData));
 
     protected abstract void TransferCore(Span<byte> data);
 }
