@@ -18,9 +18,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NewSage.ArchiveFiles;
+using NewSage.ArchiveFiles;
 
-public sealed class ArchiveFileSystem : IDisposable
+namespace NewSage.Game.Subsystems;
+
+internal sealed class ArchiveFileSystem(GameOptions options) : SubsystemBase(options)
 {
     private readonly List<IArchive> _archives = [];
 
@@ -57,15 +59,13 @@ public sealed class ArchiveFileSystem : IDisposable
         return null;
     }
 
-    ~ArchiveFileSystem() => Dispose(disposing: false);
+    public override void Initialize() { }
 
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
+    public override void Reset() { }
 
-    private void Dispose(bool disposing)
+    public override void UpdateCore() { }
+
+    protected override void Dispose(bool disposing)
     {
         if (_disposed)
         {
@@ -83,5 +83,6 @@ public sealed class ArchiveFileSystem : IDisposable
         }
 
         _disposed = true;
+        base.Dispose(disposing);
     }
 }

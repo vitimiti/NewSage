@@ -20,10 +20,11 @@
 
 using NewSage.Game.Ini;
 using NewSage.Game.Transfer;
+using NewSage.Profile;
 
 namespace NewSage.Game.Subsystems;
 
-internal sealed class SubsystemList : IDisposable
+internal sealed class SubsystemList(GameOptions options) : IDisposable
 {
     private readonly List<SubsystemBase> _subsystems = [];
 
@@ -39,6 +40,7 @@ internal sealed class SubsystemList : IDisposable
         string name
     )
     {
+        using var profiler = Profiler.Start($"{name} Initialization", options.EnableProfiling);
         subsystem.Name = name;
         subsystem.Initialize();
 

@@ -77,6 +77,20 @@ internal sealed class SplashScene(GameOptions options) : IScene
         GC.SuppressFinalize(this);
     }
 
+    private static T InitializeSubsystem<T>(
+        string name,
+        Func<T> factory,
+        TransferService? transfer,
+        string? path1 = null,
+        string? path2 = null
+    )
+        where T : SubsystemBase
+    {
+        T sys = factory();
+        SubsystemList.TheSubsystemList!.InitializeSubsystem(sys, path1, path2, transfer, name);
+        return sys;
+    }
+
     [SuppressMessage(
         "Design",
         "CA1031:Do not catch general exception types",
@@ -192,7 +206,7 @@ internal sealed class SplashScene(GameOptions options) : IScene
         VersionInformation.LogVersionHeader();
 
         Log.Information("Initializing the subsystems list...");
-        SubsystemList.TheSubsystemList = new SubsystemList();
+        SubsystemList.TheSubsystemList = new SubsystemList(options);
 
         Log.Information("Initializing the name key generator...");
         NameKeyGenerator.TheNameKeyGenerator = new NameKeyGenerator(options);
@@ -201,6 +215,13 @@ internal sealed class SplashScene(GameOptions options) : IScene
         Log.Information("Opening the light CRC transfer service...");
         var transferCrc = new TransferCrcService();
         transferCrc.Open("lightCRC");
+
+        Log.Information("Initializing the archive file system...");
+        ArchiveFileSystem.TheArchiveFileSystem = InitializeSubsystem(
+            "TheArchiveFileSystem",
+            () => new ArchiveFileSystem(options),
+            null
+        );
 
         transferCrc.Close();
         Log.Debug($"Light CRC result: 0x{transferCrc.Crc:X8}");
