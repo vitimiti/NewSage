@@ -125,8 +125,16 @@
         <_Parameter2>$(GitAuthor)</_Parameter2>
       </AssemblyAttribute>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-        <_Parameter1>GitVersion</_Parameter1>
-        <_Parameter2>$(GitVersion)</_Parameter2>
+        <_Parameter1>Major</_Parameter1>
+        <_Parameter2>0</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>Minor</_Parameter1>
+        <_Parameter2>1</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>Build</_Parameter1>
+        <_Parameter2>$(GitRevision)</_Parameter2>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>

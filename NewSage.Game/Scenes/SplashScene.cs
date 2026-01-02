@@ -184,6 +184,8 @@ internal sealed class SplashScene(GameOptions options) : IScene
 
     private void BackgroundInitialize()
     {
+        VersionInformation.LogVersionHeader();
+
         Thread.Sleep(1000);
         Log.Information("Fake work finalized, splash screen finished all background work.");
     }
