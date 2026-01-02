@@ -23,7 +23,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using NewSage.Game.Ini;
-using NewSage.Game.NameKeys;
 using NewSage.Game.Subsystems;
 using NewSage.Game.Transfer;
 using NewSage.Interop.NativeSdl;
@@ -33,7 +32,7 @@ using NewSage.Utilities;
 
 namespace NewSage.Game.Scenes;
 
-internal sealed class SplashScene(GameOptions options) : IScene
+internal sealed class SplashScene(string[] args, GameOptions options) : IScene
 {
     private const string SplashScreenName = "Install_Final.bmp";
 
@@ -235,6 +234,8 @@ internal sealed class SplashScene(GameOptions options) : IScene
             Path.Combine(options.GameDirectory, "Data", "INI", "Default", "GameData"),
             Path.Combine(options.GameDirectory, "Data", "INI", "GameData")
         );
+
+        CommandLine.ApplyUserGlobalData(args);
 
         GlobalData.TheWritableGlobalData.ParseCustomDefinition();
 

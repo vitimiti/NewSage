@@ -31,6 +31,7 @@ namespace NewSage.Game;
 
 public sealed class SageGame : IDisposable
 {
+    private readonly string[] _args;
     private readonly GameOptions _options;
 
     private FileStreamSink? _fileStreamSink;
@@ -40,6 +41,7 @@ public sealed class SageGame : IDisposable
 
     public SageGame([NotNull] string[] args, string configPath = "settings.json")
     {
+        _args = args;
         _options = LoadOptions(configPath);
 
         CommandLine.ApplyUserGameOptions(args, _options);
@@ -119,7 +121,7 @@ public sealed class SageGame : IDisposable
         GlobalData.TheWritableGlobalData = new GlobalData(_options);
 
         InitializeSdl();
-        _scene = new SplashScene(_options);
+        _scene = new SplashScene(_args, _options);
         _scene.Initialize();
     }
 
