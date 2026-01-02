@@ -30,7 +30,7 @@ internal abstract class TransferService
 
     public string Identifier { get; protected set; } = string.Empty;
 
-    public abstract void Open(string identifier);
+    public virtual void Open(string identifier) => Identifier = identifier;
 
     public abstract void Close();
 
