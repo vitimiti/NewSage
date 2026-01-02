@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using NewSage.BaseTypes;
 using NewSage.Game.Exceptions.TransferServiceExceptions;
+using NewSage.Game.Masks;
 using NewSage.Game.SaveLoad;
 using NewSage.Utilities;
 using NewSage.Utilities.GameTypes;
@@ -371,6 +372,47 @@ internal abstract class TransferService
                     _ = intList.AddLast(intData);
                 }
 
+                break;
+            }
+
+            case TransferMode.Invalid:
+            default:
+                throw new TransferServiceUnknownModeException($"Unknown transfer mode: {Mode}");
+        }
+    }
+
+    public virtual void TransferKindOf(ref KindOfType kindOfData)
+    {
+        const byte currentVersion = 1;
+        var version = currentVersion;
+        TransferVersion(ref version, currentVersion);
+
+        switch (Mode)
+        {
+            case TransferMode.Save:
+            {
+                var kindOfName = KindOfMask.GetTransferName(kindOfData);
+                TransferAsciiString(ref kindOfName);
+                break;
+            }
+
+            case TransferMode.Load:
+            {
+                var kindOfName = string.Empty;
+                TransferAsciiString(ref kindOfName);
+
+                KindOfType bit = KindOfMask.GetFromTransferName(kindOfName);
+                if (bit != KindOfType.Invalid)
+                {
+                    kindOfData = bit;
+                }
+
+                break;
+            }
+
+            case TransferMode.Crc:
+            {
+                TransferInt32(ref Unsafe.As<KindOfType, int>(ref kindOfData));
                 break;
             }
 

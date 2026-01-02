@@ -98,10 +98,24 @@ public sealed class BitMaskGenerator : IIncrementalGenerator
         return nameSpace;
     }
 
+    private static string? GetBitMaskNameFromMember(EnumMemberDeclarationSyntax member)
+    {
+        AttributeSyntax? attribute = member
+            .AttributeLists.SelectMany(al => al.Attributes)
+            .FirstOrDefault(a => a.Name.ToString().EndsWith("BitMaskName"));
+
+        return attribute?.ArgumentList?.Arguments.FirstOrDefault()?.Expression.ToString().Trim('"');
+    }
+
     [SuppressMessage(
         "csharpsquid",
         "S1192:String literals should not be duplicated",
         Justification = "Makes it less readable."
+    )]
+    [SuppressMessage(
+        "csharpsquid",
+        "S3776:Cognitive Complexity of methods should not be too high",
+        Justification = "Generators are complex."
     )]
     private static void Execute(SourceProductionContext context, ImmutableArray<EnumDeclarationSyntax?> enums)
     {
@@ -146,6 +160,9 @@ public sealed class BitMaskGenerator : IIncrementalGenerator
                 .AppendLine($"    private const int BitCount = {bitCount};")
                 .AppendLine("    private const int ElementCount = (BitCount + 31) / 32;")
                 .AppendLine()
+                .AppendLine("    /// <summary>Represents a bitmask with no bits set.</summary>")
+                .AppendLine($"    public static {structName} Empty => default;")
+                .AppendLine()
                 .AppendLine("    [StructLayout(LayoutKind.Explicit, Size = ElementCount * sizeof(uint))]")
                 .AppendLine("    private struct InlineBuffer")
                 .AppendLine("    {")
@@ -154,11 +171,128 @@ public sealed class BitMaskGenerator : IIncrementalGenerator
                 .AppendLine()
                 .AppendLine("    private InlineBuffer _bits;")
                 .AppendLine()
+                .AppendLine($"    /// <summary>Converts a single enum value into a {structName}.</summary>")
+                .AppendLine($"    public static implicit operator {structName}({enumName} value)")
+                .AppendLine("    {")
+                .AppendLine($"        var mask = new {structName}();")
+                .AppendLine("        mask.Set(value, true);")
+                .AppendLine("        return mask;")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine("    /// <summary>Checks if any bits are set in the mask.</summary>")
+                .AppendLine("    public readonly bool Any()")
+                .AppendLine("    {")
+                .AppendLine("        for (var i = 0; i < ElementCount; i++)")
+                .AppendLine("        {")
+                .AppendLine("            if (GetElement(i) != 0)")
+                .AppendLine("            {")
+                .AppendLine("                return true;")
+                .AppendLine("            }")
+                .AppendLine("        }")
+                .AppendLine()
+                .AppendLine("        return false;")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine("    /// <summary>Checks for any intersection between this mask and another.</summary>")
+                .AppendLine($"    public readonly bool AnyIntersectionWith(in {structName} other)")
+                .AppendLine("    {")
+                .AppendLine("        for (var i = 0; i < ElementCount; i++)")
+                .AppendLine("        {")
+                .AppendLine("            if ((GetElement(i) & other.GetElement(i)) != 0)")
+                .AppendLine("            {")
+                .AppendLine("                return true;")
+                .AppendLine("            }")
+                .AppendLine("        }")
+                .AppendLine()
+                .AppendLine("        return false;")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine($"    /// <summary>Checks if specific bits are set and others are clear.</summary>")
+                .AppendLine(
+                    $"    public readonly bool TestSetAndClear(in {structName} mustBeSet, in {structName} mustBeClear)"
+                )
+                .AppendLine("    {")
+                .AppendLine("        for (var i = 0; i < ElementCount; i++)")
+                .AppendLine("        {")
+                .AppendLine("            uint val = GetElement(i);")
+                .AppendLine("            if ((val & mustBeSet.GetElement(i)) != mustBeSet.GetElement(i))")
+                .AppendLine("            {")
+                .AppendLine("                return false;")
+                .AppendLine("            }")
+                .AppendLine()
+                .AppendLine("            if ((val & mustBeClear.GetElement(i)) != 0)")
+                .AppendLine("            {")
+                .AppendLine("                return false;")
+                .AppendLine("            }")
+                .AppendLine()
+                .AppendLine("        }")
+                .AppendLine()
+                .AppendLine("        return true;")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine("    /// <summary>Clears all bits in the mask.</summary>")
+                .AppendLine("    public void Clear()")
+                .AppendLine("    {")
+                .AppendLine("        for (var i = 0; i < ElementCount; i++)")
+                .AppendLine("        {")
+                .AppendLine("            GetElement(i) = 0;")
+                .AppendLine("        }")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine("    /// <summary>Flips all bits in the mask.</summary>")
+                .AppendLine("    public void Flip()")
+                .AppendLine("    {")
+                .AppendLine("        for (var i = 0; i < ElementCount; i++)")
+                .AppendLine("        {")
+                .AppendLine("            GetElement(i) = ~GetElement(i);")
+                .AppendLine("        }")
+                .AppendLine("    }")
+                .AppendLine()
+                .AppendLine($"    public static string GetTransferName({enumName} value) => value switch")
+                .AppendLine("    {");
+
+            foreach (EnumMemberDeclarationSyntax member in enumDecl.Members)
+            {
+                if (member.Identifier.Text == "Invalid")
+                {
+                    continue;
+                }
+
+                var name = GetBitMaskNameFromMember(member) ?? member.Identifier.Text;
+                _ = sb.AppendLine($"        {enumName}.{member.Identifier.Text} => \"{name}\",");
+            }
+
+            _ = sb.AppendLine("        _ => string.Empty")
+                .AppendLine("    };")
+                .AppendLine()
+                .AppendLine(
+                    $"    public static {enumName} GetFromTransferName(string name) => name.ToUpperInvariant() switch"
+                )
+                .AppendLine("    {");
+
+            foreach (EnumMemberDeclarationSyntax member in enumDecl.Members)
+            {
+                if (member.Identifier.Text == "Invalid")
+                {
+                    continue;
+                }
+
+                var name = GetBitMaskNameFromMember(member) ?? member.Identifier.Text;
+                _ = sb.AppendLine($"        \"{name.ToUpperInvariant()}\" => {enumName}.{member.Identifier.Text},");
+            }
+
+            _ = sb.AppendLine($"        _ => {enumName}.Invalid")
+                .AppendLine("    };")
+                .AppendLine()
                 .AppendLine("    /// <summary>Tests if the specified enum value is set in the bitmask.</summary>")
                 .AppendLine($"    public readonly bool Test({enumName} type)")
                 .AppendLine("    {")
                 .AppendLine("        int index = (int)type;")
-                .AppendLine("        if (index < 0 || index >= BitCount) return false;")
+                .AppendLine("        if (index < 0 || index >= BitCount)")
+                .AppendLine("        {")
+                .AppendLine("            return false;")
+                .AppendLine("        }")
+                .AppendLine()
                 .AppendLine("        return (GetElement(index / 32) & (1u << (index % 32))) != 0;")
                 .AppendLine("    }")
                 .AppendLine()
@@ -166,10 +300,20 @@ public sealed class BitMaskGenerator : IIncrementalGenerator
                 .AppendLine($"    public void Set({enumName} type, bool value)")
                 .AppendLine("    {")
                 .AppendLine("        int index = (int)type;")
-                .AppendLine("        if (index < 0 || index >= BitCount) return;")
+                .AppendLine("        if (index < 0 || index >= BitCount)")
+                .AppendLine("        {")
+                .AppendLine("            return;")
+                .AppendLine("        }")
+                .AppendLine()
                 .AppendLine("        ref uint element = ref GetElement(index / 32);")
-                .AppendLine("        if (value) element |= (1u << (index % 32));")
-                .AppendLine("        else element &= ~(1u << (index % 32));")
+                .AppendLine("        if (value)")
+                .AppendLine("        {")
+                .AppendLine("            element |= 1u << (index % 32);")
+                .AppendLine("        }")
+                .AppendLine("        else")
+                .AppendLine("        {")
+                .AppendLine("            element &= ~(1u << (index % 32));")
+                .AppendLine("        }")
                 .AppendLine("    }")
                 .AppendLine()
                 .AppendLine("    private readonly ref uint GetElement(int index) =>")
