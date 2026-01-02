@@ -18,12 +18,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace NewSage.Video.Internals;
+namespace NewSage.Interop.NativeSdl;
 
-internal static partial class SdlImage
+[SuppressMessage(
+    "csharpsquid",
+    "S4200:Native methods should be wrapped",
+    Justification = "This is an unsafe, interop library for internal use."
+)]
+public static partial class SdlImage
 {
     [LibraryImport("SDL3_image", EntryPoint = "IMG_Load", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]

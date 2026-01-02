@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="GameOptions.cs" company="NewSage">
+// <copyright file="IScene.cs" company="NewSage">
 // A transliteration and update of the CnC Generals (Zero Hour) engine and games with mod-first support.
 // Copyright (C) 2025 NewSage Contributors
 //
@@ -18,24 +18,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using NewSage.Debug;
-using NewSage.Logging;
+namespace NewSage.Game.Scenes;
 
-namespace NewSage.Game;
-
-internal sealed class GameOptions
+internal interface IScene : IDisposable
 {
-    public bool EnableProfiling { get; set; }
+    IScene? NextScene { get; }
 
-    public DumpOptions DumpOptions { get; set; } = new();
+    void Initialize();
 
-    public LogLevel LogLevel { get; set; } = LogLevel.Information;
+    void Update();
 
-    public bool LogToFile { get; set; }
-
-    public string GameDirectory { get; set; } = Environment.CurrentDirectory;
-
-    public string GameId { get; set; } = "NewSage";
-
-    public string GameTitle { get; set; } = "NewSage Game";
+    void Draw();
 }

@@ -4,5 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--This is an unsafe interop library for internal use.-->
+    <NoWarn>$(NoWarn);CA1027;CA1028;CA1034;CA1401;CA1711;CA1716</NoWarn>
   </PropertyGroup>
 </Project>

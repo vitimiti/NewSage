@@ -39,6 +39,7 @@ internal static class CommandLine
         { "--working-dir", "WorkingDirectory" },
         { "--game-dir", "GameDirectory" },
         { "--game-id", "GameId" },
+        { "--game-title", "GameTitle" },
     };
 
     public static void ApplyUserRuntimeOptions(string[] args, GameOptions options)
@@ -122,6 +123,12 @@ internal static class CommandLine
         if (!string.IsNullOrEmpty(id))
         {
             options.GameId = id;
+        }
+
+        var title = config["GameTitle"];
+        if (!string.IsNullOrEmpty(title))
+        {
+            options.GameTitle = title;
         }
     }
 }

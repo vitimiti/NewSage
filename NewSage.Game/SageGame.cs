@@ -19,26 +19,23 @@
 // -----------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Text.Json;
 using NewSage.Debug;
+using NewSage.Game.Scenes;
+using NewSage.Interop.NativeSdl;
 using NewSage.Logging;
 using NewSage.Logging.DefaultSinks;
 using NewSage.Profile;
-using NewSage.Utilities;
-using NewSage.Video;
 
 namespace NewSage.Game;
 
 public sealed class SageGame : IDisposable
 {
-    private const string SplashScreenName = "Install_Final.bmp";
-
     private readonly GameOptions _options;
 
     private FileStreamSink? _fileStreamSink;
-    private Image? _loadScreenBitmap;
-
+    private IScene? _scene;
+    private bool _userRequestedQuit;
     private bool _disposed;
 
     public SageGame(string[] args, string configPath = "settings.json")
@@ -58,7 +55,15 @@ public sealed class SageGame : IDisposable
         Log.AddSink(_fileStreamSink);
     }
 
-    public void Run() => Initialize();
+    public void Run()
+    {
+        Initialize();
+        while (!_userRequestedQuit)
+        {
+            Update();
+            Draw();
+        }
+    }
 
     ~SageGame() => Dispose(disposing: false);
 
@@ -92,87 +97,57 @@ public sealed class SageGame : IDisposable
         }
     }
 
+    private static void InitializeSdl()
+    {
+        if (!Sdl.Init(Sdl.InitVideo))
+        {
+            throw new InvalidOperationException($"SDL video subsystem not initialized: {Sdl.GetError()}.");
+        }
+    }
+
     private void Initialize()
     {
         using var profiler = Profiler.Start("Game initialization", _options.EnableProfiling);
         UnhandledExceptionHandler.Install(_options.DumpOptions);
 
-        _loadScreenBitmap = LoadSplashScreen();
+        InitializeSdl();
+        _scene = new SplashScene(_options);
+        _scene.Initialize();
 
-        if (_loadScreenBitmap is { IsLoaded: true })
+        if (profiler.Enabled)
         {
-            // Show the splash screen
+            Log.Debug($"{profiler.What}: {profiler.Elapsed.TotalMicroseconds}\u00b5s");
         }
-
-        // Start background initialization here
-
-        // Then, once finished:
-        _loadScreenBitmap?.Dispose();
-        _loadScreenBitmap = null;
-
-        Log.Debug($"Game initialized after {profiler.Elapsed.TotalMicroseconds}\u00b5s");
     }
 
-    private Image? LoadSplashScreen()
+    private void Update()
     {
-        try
+        while (Sdl.PollEvent(out Sdl.Event ev))
         {
-            using Stream? stream = ResourceLoader.GetEmbeddedStream(SplashScreenName);
-            if (stream is not null)
+            if (ev.Type is Sdl.EventType.Quit)
             {
-                var img = new Image();
-                try
-                {
-                    img.Load(stream);
-                    Log.Debug("Splash screen image loaded from embedded resources.");
-                    return img;
-                }
-                catch
-                {
-                    img.Dispose();
-                    throw;
-                }
-            }
-        }
-        catch (InvalidOperationException ex)
-        {
-            Log.Error($"Failed to load the splash screen image from embedded resources.\n{ex}");
-        }
-
-        var paths = new[]
-        {
-            Path.Combine(
-                _options.GameDirectory,
-                "Data",
-                CultureInfo.CurrentCulture.TwoLetterISOLanguageName,
-                SplashScreenName
-            ),
-            Path.Combine(_options.GameDirectory, SplashScreenName),
-        };
-
-        foreach (var path in paths)
-        {
-            if (!File.Exists(path))
-            {
-                continue;
-            }
-
-            var img = new Image();
-            try
-            {
-                img.Load(path);
-                Log.Debug($"Splash screen image loaded from '{path}'.");
-                return img;
-            }
-            catch (InvalidOperationException ex)
-            {
-                img.Dispose();
-                Log.Error($"Failed to load splash screen image from '{path}'.\n{ex}");
+                _userRequestedQuit = true;
             }
         }
 
-        return null;
+        IScene? currentScene = _scene;
+        if (currentScene is null)
+        {
+            return;
+        }
+
+        currentScene.Update();
+        if (currentScene.NextScene is { } nextScene)
+        {
+            _scene = null;
+            currentScene.Dispose();
+
+            _scene = nextScene;
+            _scene.Initialize();
+        }
     }
+
+    private void Draw() => _scene?.Draw();
 
     private void Dispose(bool disposing)
     {
@@ -183,12 +158,14 @@ public sealed class SageGame : IDisposable
 
         if (disposing)
         {
-            _loadScreenBitmap?.Dispose();
-            _loadScreenBitmap = null;
+            _scene?.Dispose();
+            _scene = null;
 
             _fileStreamSink?.Dispose();
             _fileStreamSink = null;
         }
+
+        Sdl.Quit();
 
         _disposed = true;
     }

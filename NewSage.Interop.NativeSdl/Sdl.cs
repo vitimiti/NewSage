@@ -18,15 +18,23 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
-namespace NewSage.Video.Internals;
+namespace NewSage.Interop.NativeSdl;
 
-internal static unsafe partial class Sdl
+[SuppressMessage(
+    "csharpsquid",
+    "S4200:Native methods should be wrapped",
+    Justification = "This is an unsafe, interop library for internal use."
+)]
+public static unsafe partial class Sdl
 {
-    public const uint InitVideo = 0x00000020;
+    public const uint InitVideo = 0x0000_0020;
+
+    public const ulong WindowBorderless = 0x0000_0000_0000_0010;
 
     [LibraryImport("SDL3", EntryPoint = "SDL_Init")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -54,6 +62,42 @@ internal static unsafe partial class Sdl
     public static IoStream IoFromConstMem(ReadOnlySpan<byte> data) =>
         UnsafeIoFromConstMem((byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(data)), (nuint)data.Length);
 
+    [LibraryImport("SDL3", EntryPoint = "SDL_CreateWindow", StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    public static partial Window CreateWindow(string title, int width, int height, ulong flags);
+
+    [LibraryImport("SDL3", EntryPoint = "SDL_PollEvent")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    [return: MarshalAs(UnmanagedType.I1)]
+    public static partial bool PollEvent(out Event ev);
+
+    public static Surface GetWindowSurface(Window window)
+    {
+        var handle = UnsafeGetWindowSurface(window);
+        return new Surface(handle, ownsHandle: false);
+    }
+
+    [LibraryImport("SDL3", EntryPoint = "SDL_UpdateWindowSurface")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    [return: MarshalAs(UnmanagedType.I1)]
+    public static partial bool UpdateWindowSurface(Window window);
+
+    public static bool BlitSurface(Surface src, Surface dst)
+    {
+        Rect* srcRect = null;
+        Rect* dstRect = null;
+        return UnsafeBlitSurface(src, srcRect, dst, dstRect);
+    }
+
+    [LibraryImport("SDL3", EntryPoint = "SDL_ShowWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    [return: MarshalAs(UnmanagedType.I1)]
+    public static partial bool ShowWindow(Window window);
+
     [LibraryImport("SDL3", EntryPoint = "SDL_GetError")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
@@ -75,11 +119,36 @@ internal static unsafe partial class Sdl
     [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
     private static partial IoStream UnsafeIoFromConstMem(byte* data, nuint size);
 
+    [LibraryImport("SDL3", EntryPoint = "SDL_DestroyWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    private static partial void DestroyWindow(nint window);
+
+    [LibraryImport("SDL3", EntryPoint = "SDL_GetWindowSurface")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    private static partial nint UnsafeGetWindowSurface(Window window);
+
+    [LibraryImport("SDL3", EntryPoint = "SDL_BlitSurface")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    [return: MarshalAs(UnmanagedType.I4)]
+    private static partial bool UnsafeBlitSurface(Surface src, Rect* srcRect, Surface dst, Rect* dstRect);
+
+    public enum EventType : uint
+    {
+        First,
+        Quit = 0x0100,
+    }
+
     [NativeMarshalling(typeof(SafeHandleMarshaller<Surface>))]
     public sealed class Surface : SafeHandle
     {
         public Surface()
             : base(invalidHandleValue: nint.Zero, ownsHandle: true) => SetHandle(nint.Zero);
+
+        public Surface(nint preexistingHandle, bool ownsHandle = true)
+            : base(invalidHandleValue: nint.Zero, ownsHandle) => SetHandle(preexistingHandle);
 
         public override bool IsInvalid => handle == nint.Zero;
 
@@ -97,7 +166,6 @@ internal static unsafe partial class Sdl
             }
 
             DestroySurface(handle);
-            SetHandleAsInvalid();
             return true;
         }
     }
@@ -118,9 +186,67 @@ internal static unsafe partial class Sdl
             }
 
             var result = CloseIo(handle);
-            SetHandleAsInvalid();
             return result;
         }
+    }
+
+    [NativeMarshalling(typeof(SafeHandleMarshaller<Window>))]
+    public sealed class Window : SafeHandle
+    {
+        public Window()
+            : base(invalidHandleValue: nint.Zero, ownsHandle: true) => SetHandle(nint.Zero);
+
+        public override bool IsInvalid => handle == nint.Zero;
+
+        protected override bool ReleaseHandle()
+        {
+            if (IsInvalid)
+            {
+                return true;
+            }
+
+            DestroyWindow(handle);
+            return true;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Rect : IEquatable<Rect>
+    {
+        public int X;
+        public int Y;
+        public int W;
+        public int H;
+
+        public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Rect other && Equals(other);
+
+        public readonly bool Equals(Rect other) => X == other.X && Y == other.Y && W == other.W && H == other.H;
+
+        public override readonly int GetHashCode() => HashCode.Combine(X, Y, W, H);
+
+        public static bool operator ==(Rect left, Rect right) => left.Equals(right);
+
+        public static bool operator !=(Rect left, Rect right) => !left.Equals(right);
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct Event : IEquatable<Event>
+    {
+        [FieldOffset(0)]
+        public EventType Type;
+
+        [FieldOffset(0)]
+        public fixed byte Padding[128];
+
+        public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Event other && Equals(other);
+
+        public readonly bool Equals(Event other) => Type == other.Type;
+
+        public override readonly int GetHashCode() => HashCode.Combine(Type);
+
+        public static bool operator ==(Event left, Event right) => left.Equals(right);
+
+        public static bool operator !=(Event left, Event right) => !left.Equals(right);
     }
 
     [StructLayout(LayoutKind.Sequential)]

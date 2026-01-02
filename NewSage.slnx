@@ -2,11 +2,13 @@
   <Folder Name="/Games/">
     <Project Path="NewSage.Games.Generals/NewSage.Games.Generals.csproj" />
   </Folder>
+  <Folder Name="/Interop/">
+    <Project Path="NewSage.Interop.NativeSdl/NewSage.Interop.NativeSdl.csproj" />
+  </Folder>
   <Project Path="NewSage.BaseTypes/NewSage.BaseTypes.csproj" />
   <Project Path="NewSage.Debug/NewSage.Debug.csproj" />
   <Project Path="NewSage.Game/NewSage.Game.csproj" />
   <Project Path="NewSage.Logging/NewSage.Logging.csproj" />
   <Project Path="NewSage.Profile/NewSage.Profile.csproj" />
   <Project Path="NewSage.Utilities/NewSage.Utilities.csproj" />
-  <Project Path="NewSage.Video/NewSage.Video.csproj" />
 </Solution>
