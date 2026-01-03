@@ -137,37 +137,45 @@ internal class IniParser : IDisposable, IAsyncDisposable
             throw new IniInvalidDirectoryException("Directory name is empty.");
         }
 
-        var rootPath = Path.GetFullPath(directory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        var files = Directory.GetFiles(
-            rootPath,
-            "*.ini",
-            new EnumerationOptions
-            {
-                RecurseSubdirectories = recursive,
-                IgnoreInaccessible = true,
-                MatchCasing = MatchCasing.CaseInsensitive,
-            }
-        );
+        try
+        {
+            var rootPath = Path.GetFullPath(directory)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var files = Directory.GetFiles(
+                rootPath,
+                "*.ini",
+                new EnumerationOptions
+                {
+                    RecurseSubdirectories = recursive,
+                    IgnoreInaccessible = true,
+                    MatchCasing = MatchCasing.CaseInsensitive,
+                }
+            );
 
-        Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
-        // Files in directory
-        var filesRead = (
-            from file in files
-            let fileDir = Path.GetDirectoryName(file)
-                ?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            where string.Equals(fileDir, rootPath, StringComparison.OrdinalIgnoreCase)
-            select file
-        ).Aggregate(0U, (current, file) => current + Load(file, loadType, transfer));
+            // Files in directory
+            var filesRead = (
+                from file in files
+                let fileDir = Path.GetDirectoryName(file)
+                    ?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                where string.Equals(fileDir, rootPath, StringComparison.OrdinalIgnoreCase)
+                select file
+            ).Aggregate(0U, (current, file) => current + Load(file, loadType, transfer));
 
-        // Files in subdirectories
-        return (
-            from file in files
-            let fileDir = Path.GetDirectoryName(file)
-                ?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            where !string.Equals(fileDir, rootPath, StringComparison.OrdinalIgnoreCase)
-            select file
-        ).Aggregate(filesRead, (current, file) => current + Load(file, loadType, transfer));
+            // Files in subdirectories
+            return (
+                from file in files
+                let fileDir = Path.GetDirectoryName(file)
+                    ?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                where !string.Equals(fileDir, rootPath, StringComparison.OrdinalIgnoreCase)
+                select file
+            ).Aggregate(filesRead, (current, file) => current + Load(file, loadType, transfer));
+        }
+        catch (Exception ex)
+        {
+            throw new IniCantOpenFileException($"Cannot open INI file directory '{directory}'.", ex);
+        }
     }
 
     public uint Load(string fileName, IniLoadType loadType, TransferService? transfer)

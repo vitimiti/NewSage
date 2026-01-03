@@ -41,6 +41,12 @@ internal static class CommandLine
         { "--game-title", "GameTitle" },
     };
 
+    private static readonly Dictionary<string, string> GlobalDataSwitchMappings = new()
+    {
+        { "--mod-dir", "ModDirectory" },
+        { "--mod-ext", "ModExtension" },
+    };
+
     public static void ApplyUserGameOptions(string[] args, GameOptions options)
     {
         if (args.Length == 0)
@@ -68,7 +74,13 @@ internal static class CommandLine
 
         Debug.Assert(GlobalData.TheWritableGlobalData is not null, "The global data is not initialized.");
 
+        var builder = new ConfigurationBuilder();
+        _ = builder.AddCommandLine(args, GlobalDataSwitchMappings);
+
+        IConfigurationRoot config = builder.Build();
+
         UserGlobalDataOptionsParser.ParseDirectOptions(args, GlobalData.TheWritableGlobalData);
+        UserGlobalDataOptionsParser.ParseModOptions(config, GlobalData.TheWritableGlobalData);
 
 #if DEBUG
         UserGlobalDataOptionsParser.ParseDebugDirectOptions(args, GlobalData.TheWritableGlobalData);
@@ -182,6 +194,21 @@ internal static class CommandLine
             if (args.Contains("--use-csf"))
             {
                 globalData.UseStringFile = true;
+            }
+        }
+
+        public static void ParseModOptions(IConfigurationRoot config, GlobalData globalData)
+        {
+            var modDir = config["ModDirectory"];
+            if (!string.IsNullOrEmpty(modDir))
+            {
+                globalData.ModDirectory = modDir;
+            }
+
+            var modExt = config["ModExtension"];
+            if (!string.IsNullOrEmpty(modExt))
+            {
+                globalData.ModBigFilesExtension = modExt;
             }
         }
 

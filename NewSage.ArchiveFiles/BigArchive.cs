@@ -20,6 +20,7 @@
 
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
+using NewSage.Logging;
 using NewSage.Utilities;
 
 namespace NewSage.ArchiveFiles;
@@ -138,7 +139,7 @@ public sealed class BigArchive : IArchive
             throw new InvalidDataException($"File {FilePath} is not a valid BIG archive (Magic mismatch).");
         }
 
-        // Header Structure (Original C++ Engine):
+        // Header Structure:
         // 00-03: 'BIGF'
         // 04-07: Total File Size (Little Endian)
         // 08-11: Number of Files (Big Endian)

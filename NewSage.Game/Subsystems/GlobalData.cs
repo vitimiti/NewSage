@@ -55,6 +55,10 @@ internal class GlobalData : SubsystemBase, ICloneable
 
     public bool MusicOn { get; set; } = true;
 
+    public string? ModDirectory { get; set; }
+
+    public string ModBigFilesExtension { get; set; } = ".big";
+
 #if DEBUG
     public int TheFirstCrcFrameToLog { get; set; } = -1;
 

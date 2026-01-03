@@ -226,6 +226,7 @@ internal sealed class SplashScene(string[] args, GameOptions options) : IScene
             null
         );
 
+        Log.Information("Initializing the global data subsystem...");
         Debug.Assert(GlobalData.TheWritableGlobalData is not null, "Global data is not initialized.");
         GlobalData.TheWritableGlobalData = InitializeSubsystem(
             "TheWritableGlobalData",
@@ -235,7 +236,27 @@ internal sealed class SplashScene(string[] args, GameOptions options) : IScene
             Path.Combine(options.GameDirectory, "Data", "INI", "GameData")
         );
 
+        Log.Information("Applying user-defined global data...");
         CommandLine.ApplyUserGlobalData(args);
+
+        Log.Information($"Mounting the game directory '{options.GameDirectory}'...");
+        ArchiveFileSystem.TheArchiveFileSystem.MountDirectory(options.GameDirectory);
+        if (GlobalData.TheGlobalData!.ModDirectory is not null)
+        {
+            Log.Information($"Mounting the mod directory '{GlobalData.TheGlobalData.ModDirectory}'...");
+            var actualPattern = GlobalData.TheGlobalData.ModBigFilesExtension;
+            if (!actualPattern.StartsWith('*'))
+            {
+                actualPattern = $"*{actualPattern}";
+            }
+
+            if (!actualPattern[1..].StartsWith('.'))
+            {
+                actualPattern = $"*.{actualPattern[1..]}";
+            }
+
+            ArchiveFileSystem.TheArchiveFileSystem.MountDirectory(GlobalData.TheGlobalData.ModDirectory, actualPattern);
+        }
 
         GlobalData.TheWritableGlobalData.ParseCustomDefinition();
 

@@ -19,6 +19,8 @@
 // -----------------------------------------------------------------------
 
 using NewSage.ArchiveFiles;
+using NewSage.Logging;
+using NewSage.Profile;
 
 namespace NewSage.Game.Subsystems;
 
@@ -34,9 +36,11 @@ internal sealed class ArchiveFileSystem(GameOptions options) : SubsystemBase(opt
 
     public void MountDirectory(string directory, string searchPattern = "*.big")
     {
+        using var profiler = Profiler.Start($"{nameof(MountDirectory)}({directory})", options.EnableProfiling);
         IOrderedEnumerable<string> files = Directory.GetFiles(directory, searchPattern).Order();
         foreach (var file in files)
         {
+            Log.Information($"Mounting archive '{file}'.");
             Mount(file);
         }
     }

@@ -18,8 +18,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
+using NewSage.Game.Exceptions;
 using NewSage.Game.Ini;
 using NewSage.Game.Transfer;
+using NewSage.Logging;
 using NewSage.Profile;
 
 namespace NewSage.Game.Subsystems;
@@ -47,12 +50,26 @@ internal sealed class SubsystemList(GameOptions options) : IDisposable
         using var ini = new IniParser();
         if (path1 is not null)
         {
-            _ = ini.LoadFileDirectory(path1, IniLoadType.Overwrite, transfer);
+            try
+            {
+                _ = ini.LoadFileDirectory(path1, IniLoadType.Overwrite, transfer);
+            }
+            catch (IniException ex)
+            {
+                Log.Error($"Unable to load any INI file in the file directory '{path1}'.\n{ex}");
+            }
         }
 
         if (path2 is not null)
         {
-            _ = ini.LoadFileDirectory(path2, IniLoadType.Overwrite, transfer);
+            try
+            {
+                _ = ini.LoadFileDirectory(path2, IniLoadType.Overwrite, transfer);
+            }
+            catch (IniException ex)
+            {
+                Log.Error($"Unable to load any INI file in the file directory '{path2}'.\n{ex}");
+            }
         }
 
         _subsystems.Add(subsystem);
